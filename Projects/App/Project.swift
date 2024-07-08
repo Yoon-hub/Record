@@ -14,6 +14,9 @@ let project = Project(name: "App", targets: [
         product: .app,
         bundleId: "record.app.com",
         sources: ["Sources/**"],
-        resources: ["Resources/**"]
+        resources: ["Resources/**"],
+        dependencies: [
+            .external(name: "ReactorKit")
+        ]
     )
 ])

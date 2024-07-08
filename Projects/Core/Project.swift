@@ -13,6 +13,9 @@ let coreProject = Project(name: "Core", targets: [
         destinations: .iOS,
         product: .staticLibrary,
         bundleId: "record.Core.com",
-        sources: ["Sources/**"]
+        sources: ["Sources/**"],
+        dependencies: [
+            .external(name: "ReactorKit")
+        ]
     )
 ])
