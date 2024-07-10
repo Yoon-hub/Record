@@ -38,6 +38,7 @@ extension InjectIdentifier: Hashable {
     }
 }
 
+/// 간편하게 인스턴스 생성 제공
 extension InjectIdentifier {
     public func by(
         type: V.Type? = nil,
