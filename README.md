@@ -31,6 +31,7 @@ extension InjectIdentifier: Hashable {
     }
 }
 ```
+<br>
 
 ### DIContainer for Dependency Management
 
@@ -102,5 +103,13 @@ then
 ``` swift
 container.register(type: AppNavigator.self) { _ in  AppNavigator(window: self.window!, navigationController: UINavigationController())
 ```
+<br>
 
+
+### Utilize property wrapper to get dependencies
+
+It's uncomfortable to take out the dependency like this every time, so I'll try to improve it with property wrapper.
+```swift
+appNavigator = try! Container.standard.resolve(type: AppNavigator.self)
+```
 
