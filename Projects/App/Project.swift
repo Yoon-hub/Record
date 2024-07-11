@@ -14,6 +14,7 @@ let project = Project(name: "App", targets: [
         product: .app,
         bundleId: "record.app.com",
         infoPlist: .extendingDefault(with: [
+            "UILaunchStoryboardName": .string("LaunchScreen.storyboard"),
             "UIApplicationSceneManifest" : .dictionary([
                 "UIApplicationSupportsMultipleScenes" : .boolean(false),
                 "UISceneConfigurations" : .dictionary([
@@ -30,7 +31,8 @@ let project = Project(name: "App", targets: [
         resources: ["Resources/**"],
         dependencies: [
             .project(target: "Core", path: "../Core"),
-            .external(name: "ReactorKit")
+            .external(name: "ReactorKit"),
+            .external(name: "PinLayout")
         ]
     )
 ])
