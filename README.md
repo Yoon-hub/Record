@@ -108,8 +108,35 @@ container.register(type: AppNavigator.self) { _ in  AppNavigator(window: self.wi
 
 ### Utilize property wrapper to get dependencies
 
-It's uncomfortable to take out the dependency like this every time, so I'll try to improve it with property wrapper.
+It's uncomfortable to take out the dependency like this every time, so I'll try to improve it with **property wrapper.**
 ```swift
 appNavigator = try! Container.standard.resolve(type: AppNavigator.self)
+```
+
+```swift
+@propertyWrapper
+public struct Injected<V> {
+    
+    public let identifier: InjectIdentifier<V>
+    
+    public init() {
+        self.identifier = .by(type: V.self)
+    }
+    
+    public lazy var wrappedValue: V = {
+        let contianer = Container.standard
+        
+        do {
+            let value = try contianer.resolve(identifier)
+            return value
+        } catch {
+            fatalError(error.localizedDescription)
+        }
+    }()
+}
+```
+It's easy to get dependency. like this
+```swift
+@Injected var appNaviagtor: AppNavigatorProtocol
 ```
 
