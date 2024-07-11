@@ -78,3 +78,29 @@ public extension Injectable {
 ```
 **"Cannot use mutating member on immutable value: 'self' is immutable"** error resolved by adopting **AnyObject**
 
+
+When registering dependencies, you must create an InjectIdentifier instance each time and put it as a parameter as follows.
+```swift
+let container = Container.standard
+
+container.register(InjectIdentifier(type: AppNavigator.self)) { _ in
+    AppNavigator(window: self.window!, navigationController: UINavigationController())
+}
+```
+
+It's uncomfortable, so I'll add a register function.
+```swift
+func resolve<V>(
+    type: V.Type? = nil,
+    key: String? = nil
+) throws -> V {
+    try self.resolve(.by(type: type, key: key))
+}
+```
+
+then
+``` swift
+container.register(type: AppNavigator.self) { _ in  AppNavigator(window: self.window!, navigationController: UINavigationController())
+```
+
+
