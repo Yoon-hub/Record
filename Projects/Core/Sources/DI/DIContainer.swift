@@ -29,6 +29,14 @@ public extension Injectable {
         return dependency
     }
     
+    /// 의존성 가져올 시 InjectIdentifier 편하게 생성하기 위한 메서드
+    func resolve<V>(
+        type: V.Type? = nil,
+        key: String? = nil
+    ) throws -> V {
+        try self.resolve(.by(type: type, key: key))
+    }
+    
     /// 의존성 삭제
     func remove<V>(_ indentifier: InjectIdentifier<V>) {
         dependencies.removeValue(forKey: indentifier)
