@@ -45,6 +45,15 @@ public extension Injectable {
             assertionFailure(error.localizedDescription)
         }
     }
+    
+    /// 의존성 등록 시 InjectIdentifier 편하게 생성하기 위한 메서드
+    func register<V>(
+        type: V.Type? = nil,
+        key: String? = nil,
+        _ resolve: (Resolvable) throws -> V
+    ){
+        self.register( .by(type: type, key: key), resolve)
+    }
 }
 
 
