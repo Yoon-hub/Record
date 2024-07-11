@@ -13,6 +13,19 @@ let project = Project(name: "App", targets: [
         destinations: .iOS,
         product: .app,
         bundleId: "record.app.com",
+        infoPlist: .extendingDefault(with: [
+            "UIApplicationSceneManifest" : .dictionary([
+                "UIApplicationSupportsMultipleScenes" : .boolean(false),
+                "UISceneConfigurations" : .dictionary([
+                    "UIWindowSceneSessionRoleApplication" : .array([
+                        .dictionary([
+                            "UISceneConfigurationName" : .string("Default Configuration"),
+                            "UISceneDelegateClassName" : .string("$(PRODUCT_MODULE_NAME).SceneDelegate")
+                        ])
+                    ])
+                ])
+            ])
+        ]),
         sources: ["Sources/**"],
         resources: ["Resources/**"],
         dependencies: [
