@@ -12,7 +12,7 @@ protocol AppNavigatorProtocol: BaseNavigator {
     
     var window: UIWindow { get set }
     
-    func toHome()
+    func toTabBar()
 }
 
 final class AppNavigator: AppNavigatorProtocol {
@@ -28,7 +28,10 @@ final class AppNavigator: AppNavigatorProtocol {
         self.navigationController = navigationController
     }
     
-    func toHome() {
-        
+    func toTabBar() {
+        let vc = TabBarViewControllerWrapper().viewController
+        navigationController.setViewControllers([vc], animated: false)
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
     }
 }
