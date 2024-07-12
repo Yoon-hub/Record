@@ -13,6 +13,7 @@ let project = Project(name: "App", targets: [
         destinations: .iOS,
         product: .app,
         bundleId: "record.app.com",
+        deploymentTargets: .iOS("15.0"),
         infoPlist: .extendingDefault(with: [
             "UILaunchStoryboardName": .string("LaunchScreen.storyboard"),
             "UIApplicationSceneManifest" : .dictionary([
