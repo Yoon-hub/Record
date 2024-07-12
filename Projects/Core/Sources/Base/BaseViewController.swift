@@ -18,7 +18,7 @@ open class BaseViewController<R: Reactor, V: BaseView>: UIViewController, View {
     
     public var contentView: V
     
-    public func bind(reactor: R) {}
+    open func bind(reactor: R) {}
     
     // MARK: - Intializer
     public init(contentView: V, reactor: Reactor? = nil) {

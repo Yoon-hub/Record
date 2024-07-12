@@ -30,8 +30,7 @@ final class AppNavigator: AppNavigatorProtocol {
     
     func toTabBar() {
         let vc = TabBarViewControllerWrapper().viewController
-        navigationController.setViewControllers([vc], animated: false)
-        window.rootViewController = navigationController
+        window.rootViewController = vc
         window.makeKeyAndVisible()
     }
 }
