@@ -33,7 +33,8 @@ let project = Project(name: "App", targets: [
         dependencies: [
             .project(target: "Core", path: "../Core"),
             .external(name: "ReactorKit"),
-            .external(name: "PinLayout")
+            .external(name: "PinLayout"),
+            .external(name: "RxCocoa")
         ]
     )
 ])
