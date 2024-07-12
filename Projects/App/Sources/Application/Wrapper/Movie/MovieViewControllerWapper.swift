@@ -13,6 +13,7 @@ final class MovieViewControllerWapper: BaseWrapper {
     
     typealias R = MovieReactor
     typealias V = MovieViewContoller
+    typealias C = MovieView
     
     var viewController: V {
         makeViewController()
@@ -25,11 +26,15 @@ final class MovieViewControllerWapper: BaseWrapper {
     // MARK: - Make
     
     func makeViewController() -> V {
-        return MovieViewContoller(reactor: makeReactor())
+        return MovieViewContoller(contentView: makeView(), reactor: makeReactor())
     }
     
     func makeReactor() -> R {
         return MovieReactor(initialState: MovieReactor.State())
+    }
+    
+    func makeView() -> C {
+        return MovieView()
     }
 
 }

@@ -10,31 +10,32 @@ import UIKit
 import ReactorKit
 import RxSwift
 
-open class BaseViewController<R: Reactor>: UIViewController, View {
+open class BaseViewController<R: Reactor, V: BaseView>: UIViewController, View {
     
     public typealias Reactor = R
     
     public var disposeBag = DisposeBag()
     
-    public func bind(reactor: R) {
-        
-    }
+    public var contentView: V
+    
+    public func bind(reactor: R) {}
     
     // MARK: - Intializer
-    public init() {
+    public init(contentView: V, reactor: Reactor? = nil) {
+        self.contentView = contentView
         super.init(nibName: nil, bundle: nil)
-    }
-    
-    public convenience init(reactor: Reactor? = nil) {
-        self.init()
         self.reactor = reactor
     }
     
     required public init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Life Cycle
+    open override func loadView() {
+        self.view = contentView
+    }
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         setup()

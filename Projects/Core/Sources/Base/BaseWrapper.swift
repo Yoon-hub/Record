@@ -13,6 +13,7 @@ public protocol BaseWrapper {
     
     associatedtype R: Reactor
     associatedtype V: ReactorKit.View
+    associatedtype C: BaseView
     
     func makeReactor() -> R
     func makeViewController() -> V
