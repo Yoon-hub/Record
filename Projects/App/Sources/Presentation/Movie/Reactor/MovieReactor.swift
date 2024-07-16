@@ -51,7 +51,10 @@ extension MovieReactor {
         }
     }
     
-    func reduce(state: State, mutation: Mutation) -> State {
+    func reduce(
+        state: State,
+        mutation: Mutation
+    ) -> State {
         var newState = state
         
         switch mutation {

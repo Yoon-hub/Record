@@ -25,7 +25,7 @@ final class TabBarViewController: UITabBarController {
             tabBar.tintColor = .recordColor
             
             // movie
-            let movie = MovieViewControllerWapper().viewController
+            let movie = MovieViewControllerWrapper().viewController
             movie.tabBarItem = UITabBarItem(title: "영화", image: DesignAsset.movie.image.resize(targetSize: CGSize(width: 30, height: 30)), tag: 0)
             
             let movieNavi = UINavigationController(rootViewController: movie)

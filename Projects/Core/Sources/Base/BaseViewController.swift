@@ -24,6 +24,7 @@ open class BaseViewController<R: Reactor, V: BaseView>: UIViewController, View {
     public init(contentView: V, reactor: Reactor? = nil) {
         self.contentView = contentView
         super.init(nibName: nil, bundle: nil)
+        beforeBind()
         self.reactor = reactor
     }
     
@@ -41,5 +42,6 @@ open class BaseViewController<R: Reactor, V: BaseView>: UIViewController, View {
         setup()
     }
     
+    open func beforeBind() {}
     open func setup() {}
 }

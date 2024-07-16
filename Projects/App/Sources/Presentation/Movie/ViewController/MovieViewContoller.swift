@@ -22,18 +22,26 @@ final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
     }
     
     private func setNavigation() {
+        self.navigationController?.navigationBar.tintColor = .recordColor
+    }
+    
+    override func beforeBind() {
+        makeNavigationItem()
+    }
+    
+    override func bind(reactor: MovieReactor) {
+        super.bind(reactor: reactor)
+        bindInput(reactor: reactor)
+        bindOutput(reactor: reactor)
+    }
+    
+    private func makeNavigationItem() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
         
         
         let rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: nil, action: nil)
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
-        self.navigationController?.navigationBar.tintColor = .recordColor
-    }
-    
-    override func bind(reactor: MovieReactor) {
-        bindInput(reactor: reactor)
-        bindOutput(reactor: reactor)
     }
 }
 
@@ -49,7 +57,6 @@ extension MovieViewContoller {
     
     private func bindOutput(reactor: MovieReactor) {
         reactor.pulse(\.$openNextView)
-            .distinctUntilChanged()
             .compactMap { $0 }
             .withUnretained(self)
             .observe(on: MainScheduler.instance)
@@ -61,6 +68,6 @@ extension MovieViewContoller {
 // MARK: -
 extension MovieViewContoller {
     private func openNextView(_ nextView: MovieReactor.TranstionTo) {
-        
+        print(nextView)
     }
 }
