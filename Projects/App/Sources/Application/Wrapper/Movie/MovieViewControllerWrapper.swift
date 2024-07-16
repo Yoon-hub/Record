@@ -9,7 +9,7 @@ import UIKit
 
 import Core
 
-final class MovieViewControllerWapper: BaseWrapper {
+final class MovieViewControllerWrapper: BaseWrapper {
     
     typealias R = MovieReactor
     typealias V = MovieViewContoller
@@ -23,10 +23,14 @@ final class MovieViewControllerWapper: BaseWrapper {
         makeReactor()
     }
     
+    var view: C {
+        makeView()
+    }
+    
     // MARK: - Make
     
     func makeViewController() -> V {
-        return MovieViewContoller(contentView: makeView(), reactor: makeReactor())
+        return MovieViewContoller(contentView: view, reactor: reactor)
     }
     
     func makeReactor() -> R {
