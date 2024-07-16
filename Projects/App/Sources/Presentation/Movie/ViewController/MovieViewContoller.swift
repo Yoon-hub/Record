@@ -33,16 +33,34 @@ final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
     
     override func bind(reactor: MovieReactor) {
         bindInput(reactor: reactor)
+        bindOutput(reactor: reactor)
     }
 }
 
 // MARK: - Bind
 extension MovieViewContoller {
-    
     private func bindInput(reactor: MovieReactor) {
-        
         self.navigationItem.rightBarButtonItem?.rx.tap
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
-            
+            .map { _ in Reactor.Action.openNextView(.didTapRightBarButtonItem) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindOutput(reactor: MovieReactor) {
+        reactor.pulse(\.$openNextView)
+            .distinctUntilChanged()
+            .compactMap { $0 }
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .bind { $0.0.openNextView($0.1) }
+            .disposed(by: disposeBag)
+    }
+}
+
+// MARK: -
+extension MovieViewContoller {
+    private func openNextView(_ nextView: MovieReactor.TranstionTo) {
+        
     }
 }
