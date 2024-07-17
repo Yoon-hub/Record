@@ -13,7 +13,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
     
-    @Injected var appNaviagtor: AppNavigatorProtocol
+    @Navigator var appNaviagtor: AppNavigatorProtocol
     
     func scene(
         _ scene: UIScene,

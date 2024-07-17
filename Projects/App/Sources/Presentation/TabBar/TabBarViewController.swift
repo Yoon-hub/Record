@@ -12,6 +12,8 @@ import Design
 
 final class TabBarViewController: UITabBarController {
     
+    @Navigator var mainNaivagtor: MainNaviagatorProtocol
+    
     override func viewDidLoad() {
             super.viewDidLoad()
             setTabbar()
@@ -28,9 +30,9 @@ final class TabBarViewController: UITabBarController {
             let movie = MovieViewControllerWrapper().viewController
             movie.tabBarItem = UITabBarItem(title: "영화", image: DesignAsset.movie.image.resize(targetSize: CGSize(width: 30, height: 30)), tag: 0)
             
-            let movieNavi = UINavigationController(rootViewController: movie)
-            
-            self.viewControllers = [movieNavi]
+            let navi = mainNaivagtor.navigationController
+            navi.viewControllers = [movie]
+            self.viewControllers = [navi]
         }
     
 }
