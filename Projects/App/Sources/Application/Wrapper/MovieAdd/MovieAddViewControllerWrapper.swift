@@ -10,34 +10,34 @@ import UIKit
 import Core
 
 final class MovieAddViewControllerWrapper: BaseWrapper {
-        
-        typealias R = MovieAddReactor
-        typealias V = MovieAddViewController
-        typealias C = MovieAddView
-        
-        var viewController: V {
-            makeViewController()
-        }
-        
-        var reactor: R {
-            makeReactor()
-        }
-        
-        var view: C {
-            makeView()
-        }
-        
-        // MARK: - Make
-        
-        func makeViewController() -> V {
-            return MovieAddViewController(contentView: view, reactor: reactor)
-        }
-        
-        func makeReactor() -> R {
-            return MovieAddReactor(initialState: MovieAddReactor.State())
-        }
-        
-        func makeView() -> C {
-            return MovieAddView()
-        }
+    
+    typealias R = MovieAddReactor
+    typealias V = MovieAddViewController
+    typealias C = MovieAddView
+    
+    var viewController: V {
+        makeViewController()
+    }
+    
+    var reactor: R {
+        makeReactor()
+    }
+    
+    var view: C {
+        makeView()
+    }
+    
+    // MARK: - Make
+    
+    func makeViewController() -> V {
+        return MovieAddViewController(contentView: view, reactor: reactor)
+    }
+    
+    func makeReactor() -> R {
+        return MovieAddReactor(initialState: MovieAddReactor.State())
+    }
+    
+    func makeView() -> C {
+        return MovieAddView()
+    }
 }
