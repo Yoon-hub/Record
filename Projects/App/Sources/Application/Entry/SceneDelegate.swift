@@ -32,12 +32,10 @@ extension SceneDelegate {
         guard let scene = (scene as? UIWindowScene) else { return }
 
         let window = UIWindow(windowScene: scene)
-        let navigationController = UINavigationController()
         self.window = window
         
         container.register(type: UIWindow.self) { _ in window }
-        container.register(type: UINavigationController.self) { _ in navigationController }
         
-        NaviagtionDIContainer().registerDependencies()
+        NaviagtionDIContainer(mainNavigatorNaviagtionController: UINavigationController()).registerDependencies()
     }
 }
