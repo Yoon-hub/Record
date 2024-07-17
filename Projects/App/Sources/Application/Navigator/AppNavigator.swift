@@ -5,10 +5,11 @@
 //  Created by 윤제 on 7/8/24.
 //
 
-import Core
 import UIKit
 
-protocol AppNavigatorProtocol: BaseNavigator {
+import Core
+
+protocol AppNavigatorProtocol {
     
     var window: UIWindow { get set }
     
@@ -18,14 +19,11 @@ protocol AppNavigatorProtocol: BaseNavigator {
 final class AppNavigator: AppNavigatorProtocol {
     
     var window: UIWindow
-    var navigationController: UINavigationController
     
     init(
-        window: UIWindow,
-        navigationController: UINavigationController
+        window: UIWindow
     ) {
         self.window = window
-        self.navigationController = navigationController
     }
     
     func toTabBar() {
