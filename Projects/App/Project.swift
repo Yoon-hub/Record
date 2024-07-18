@@ -26,7 +26,8 @@ let project = Project(name: "App", targets: [
                         ])
                     ])
                 ])
-            ])
+            ]),
+            "UIUserInterfaceStyle": .string("Light")
         ]),
         sources: ["Sources/**"],
         resources: ["Resources/**"],
