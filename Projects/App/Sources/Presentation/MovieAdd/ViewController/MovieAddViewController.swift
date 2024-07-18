@@ -21,6 +21,7 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
     override func bind(reactor: R) {
         super.bind(reactor: reactor)
         bindInput(reactor: reactor)
+        bindOutput(reactor: reactor)
     }
     
     override func setup() {
@@ -32,6 +33,38 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .bind {$0.0.openPhotoLibrary()}
+            .disposed(by: disposeBag)
+        
+        // TextView PlaceHolder
+        contentView.contentTextView.rx.didBeginEditing
+            .withUnretained(self)
+            .filter { $0.0.contentView.contentTextView.text == $0.0.contentView.textViewPlaceHolderText }
+            .map {$0.0.contentView}
+            .bind {
+                $0.contentTextView.text.removeAll()
+                $0.contentTextView.textColor = .black
+            }
+            .disposed(by: disposeBag)
+        
+        contentView.contentTextView.rx.didEndEditing
+            .withUnretained(self)
+            .filter { $0.0.contentView.contentTextView.text.isEmpty}
+            .map {$0.0.contentView}
+            .bind {
+                $0.contentTextView.text = $0.textViewPlaceHolderText
+                $0.contentTextView.textColor = .systemGray3
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindOutput(reactor: R) {
+        reactor.state.map { $0.imageItems }
+            .bind(to: contentView.imageCollectionView.rx.items(
+                cellIdentifier: ImageListCollectionViewCell.identifier,
+                cellType: ImageListCollectionViewCell.self)
+            ) { _, item, cell in
+                cell.bind(image: item)
+            }
             .disposed(by: disposeBag)
     }
 }
