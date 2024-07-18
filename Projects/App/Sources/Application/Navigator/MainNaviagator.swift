@@ -22,6 +22,7 @@ final class MainNaviagator: MainNaviagatorProtocol {
     }
     
     func toMovieAdd() {
-        
+        let movieAddView = MovieAddViewControllerWrapper().viewController
+        self.navigationController.pushViewController(movieAddView, animated: true)
     }
 }

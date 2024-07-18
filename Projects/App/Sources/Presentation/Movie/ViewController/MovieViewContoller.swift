@@ -15,6 +15,8 @@ import RxCocoa
 
 final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
     
+    @Navigator var navigator: MainNaviagatorProtocol
+    
     // MARK: Set
     override func setup() {
         view.backgroundColor = .white
@@ -68,6 +70,9 @@ extension MovieViewContoller {
 // MARK: -
 extension MovieViewContoller {
     private func openNextView(_ nextView: MovieReactor.TranstionTo) {
-        print(nextView)
+        switch nextView {
+        case .addMovie:
+            navigator.toMovieAdd()
+        }
     }
 }
