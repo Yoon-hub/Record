@@ -24,11 +24,33 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
         bindOutput(reactor: reactor)
     }
     
-    override func setup() {
-        
+    override func beforeBind() {
+        makeNavigationItem()
+    }
+    
+    override func setup() {}
+    
+    private func makeNavigationItem() {
+        let rightBarButtonItem = UIBarButtonItem(title: "저장", style: .plain, target: nil, action: nil)
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
     }
     
     private func bindInput(reactor: R) {
+        self.navigationItem.rightBarButtonItem?.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .map { $0.0.contentView }
+            .map {
+                if $0.contentTextView.text == $0.textViewPlaceHolderText {
+                    return ($0.titleTextField.text, "")
+                } else {
+                    return ($0.titleTextField.text, $0.contentTextView.text)
+                }
+            }
+            .map { Reactor.Action.didTapSaveButton($0.0, $0.1) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         contentView.imagePlusButton.rx.tap
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
@@ -65,6 +87,13 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             ) { _, item, cell in
                 cell.bind(image: item)
             }
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$showAlert)
+            .skip(1)
+            .withUnretained(self)
+            .subscribe(on: MainScheduler.instance)
+            .bind { $0.0.showAlert(title: "알림", message: $0.1) }
             .disposed(by: disposeBag)
     }
 }
