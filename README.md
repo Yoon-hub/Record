@@ -1,6 +1,5 @@
 ### Struct to Manage Types and Keys for Dependency Injection
 ```swift
-/// 의존성 주입 시 타입과 키값을 저장하는 구조체
 public struct InjectIdentifier<V> {
     private(set) var type: V.Type?
     private(set) var key: String?
@@ -14,7 +13,6 @@ public struct InjectIdentifier<V> {
     }
 }
 
-/// Hashable 프로토콜을 활용하여 비교 가능하도록
 extension InjectIdentifier: Hashable {
     public static func == (
         lhs: InjectIdentifier<V>,
@@ -37,7 +35,6 @@ extension InjectIdentifier: Hashable {
 
 ```swift
 public protocol Resolvable {
-    /// 의존성 가져오기
     func resolve<V>(_ indentifier: InjectIdentifier<V>) throws -> V
 }
 
@@ -50,7 +47,6 @@ public protocol Injectable: Resolvable, AnyObject {
 
 public extension Injectable {
     
-    /// 의존성 가져오기
     func resolve<V>(_ identifier: InjectIdentifier<V>) throws -> V {
         guard let dependency = dependencies[identifier] as? V else {
             throw ResolvableError.dependencyNotFound(identifier.type, identifier.key)
@@ -58,12 +54,10 @@ public extension Injectable {
         return dependency
     }
     
-    /// 의존성 삭제
     func remove<V>(_ indentifier: InjectIdentifier<V>) {
         dependencies.removeValue(forKey: indentifier)
     }
     
-    /// 의존성 등록
     func register<V>(
         _ indentifier: InjectIdentifier<V>,
         _ resolve: (Resolvable) throws -> V
