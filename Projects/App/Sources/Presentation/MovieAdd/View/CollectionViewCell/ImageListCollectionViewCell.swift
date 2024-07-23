@@ -14,6 +14,7 @@ import PinLayout
 final class ImageListCollectionViewCell: UICollectionViewCell, BaseView {
     
     let imageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFit
         $0.layer.masksToBounds = true
         $0.layer.cornerRadius = 10
     }
@@ -56,6 +57,6 @@ final class ImageListCollectionViewCell: UICollectionViewCell, BaseView {
     }
     
     func bind(image: UIImage) {
-        self.imageView.image = image.resize(targetSize: CGSize(width: 71, height: 71))
+        self.imageView.image = image
     }
 }
