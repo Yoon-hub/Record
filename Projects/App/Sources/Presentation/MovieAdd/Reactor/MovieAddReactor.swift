@@ -8,6 +8,8 @@
 import UIKit
 
 import ReactorKit
+import Data
+import Domain
 
 final class MovieAddReactor: Reactor {
     
@@ -15,12 +17,14 @@ final class MovieAddReactor: Reactor {
     enum Action {
         case addImage(UIImage)
         case didTapSaveButton(String?, String?)
+        case didTapImageCell(IndexPath)
     }
     
     enum Mutation {
         case addImage(UIImage)
         case saveSucess
         case errorMessage(String)
+        case removeIndex(IndexPath)
     }
     
     struct State {
@@ -34,11 +38,15 @@ final class MovieAddReactor: Reactor {
     init(initialState: State) {
         self.initialState = initialState
     }
+    
+    let swiftDataRepository = SwiftDataRepository<Movie>()
 }
 
 extension MovieAddReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .didTapImageCell(let index):
+            return .just(.removeIndex(index))
         case .addImage(let image):
             return .just(.addImage(image))
         case let .didTapSaveButton(title, content):
@@ -54,6 +62,10 @@ extension MovieAddReactor {
             if currentState.imageItems.isEmpty {
                 return .just(.errorMessage("이미지를 추가해 주세요"))
             }
+            
+            let movie = Movie(id: "aaa", title: "aaaa", content: "aaaa", image: "aaaa", date: Date())
+            try! swiftDataRepository.insertData(data: movie)
+            
             return .just(.saveSucess)
         }
     }
@@ -73,6 +85,10 @@ extension MovieAddReactor {
             newState.showAlert = error
         case .saveSucess:
             return newState
+        case .removeIndex(let index):
+            var imageList = state.imageItems
+            imageList.remove(at: index.row)
+            newState.imageItems = imageList
         }
         
         return newState

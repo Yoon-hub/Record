@@ -77,6 +77,11 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
                 $0.contentTextView.textColor = .systemGray3
             }
             .disposed(by: disposeBag)
+        
+        contentView.imageCollectionView.rx.itemSelected
+            .map { Reactor.Action.didTapImageCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: R) {
