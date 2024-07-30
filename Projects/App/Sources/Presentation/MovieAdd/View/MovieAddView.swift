@@ -34,6 +34,31 @@ final class MovieAddView: UIView, BaseView {
         $0.layer.cornerRadius = 10
     }
     
+    let firstStarButton = UIButton().then {
+        $0.tintColor = .systemGray4
+        $0.setImage(DesignAsset.star.image, for: .normal)
+    }
+    
+    let secondStarButton = UIButton().then {
+        $0.tintColor = .systemGray4
+        $0.setImage(DesignAsset.star.image, for: .normal)
+    }
+    
+    let thirdStarButton = UIButton().then {
+        $0.tintColor = .systemGray4
+        $0.setImage(DesignAsset.star.image, for: .normal)
+    }
+    
+    let fourthStarButton = UIButton().then {
+        $0.tintColor = .systemGray4
+        $0.setImage(DesignAsset.star.image, for: .normal)
+    }
+    
+    let fifthStarButton = UIButton().then {
+        $0.tintColor = .systemGray4
+        $0.setImage(DesignAsset.star.image, for: .normal)
+    }
+    
     let titleTextField = UITextField().then {
         $0.attributedPlaceholder = NSAttributedString(
                   string: "title",
@@ -46,6 +71,13 @@ final class MovieAddView: UIView, BaseView {
     
     let datePicker = UIDatePicker(frame: .zero).then {
         $0.datePickerMode = .date
+    }
+    
+    let dateLabel = UILabel().then {
+        $0.text = "\(Date().formattedDateString())"
+        $0.backgroundColor = .white
+        $0.textColor = UIColor.systemGray3
+        $0.font = UIFont.systemFont(ofSize: 15)
     }
     
     lazy var contentTextView = UITextView().then {
@@ -76,7 +108,7 @@ final class MovieAddView: UIView, BaseView {
     
     func setUI() {
         self.backgroundColor = .white
-        [imagePlusButton, imageCollectionView, titleTextField, datePicker, contentTextView].forEach { self.addSubview($0) }
+        [imagePlusButton, imageCollectionView, titleTextField, datePicker, contentTextView, firstStarButton, secondStarButton, thirdStarButton, fourthStarButton, fifthStarButton, dateLabel].forEach { self.addSubview($0) }
     }
     
     func configure() {
@@ -100,18 +132,59 @@ final class MovieAddView: UIView, BaseView {
             .height(40)
             .width(78)
         
-        titleTextField.pin
+        firstStarButton.pin
             .below(of: imageCollectionView)
-            .before(of: datePicker)
             .marginTop(24)
-            .marginRight(12)
-            .left(16)
+            .left(24)
+            .height(20)
+            .width(20)
+        
+        dateLabel.pin
+            .below(of: imageCollectionView)
+            .marginTop(13)
+            .right(16)
+            .height(40)
+            .width(82)
+        
+        secondStarButton.pin
+            .after(of: firstStarButton)
+            .marginLeft(1)
+            .height(20)
+            .width(20)
+            .vCenter(to: firstStarButton.edge.vCenter)
+        
+        thirdStarButton.pin
+            .after(of: secondStarButton)
+            .marginLeft(1)
+            .height(20)
+            .width(20)
+            .vCenter(to: firstStarButton.edge.vCenter)
+        
+        fourthStarButton.pin
+            .after(of: thirdStarButton)
+            .marginLeft(1)
+            .height(20)
+            .width(20)
+            .vCenter(to: firstStarButton.edge.vCenter)
+        
+        fifthStarButton.pin
+            .after(of: fourthStarButton)
+            .marginLeft(1)
+            .height(20)
+            .width(20)
+            .vCenter(to: firstStarButton.edge.vCenter)
+        
+            
+        titleTextField.pin
+            .below(of: firstStarButton)
+            .marginTop(24)
+            .horizontally(24)
             .height(40)
 
         contentTextView.pin
             .below(of: titleTextField)
             .marginTop(16)
-            .horizontally(16)
+            .horizontally(24)
             .bottom(36 + keyBoardHeight)
     }
 }

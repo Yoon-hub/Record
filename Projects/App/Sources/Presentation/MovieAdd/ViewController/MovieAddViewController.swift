@@ -9,6 +9,7 @@ import UIKit
 import PhotosUI
 
 import Core
+import Design
 
 import ReactorKit
 import RxSwift
@@ -30,7 +31,13 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
         makeNavigationItem()
     }
     
-    override func setup() {}
+    override func setup() {
+        contentView.datePicker.layer.opacity = 0.1
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+            self.view.endEditing(true)
+   }
     
     private func makeNavigationItem() {
         let rightBarButtonItem = UIBarButtonItem(title: "저장", style: .plain, target: nil, action: nil)
@@ -83,6 +90,42 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .map { Reactor.Action.didTapImageCell($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        contentView.firstStarButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .map {Reactor.Action.didTapRateStar(1)}
+            .bind (to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        contentView.secondStarButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .map {Reactor.Action.didTapRateStar(2)}
+            .bind (to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        contentView.thirdStarButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .map {Reactor.Action.didTapRateStar(3)}
+            .bind (to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        contentView.fourthStarButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .map {Reactor.Action.didTapRateStar(4)}
+            .bind (to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        contentView.fifthStarButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .map {Reactor.Action.didTapRateStar(5)}
+            .bind (to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        contentView.datePicker.rx.date
+            .map { $0.formattedDateString() }
+            .withUnretained(self)
+            .bind { $0.0.contentView.dateLabel.text = $0.1 }
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: R) {
@@ -109,6 +152,12 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .bind { (vc, _) in
                 vc.showAlert(title: "알림", message: "저장이 완료되었습니다.") { vc.navigator.popToMain() }
             }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.rate }
+            .withUnretained(self)
+            .subscribe(on: MainScheduler.instance)
+            .bind { $0.0.changeStar($0.1)}
             .disposed(by: disposeBag)
         
     }
@@ -142,4 +191,19 @@ extension MovieAddViewController: PHPickerViewControllerDelegate {
         picker.delegate = self
         present(picker, animated: true, completion: nil)
     }
+}
+
+// MARK: - User Define
+extension MovieAddViewController {
+    private func changeStar(_ rate: Int) {
+        let starButtons = [contentView.firstStarButton, contentView.secondStarButton, contentView.thirdStarButton, contentView.fourthStarButton, contentView.fifthStarButton]
+        for i in 0..<rate {
+            starButtons[i].setImage(DesignAsset.starFill.image, for: .normal)
+        }
+        
+        for i in rate..<5 {
+            starButtons[i].setImage(DesignAsset.star.image, for: .normal)
+        }
+    }
+
 }

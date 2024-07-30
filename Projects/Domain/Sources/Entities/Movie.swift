@@ -15,17 +15,20 @@ final public class Movie {
     public var content: String
     public var image: [Data]
     public var date: Date
+    public var rate: Int
     
     public init(
         title: String,
         content: String,
         image: [Data],
-        date: Date
+        date: Date,
+        rate: Int
     ) {
         self.id = UUID().uuidString
         self.title = title
          self.content = content
         self.image = image
         self.date = date
+        self.rate = rate
     }
 }

@@ -20,6 +20,7 @@ final class MovieAddReactor: Reactor {
         case addImage(UIImage)
         case didTapSaveButton(String?, String?, Date)
         case didTapImageCell(IndexPath)
+        case didTapRateStar(Int)
     }
     
     enum Mutation {
@@ -27,10 +28,12 @@ final class MovieAddReactor: Reactor {
         case saveSucess
         case errorMessage(String)
         case removeIndex(IndexPath)
+        case changeRate(Int)
     }
     
     struct State {
         var imageItems: [UIImage] = []
+        var rate = 0
         
         @Pulse var showAlert: String?
         @Pulse var isSaveSucess: Bool = false
@@ -67,10 +70,12 @@ extension MovieAddReactor {
             }
             
             let imageData = currentState.imageItems.map { $0.toData() }
-            let movie = Movie(title: title, content: content, image: imageData, date: date)
+            let movie = Movie(title: title, content: content, image: imageData, date: date, rate: currentState.rate)
             
             saveMovieUsecase.execute(movie: movie)
             return .just(.saveSucess)
+        case .didTapRateStar(let number):
+            return .just(.changeRate(number))
         }
     }
     
@@ -93,6 +98,8 @@ extension MovieAddReactor {
             var imageList = state.imageItems
             imageList.remove(at: index.row)
             newState.imageItems = imageList
+        case .changeRate(let rate):
+            newState.rate = rate
         }
         
         return newState
