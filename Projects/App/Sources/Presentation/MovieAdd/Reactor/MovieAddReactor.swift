@@ -7,16 +7,18 @@
 
 import UIKit
 
-import ReactorKit
+import Core
 import Data
 import Domain
+
+import ReactorKit
 
 final class MovieAddReactor: Reactor {
     
     // MARK: - Reactor
     enum Action {
         case addImage(UIImage)
-        case didTapSaveButton(String?, String?)
+        case didTapSaveButton(String?, String?, Date)
         case didTapImageCell(IndexPath)
     }
     
@@ -31,6 +33,7 @@ final class MovieAddReactor: Reactor {
         var imageItems: [UIImage] = []
         
         @Pulse var showAlert: String?
+        @Pulse var isSaveSucess: Bool = false
     }
     
     let initialState: State
@@ -39,7 +42,7 @@ final class MovieAddReactor: Reactor {
         self.initialState = initialState
     }
     
-    let swiftDataRepository = SwiftDataRepository<Movie>()
+    let saveMovieUsecase = SaveMovieUsecase(repository: SwiftDataRepository())
 }
 
 extension MovieAddReactor {
@@ -49,7 +52,7 @@ extension MovieAddReactor {
             return .just(.removeIndex(index))
         case .addImage(let image):
             return .just(.addImage(image))
-        case let .didTapSaveButton(title, content):
+        case let .didTapSaveButton(title, content, date):
             
             guard let title, let content else {
                 return .just(.errorMessage("title과 content를 입력해 주세요"))
@@ -63,8 +66,8 @@ extension MovieAddReactor {
                 return .just(.errorMessage("이미지를 추가해 주세요"))
             }
             
-            let movie = Movie(id: "aaa", title: "aaaa", content: "aaaa", image: "aaaa", date: Date())
-            try! swiftDataRepository.insertData(data: movie)
+            let imageData = currentState.imageItems.map { $0.toData() }
+            let movie = Movie(title: title, content: content, image: imageData, date: date)
             
             return .just(.saveSucess)
         }
@@ -84,7 +87,7 @@ extension MovieAddReactor {
         case .errorMessage(let error):
             newState.showAlert = error
         case .saveSucess:
-            return newState
+            newState.isSaveSucess = true
         case .removeIndex(let index):
             var imageList = state.imageItems
             imageList.remove(at: index.row)

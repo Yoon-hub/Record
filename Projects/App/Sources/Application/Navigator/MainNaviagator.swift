@@ -11,6 +11,7 @@ import Core
 
 protocol MainNaviagatorProtocol: BaseNavigator {
     func toMovieAdd()
+    func popToMain()
 }
 
 final class MainNaviagator: MainNaviagatorProtocol {
@@ -24,5 +25,9 @@ final class MainNaviagator: MainNaviagatorProtocol {
     func toMovieAdd() {
         let movieAddView = MovieAddViewControllerWrapper().viewController
         self.navigationController.pushViewController(movieAddView, animated: true)
+    }
+    
+    func popToMain() {
+        self.navigationController.popViewController(animated: true)
     }
 }

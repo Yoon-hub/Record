@@ -18,6 +18,8 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
     
     typealias R = MovieAddReactor
     
+    @Navigator var navigator: MainNaviagatorProtocol
+    
     override func bind(reactor: R) {
         super.bind(reactor: reactor)
         bindInput(reactor: reactor)
@@ -41,13 +43,12 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .withUnretained(self)
             .map { $0.0.contentView }
             .map {
-                if $0.contentTextView.text == $0.textViewPlaceHolderText {
-                    return ($0.titleTextField.text, "")
+                if $0.contentTextView.text == $0.textViewPlaceHolderText { // placholder text
+                    return Reactor.Action.didTapSaveButton($0.titleTextField.text, "", $0.datePicker.date)
                 } else {
-                    return ($0.titleTextField.text, $0.contentTextView.text)
+                    return Reactor.Action.didTapSaveButton($0.titleTextField.text, $0.contentTextView.text, $0.datePicker.date)
                 }
             }
-            .map { Reactor.Action.didTapSaveButton($0.0, $0.1) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -67,7 +68,7 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
                 $0.contentTextView.textColor = .black
             }
             .disposed(by: disposeBag)
-        
+            
         contentView.contentTextView.rx.didEndEditing
             .withUnretained(self)
             .filter { $0.0.contentView.contentTextView.text.isEmpty}
@@ -100,6 +101,16 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .subscribe(on: MainScheduler.instance)
             .bind { $0.0.showAlert(title: "알림", message: $0.1) }
             .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$isSaveSucess)
+            .withUnretained(self)
+            .subscribe(on: MainScheduler.instance)
+            .filter { $0.1 }
+            .bind { (vc, _) in
+                vc.showAlert(title: "알림", message: "저장이 완료되었습니다.") { vc.navigator.popToMain() }
+            }
+            .disposed(by: disposeBag)
+        
     }
 }
 
