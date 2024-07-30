@@ -6,3 +6,12 @@
 //
 
 import Foundation
+import SwiftData
+
+public protocol SwiftDataRepositoryProtocol {
+    
+    associatedtype T: PersistentModel
+    
+    func insertData(data: T) async
+    func fetchData() async throws -> [T]
+}

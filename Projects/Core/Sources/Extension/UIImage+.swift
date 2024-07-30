@@ -30,4 +30,15 @@ public extension UIImage {
 
            return resizedImage!
        }
+    
+    func toData(compressionQuality: CGFloat = 1.0) -> Data {
+        guard let data = self.jpegData(compressionQuality: compressionQuality) else { fatalError() }
+        return data
+    }
+}
+
+public extension Data {
+    func toImage() -> UIImage? {
+        return UIImage(data: self)
+    }
 }
