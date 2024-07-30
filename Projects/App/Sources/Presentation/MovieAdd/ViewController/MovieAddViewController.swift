@@ -88,8 +88,8 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
     private func bindOutput(reactor: R) {
         reactor.state.map { $0.imageItems }
             .bind(to: contentView.imageCollectionView.rx.items(
-                cellIdentifier: ImageListCollectionViewCell.identifier,
-                cellType: ImageListCollectionViewCell.self)
+                cellIdentifier: MovieAddCollectionViewCell.identifier,
+                cellType: MovieAddCollectionViewCell.self)
             ) { _, item, cell in
                 cell.bind(image: item)
             }

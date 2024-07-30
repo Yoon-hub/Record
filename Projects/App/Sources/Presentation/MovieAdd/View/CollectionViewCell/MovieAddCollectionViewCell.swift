@@ -11,7 +11,7 @@ import Core
 
 import PinLayout
 
-final class ImageListCollectionViewCell: UICollectionViewCell, BaseView {
+final class MovieAddCollectionViewCell: UICollectionViewCell, BaseView {
     
     let imageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit

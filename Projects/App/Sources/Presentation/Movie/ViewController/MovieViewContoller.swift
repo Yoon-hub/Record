@@ -17,6 +17,12 @@ final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
     
     @Navigator var navigator: MainNaviagatorProtocol
     
+    // MARK: ViewLifeCycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        reactor?.action.onNext(.viewDidLoad)
+    }
+    
     // MARK: Set
     override func setup() {
         view.backgroundColor = .white

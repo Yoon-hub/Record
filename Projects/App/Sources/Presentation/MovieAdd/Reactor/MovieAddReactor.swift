@@ -42,7 +42,7 @@ final class MovieAddReactor: Reactor {
         self.initialState = initialState
     }
     
-    let saveMovieUsecase = SaveMovieUsecase(repository: SwiftDataRepository())
+    @Injected var saveMovieUsecase: SaveMovieUsecaseProtocol
 }
 
 extension MovieAddReactor {
@@ -69,6 +69,7 @@ extension MovieAddReactor {
             let imageData = currentState.imageItems.map { $0.toData() }
             let movie = Movie(title: title, content: content, image: imageData, date: date)
             
+            saveMovieUsecase.execute(movie: movie)
             return .just(.saveSucess)
         }
     }

@@ -7,6 +7,9 @@
 
 import Foundation
 
+import Core
+import Domain
+
 import ReactorKit
 
 final class MovieReactor: Reactor {
@@ -23,14 +26,17 @@ final class MovieReactor: Reactor {
     // MARK: - Reactor
     enum Action {
         case openNextView(TranstionAction)
+        case viewDidLoad
     }
     
     enum Mutation {
         case showNextView(TranstionTo)
+        case addMovie([Movie])
     }
     
     struct State {
         @Pulse var openNextView: TranstionTo?
+        var movieItems: [Movie] = []
     }
     
     let initialState: State
@@ -38,6 +44,8 @@ final class MovieReactor: Reactor {
     init(initialState: State) {
         self.initialState = initialState
     }
+    
+    @Injected var fetchMovieUsecase: FetchMovieUsecaseProtocol
 }
 
 extension MovieReactor {
@@ -47,6 +55,16 @@ extension MovieReactor {
             switch transtionAction {
             case .didTapRightBarButtonItem:
                 return Observable.just(.showNextView(.addMovie))
+            }
+        case .viewDidLoad:
+            return Observable.create {
+                [weak self] observer in
+                guard let self else { return Disposables.create() }
+                Task {
+                    let movies = await self.fetchMovieUsecase.execute()
+                    observer.onNext(.addMovie(movies))
+                }
+                return Disposables.create()
             }
         }
     }
@@ -60,6 +78,10 @@ extension MovieReactor {
         switch mutation {
         case .showNextView(let transitionTo):
             newState.openNextView = transitionTo
+            return newState
+        case .addMovie(let movies):
+            newState.movieItems.append(contentsOf: movies)
+            print(newState.movieItems)
             return newState
         }
     }

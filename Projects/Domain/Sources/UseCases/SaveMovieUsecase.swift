@@ -25,4 +25,3 @@ public final class SaveMovieUsecase<Repository: SwiftDataRepositoryProtocol>: Sa
         }
     }
 }
-
