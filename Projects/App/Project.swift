@@ -13,7 +13,7 @@ let project = Project(name: "App", targets: [
         destinations: .iOS,
         product: .app,
         bundleId: "record.app.com",
-        deploymentTargets: .iOS("15.0"),
+        deploymentTargets: .iOS("17.0"),
         infoPlist: .extendingDefault(with: [
             "UILaunchStoryboardName": .string("LaunchScreen.storyboard"),
             "UIApplicationSceneManifest" : .dictionary([
@@ -33,6 +33,8 @@ let project = Project(name: "App", targets: [
         resources: ["Resources/**"],
         dependencies: [
             .project(target: "Core", path: "../Core"),
+            .project(target: "Domain", path: "../Domain"),
+            .project(target: "Data", path: "../Data"),
             .external(name: "ReactorKit"),
             .external(name: "PinLayout"),
             .external(name: "RxCocoa")
