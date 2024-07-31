@@ -170,13 +170,21 @@ extension MovieAddViewController: PHPickerViewControllerDelegate {
         picker.dismiss(animated: true, completion: nil)
         
         for result in results {
-            if result.itemProvider.canLoadObject(ofClass: UIImage.self) {
-                result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (image, error) in
-                    if let image = image as? UIImage {
+            result.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { (url, error) in
+                guard let url = url else {
+                    print("Error loading file representation: \(String(describing: error))")
+                    return
+                }
+
+                do {
+                    let data = try Data(contentsOf: url)
+                    if let image = UIImage(data: data) {
                         DispatchQueue.main.async {
-                            self?.reactor?.action.onNext(.addImage(image))
+                            self.reactor?.action.onNext(.addImage(image))
                         }
                     }
+                } catch {
+                    print("Error loading image data: \(error.localizedDescription)")
                 }
             }
         }
