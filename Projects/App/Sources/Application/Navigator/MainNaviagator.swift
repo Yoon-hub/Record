@@ -8,10 +8,12 @@
 import UIKit
 
 import Core
+import Domain
 
 protocol MainNaviagatorProtocol: BaseNavigator {
     func toMovieAdd()
     func popToMain()
+    func toMovieDetail(movie: Movie)
 }
 
 final class MainNaviagator: MainNaviagatorProtocol {
@@ -29,5 +31,10 @@ final class MainNaviagator: MainNaviagatorProtocol {
     
     func popToMain() {
         self.navigationController.popViewController(animated: true)
+    }
+    
+    func toMovieDetail(movie: Movie) {
+        let movieDetail = MovieDetailViewControllerWrapper(movie: movie).viewController
+        self.navigationController.pushViewController(movieDetail, animated: true)
     }
 }

@@ -38,7 +38,8 @@ public extension UIImage {
 }
 
 public extension Data {
-    func toImage() -> UIImage? {
-        return UIImage(data: self)
+    func toImage() -> UIImage {
+        guard let image = UIImage(data: self) else {fatalError()}
+        return image
     }
 }

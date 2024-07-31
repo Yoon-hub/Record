@@ -24,7 +24,7 @@ final class MovieDetailReactor: Reactor {
     }
     
     struct State {
-
+        var movie: Movie
     }
     
     let initialState: State

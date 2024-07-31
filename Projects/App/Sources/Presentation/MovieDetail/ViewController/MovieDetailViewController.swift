@@ -16,4 +16,28 @@ import RxCocoa
 
 final class MovieDetailViewController: BaseViewController<MovieDetailReactor, MovieDetailView> {
     
+    override func bind(reactor: MovieDetailReactor) {
+        bindInput(reactor: reactor)
+        bindOutput(reactor: reactor)
+    }
+}
+
+// MARK: - Bind
+extension MovieDetailViewController {
+    private func bindInput(reactor: MovieDetailReactor) {
+        
+    }
+    
+    private func bindOutput(reactor: MovieDetailReactor) {
+        reactor.state.map { $0.movie.image }
+            .bind(to: contentView.focusCollectionView.rx.items(
+                cellIdentifier: MovieDetailCollectionViewCell.identifier,
+                cellType: MovieDetailCollectionViewCell.self)
+            ) { _, item, cell in
+                cell.bind(image: item.toImage())
+            }
+            .disposed(by: disposeBag)
+        
+        
+    }
 }
