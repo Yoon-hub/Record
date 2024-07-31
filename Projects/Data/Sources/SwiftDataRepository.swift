@@ -15,6 +15,7 @@ public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryP
      public init() {
         let configure = ModelConfiguration()
         do {
+            print("configure Init")
             container = try ModelContainer(for: T.self, configurations: configure)
         } catch {
             fatalError(error.localizedDescription)
@@ -28,6 +29,12 @@ public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryP
         Task { @MainActor in
             let context = container.mainContext
             context.insert(data)
+            
+            do {
+                try context.save()
+            } catch {
+                print("Error saving context: \(error.localizedDescription)")
+            }
         }
     }
     
