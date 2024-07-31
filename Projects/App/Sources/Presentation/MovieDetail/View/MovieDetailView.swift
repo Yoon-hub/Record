@@ -8,6 +8,7 @@
 import UIKit
 
 import Core
+import Domain
 
 import PinLayout
 import FocusCollectionView
@@ -30,6 +31,15 @@ final class MovieDetailView: UIView, BaseView {
         return focusCollectionView
     }()
     
+    let titleLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 19, weight: .semibold)
+    }
+    
+    let dateLabel = UILabel().then {
+        $0.textColor = .systemGray2
+        $0.font = .systemFont(ofSize: 11)
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -46,13 +56,31 @@ final class MovieDetailView: UIView, BaseView {
     
     func configure() {
         self.backgroundColor = .white
-        [focusCollectionView].forEach { addSubview($0) }
+        [focusCollectionView, titleLabel, dateLabel].forEach { addSubview($0) }
     }
     
     func setUI() {
         focusCollectionView.pin
             .top()
             .horizontally()
-            .height(UIScreen.main.bounds.height / 2.6)
+            .height(UIScreen.main.bounds.height / 2.5)
+        
+        titleLabel.pin
+            .below(of: focusCollectionView)
+            .marginTop(0)
+            .hCenter(to: self.edge.hCenter)
+            .sizeToFit()
+        
+        dateLabel.pin
+            .below(of: titleLabel)
+            .marginTop(0)
+            .hCenter(to: self.edge.hCenter)
+            .sizeToFit()
+        
+    }
+    
+    func bind(movie: Movie) {
+        titleLabel.text = movie.title
+        dateLabel.text = movie.date.formattedDateString()
     }
 }

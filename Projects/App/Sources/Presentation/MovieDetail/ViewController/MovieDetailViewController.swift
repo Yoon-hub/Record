@@ -20,6 +20,14 @@ final class MovieDetailViewController: BaseViewController<MovieDetailReactor, Mo
         bindInput(reactor: reactor)
         bindOutput(reactor: reactor)
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    override func setup() {
+        contentView.bind(movie: reactor!.currentState.movie)
+    }
 }
 
 // MARK: - Bind
