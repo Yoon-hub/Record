@@ -17,6 +17,7 @@ let coreProject = Project(name: "Core", targets: [
         sources: ["Sources/**"],
         dependencies: [
             .external(name: "ReactorKit"),
+            .external(name: "RxCocoa"),
             .project(target: "Design", path: "../Design"),
             
         ]

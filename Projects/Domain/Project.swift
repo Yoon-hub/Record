@@ -16,7 +16,7 @@ let domainProject = Project(name: "Domain", targets: [
         deploymentTargets: .iOS("17.0"),
         sources: ["Sources/**"],
         dependencies: [
-            
+            .project(target: "Core", path: "../Core"),
         ]
     )
 ])
