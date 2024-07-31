@@ -16,20 +16,21 @@ final class MovieDIContainer: BaseContainer {
     
     private func makeSaveMovieUsecase() -> SaveMovieUsecaseProtocol {
         SaveMovieUsecase(
-            repository: makeSwiftDataRepository()
+            repository: self.repository
         )
     }
     
     private func makeFetchMovieUsecase() -> FetchMovieUsecaseProtocol {
         FetchMovieUsecase(
-            repository: makeSwiftDataRepository()
+            repository: self.repository
         )
     }
     
+    private var repository = {
+        SwiftDataRepository<Movie>()
+    }()
+    
     // MARK: - Make Repository
-    private func makeSwiftDataRepository<Movie: PersistentModel>() -> SwiftDataRepository<Movie> {
-        return SwiftDataRepository<Movie>()
-    }
     
     func registerDependencies() {
         container.register(type: SaveMovieUsecaseProtocol.self) { _ in
