@@ -20,11 +20,7 @@ final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
     // MARK: ViewLifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        reactor?.action.onNext(.viewWillAppear)
+        reactor?.action.onNext(.viewDidLoad)
     }
     
     // MARK: Set
@@ -67,7 +63,15 @@ extension MovieViewContoller {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        contentView.collectionView.rx.itemSelected
+            .withUnretained(self)
+            .bind { $0.0.navigator.toMovieDetail(movie: reactor.currentState.movieItems[$0.1.row]) }
+            .disposed(by: disposeBag)
         
+        NotificationCenterService.reloadMoive.addObserver()
+            .map {_ in Reactor.Action.viewDidLoad}
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: MovieReactor) {
