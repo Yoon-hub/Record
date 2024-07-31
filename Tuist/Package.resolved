@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Yoon-hub/FocusCollectionView.git",
       "state" : {
-        "revision" : "db8a656a2d20021425834bee4c1fdaed84d1890b",
-        "version" : "1.1.0"
+        "revision" : "51a3f1f11b7397960500382ed972fcd90670b122",
+        "version" : "1.1.1"
       }
     },
     {
