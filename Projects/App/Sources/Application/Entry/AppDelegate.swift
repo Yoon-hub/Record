@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         
         let containers: [BaseContainer] = [
-            MovieDIContainer(),
+            MovieDIContainer()
         ]
         containers.forEach {
             $0.registerDependencies()

@@ -26,7 +26,7 @@ final class MovieReactor: Reactor {
     // MARK: - Reactor
     enum Action {
         case openNextView(TranstionAction)
-        case viewDidLoad
+        case viewWillAppear
     }
     
     enum Mutation {
@@ -56,7 +56,7 @@ extension MovieReactor {
             case .didTapRightBarButtonItem:
                 return Observable.just(.showNextView(.addMovie))
             }
-        case .viewDidLoad:
+        case .viewWillAppear:
             return Observable.create {
                 [weak self] observer in
                 guard let self else { return Disposables.create() }
@@ -80,8 +80,7 @@ extension MovieReactor {
             newState.openNextView = transitionTo
             return newState
         case .addMovie(let movies):
-            newState.movieItems.append(contentsOf: movies)
-            print(newState.movieItems)
+            newState.movieItems = movies
             return newState
         }
     }

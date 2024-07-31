@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "focuscollectionview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Yoon-hub/FocusCollectionView.git",
+      "state" : {
+        "revision" : "db8a656a2d20021425834bee4c1fdaed84d1890b",
+        "version" : "1.1.0"
+      }
+    },
+    {
       "identity" : "pinlayout",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/layoutBox/PinLayout.git",

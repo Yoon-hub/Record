@@ -37,7 +37,8 @@ let project = Project(name: "App", targets: [
             .project(target: "Data", path: "../Data"),
             .external(name: "ReactorKit"),
             .external(name: "PinLayout"),
-            .external(name: "RxCocoa")
+            .external(name: "RxCocoa"),
+            .external(name: "FocusCollectionView")
         ]
     )
 ])
