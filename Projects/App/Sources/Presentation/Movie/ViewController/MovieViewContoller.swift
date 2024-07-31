@@ -20,7 +20,11 @@ final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
     // MARK: ViewLifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        reactor?.action.onNext(.viewDidLoad)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reactor?.action.onNext(.viewWillAppear)
     }
     
     // MARK: Set
@@ -31,6 +35,7 @@ final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
     
     private func setNavigation() {
         self.navigationController?.navigationBar.tintColor = .recordColor
+        self.title = "보관함"
     }
     
     override func beforeBind() {
@@ -61,6 +66,8 @@ extension MovieViewContoller {
             .map { _ in Reactor.Action.openNextView(.didTapRightBarButtonItem) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        
     }
     
     private func bindOutput(reactor: MovieReactor) {
@@ -69,6 +76,15 @@ extension MovieViewContoller {
             .withUnretained(self)
             .observe(on: MainScheduler.instance)
             .bind { $0.0.openNextView($0.1) }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.movieItems }
+            .bind(to: contentView.collectionView.rx.items(
+                cellIdentifier: MainCollectionViewCell.identifier,
+                cellType: MainCollectionViewCell.self)
+            ) { _, item, cell in
+                cell.bind(item)
+            }
             .disposed(by: disposeBag)
     }
 }

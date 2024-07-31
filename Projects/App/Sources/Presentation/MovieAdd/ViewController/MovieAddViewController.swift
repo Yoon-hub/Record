@@ -42,6 +42,7 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
     private func makeNavigationItem() {
         let rightBarButtonItem = UIBarButtonItem(title: "저장", style: .plain, target: nil, action: nil)
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        self.title = "추가하기"
     }
     
     private func bindInput(reactor: R) {
