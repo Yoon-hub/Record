@@ -12,7 +12,7 @@ import Domain
 
 public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryProtocol {
     
-     public init() {
+    public init() {
         let configure = ModelConfiguration()
         do {
             print("configure Init")
@@ -45,5 +45,16 @@ public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryP
         let context = container.mainContext
         let data = try context.fetch(descriptor)
         return data
+    }
+    
+    public func deleteData(data: T) async {
+        let context = await container.mainContext
+        context.delete(data)
+        
+        do {
+            try context.save()
+        } catch {
+            print("Error saving context: \(error.localizedDescription)")
+        }
     }
 }

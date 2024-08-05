@@ -26,6 +26,12 @@ final class MovieDIContainer: BaseContainer {
         )
     }
     
+    private func makeDeleteMovieUsecase() -> DeleteMovieUsecaseProtocol {
+        DeleteMovieUsecase(
+            repository: self.repository
+        )
+    }
+    
     private var repository = {
         SwiftDataRepository<Movie>()
     }()
@@ -39,6 +45,10 @@ final class MovieDIContainer: BaseContainer {
         
         container.register(type: FetchMovieUsecaseProtocol.self) { _ in
             self.makeFetchMovieUsecase()
+        }
+        
+        container.register(type: DeleteMovieUsecaseProtocol.self) { _ in
+            self.makeDeleteMovieUsecase()
         }
     }
 }
