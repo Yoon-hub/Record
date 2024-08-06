@@ -16,6 +16,7 @@ final public class Movie {
     public var image: [Data]
     public var date: Date
     public var rate: Int
+    public var heart: Int
     
     public init(
         title: String,
@@ -30,5 +31,6 @@ final public class Movie {
         self.image = image
         self.date = date
         self.rate = rate
+        self.heart = 0
     }
 }

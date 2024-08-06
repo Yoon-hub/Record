@@ -17,14 +17,17 @@ final class MovieDetailReactor: Reactor {
     
     enum Action {
         case didTapDeleteButton
+        case didTapHeartButton
     }
     
     enum Mutation {
         case deleteMovie
+        case heartIncrease
     }
     
     struct State {
         var movie: Movie
+        
         
         @Pulse var showAlert: String?
     }
@@ -45,6 +48,8 @@ extension MovieDetailReactor {
         case .didTapDeleteButton:
             deleteMovieUsecase.execute(movie: currentState.movie)
             return .just(.deleteMovie)
+        case .didTapHeartButton:
+            return .just(.heartIncrease)
         }
     }
     
@@ -57,8 +62,9 @@ extension MovieDetailReactor {
         switch mutation {
         case .deleteMovie:
             newState.showAlert = "삭제되었습니다."
+        case .heartIncrease:
+            newState.movie.heart += 1
         }
-        
         return newState
     }
 }

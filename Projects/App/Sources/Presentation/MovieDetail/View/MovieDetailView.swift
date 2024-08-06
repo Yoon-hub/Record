@@ -9,6 +9,7 @@ import UIKit
 
 import Core
 import Domain
+import Design
 
 import PinLayout
 import FocusCollectionView
@@ -40,6 +41,24 @@ final class MovieDetailView: UIView, BaseView {
         $0.font = .systemFont(ofSize: 11)
     }
     
+    let contentLabel = UILabel().then {
+        $0.textAlignment = .center
+        $0.numberOfLines = 0
+        $0.font = .systemFont(ofSize: 14)
+    }
+    
+    let heartButton = UIButton().then {
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
+        $0.setImage(UIImage(systemName: "heart.fill", withConfiguration: imageConfig), for: .normal)
+        $0.tintColor = DesignAsset.record.color
+        $0.adjustsImageWhenHighlighted = false
+    }
+    
+    let heartLabel = UILabel().then {
+        $0.textColor = .systemGray
+        $0.font = .systemFont(ofSize: 14)
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -56,7 +75,7 @@ final class MovieDetailView: UIView, BaseView {
     
     func configure() {
         self.backgroundColor = .white
-        [focusCollectionView, titleLabel, dateLabel].forEach { addSubview($0) }
+        [focusCollectionView, titleLabel, dateLabel, contentLabel, heartButton, heartLabel].forEach { addSubview($0) }
     }
     
     func setUI() {
@@ -77,10 +96,29 @@ final class MovieDetailView: UIView, BaseView {
             .hCenter(to: self.edge.hCenter)
             .sizeToFit()
         
+        contentLabel.pin
+            .below(of: dateLabel)
+            .marginTop(12)
+            .horizontally(16)
+            .sizeToFit(.width)
+            
+        heartButton.pin
+            .bottom(120)
+            .height(27)
+            .width(30)
+            .hCenter(to: self.edge.hCenter)
+        
+        heartLabel.pin
+            .above(of: heartButton)
+            .marginTop(4)
+            .hCenter(to: heartButton.edge.hCenter)
+            .sizeToFit()
     }
     
     func bind(movie: Movie) {
         titleLabel.text = movie.title
         dateLabel.text = movie.date.formattedDateString()
+        contentLabel.text = movie.content
+        heartLabel.text = "\(movie.heart)"
     }
 }

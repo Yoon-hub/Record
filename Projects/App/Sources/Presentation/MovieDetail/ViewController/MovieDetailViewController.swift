@@ -45,7 +45,24 @@ final class MovieDetailViewController: BaseViewController<MovieDetailReactor, Mo
 // MARK: - Bind
 extension MovieDetailViewController {
     private func bindInput(reactor: MovieDetailReactor) {
+        contentView.heartButton.rx.tap
+            .withUnretained(self)
+            .map { $0.0.contentView.heartButton }
+            .subscribe(onNext: { button in
+                UIView.animate(withDuration: 0.1, animations: {
+                    button.transform = CGAffineTransform(scaleX: 1.3, y: 1.3)
+                }) { _ in
+                    UIView.animate(withDuration: 0.1) {
+                        button.transform = CGAffineTransform.identity
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
         
+        contentView.heartButton.rx.tap
+            .map {Reactor.Action.didTapHeartButton}
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: MovieDetailReactor) {
@@ -62,6 +79,11 @@ extension MovieDetailViewController {
             .compactMap{$0}
             .withUnretained(self)
             .bind { $0.0.showSaveAlert(text: $0.1) }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map {$0.movie.heart}
+            .withUnretained(self)
+            .bind { $0.0.contentView.heartLabel.text = "\($0.1)"}
             .disposed(by: disposeBag)
     }
 }
