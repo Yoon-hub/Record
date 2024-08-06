@@ -74,7 +74,14 @@ final class MainCollectionViewCell: UICollectionViewCell, BaseView {
     }
     
     func bind(_ movie: Movie) {
-        imageView.image = movie.image[0].toImage()
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            let image = movie.image[0].toImage()
+            DispatchQueue.main.async {
+                self.imageView.image = image
+            }
+        }
+        
         titleLabel.text = movie.title
         contentLabel.text = movie.content
     }
