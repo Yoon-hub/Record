@@ -15,18 +15,6 @@ final class MovieViewControllerWrapper: BaseWrapper {
     typealias V = MovieViewContoller
     typealias C = MovieView
     
-    var viewController: V {
-        makeViewController()
-    }
-    
-    var reactor: R {
-        makeReactor()
-    }
-    
-    var view: C {
-        makeView()
-    }
-    
     // MARK: - Make
     
     func makeViewController() -> V {

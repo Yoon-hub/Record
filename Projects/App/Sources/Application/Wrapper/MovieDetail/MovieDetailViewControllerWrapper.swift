@@ -16,18 +16,6 @@ final class MovieDetailViewControllerWrapper: BaseWrapper {
     typealias V = MovieDetailViewController
     typealias C = MovieDetailView
     
-    var viewController: V {
-        makeViewController()
-    }
-    
-    var reactor: R {
-        makeReactor()
-    }
-    
-    var view: C {
-        makeView()
-    }
-    
     init(movie: Movie) {
         self.movie = movie
     }

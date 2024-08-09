@@ -17,8 +17,23 @@ public protocol BaseWrapper {
     
     func makeReactor() -> R
     func makeViewController() -> V
+    func makeView() -> C
     
     var reactor: R { get }
     var viewController: V { get }
     
+}
+
+public extension BaseWrapper {
+    var viewController: V {
+        makeViewController()
+    }
+    
+    var reactor: R {
+        makeReactor()
+    }
+    
+    var view: C {
+        makeView()
+    }
 }
