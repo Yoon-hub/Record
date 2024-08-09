@@ -30,6 +30,12 @@ final class MovieView: UIView, BaseView {
         return collectionView
     }()
     
+    let emptyLabel = UILabel().then {
+        $0.text = "너와 함께한 추억을 담을게"
+        $0.font = .systemFont(ofSize: 15)
+        $0.textColor = .systemGray
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -46,11 +52,15 @@ final class MovieView: UIView, BaseView {
     }
     
     func configure() {
-        [collectionView].forEach {addSubview( $0 ) }
+        [collectionView, emptyLabel].forEach {addSubview( $0 ) }
     }
     
     func setUI() {
         collectionView.pin
             .all()
+        
+        emptyLabel.pin
+            .center()
+            .sizeToFit()
     }
 }

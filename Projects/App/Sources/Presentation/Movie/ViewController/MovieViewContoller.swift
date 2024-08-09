@@ -90,6 +90,13 @@ extension MovieViewContoller {
                 cell.bind(item)
             }
             .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.movieItems }
+            .map { $0.isEmpty }
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .bind { $0.0.contentView.emptyLabel.isHidden = !$0.1 }
+            .disposed(by: disposeBag)
     }
 }
 
