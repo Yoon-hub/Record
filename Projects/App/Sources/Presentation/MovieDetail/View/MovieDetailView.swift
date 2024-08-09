@@ -52,11 +52,14 @@ final class MovieDetailView: UIView, BaseView {
         $0.setImage(UIImage(systemName: "heart.fill", withConfiguration: imageConfig), for: .normal)
         $0.tintColor = DesignAsset.record.color
         $0.adjustsImageWhenHighlighted = false
+        $0.isHidden = true
     }
     
     let heartLabel = UILabel().then {
+        $0.textAlignment = .center
         $0.textColor = .systemGray
         $0.font = .systemFont(ofSize: 14)
+        $0.isHidden = true
     }
     
     override init(frame: CGRect) {
@@ -111,8 +114,8 @@ final class MovieDetailView: UIView, BaseView {
         heartLabel.pin
             .above(of: heartButton)
             .marginTop(4)
-            .hCenter(to: heartButton.edge.hCenter)
-            .sizeToFit()
+            .horizontally()
+            .height(20)
     }
     
     func bind(movie: Movie) {

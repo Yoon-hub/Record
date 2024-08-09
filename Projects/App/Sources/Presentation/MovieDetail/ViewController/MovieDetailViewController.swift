@@ -35,7 +35,11 @@ final class MovieDetailViewController: BaseViewController<MovieDetailReactor, Mo
             self?.reactor?.action.onNext(.didTapDeleteButton)
         }
         
-        let menu = UIMenu(image: UIImage(systemName: "ellipsis.circle"), children: [deleteMenuItem])
+        let fixMenuItem = UIAction(title: "수정", image: UIImage(systemName: "eraser")) { [weak self] action in
+            
+        }
+        
+        let menu = UIMenu(image: UIImage(systemName: "ellipsis.circle"), children: [deleteMenuItem, fixMenuItem])
         let barButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: menu)
         
         self.navigationItem.rightBarButtonItem = barButtonItem
@@ -63,6 +67,23 @@ extension MovieDetailViewController {
             .map {Reactor.Action.didTapHeartButton}
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        contentView.focusCollectionView.rx.itemSelected
+            .withUnretained(self)
+            .compactMap { $0.0.reactor?.currentState.movie.image[$0.1.row] }
+            .map {
+                let vc = MovieImageViewController()
+                vc.image = $0.toImage()
+                return vc
+            }
+            .withUnretained(self)
+            .bind {
+                $0.1.modalPresentationStyle = .fullScreen	
+                $0.0.present($0.1, animated: true)
+            }
+            .disposed(by: disposeBag)
+           
+           
     }
     
     private func bindOutput(reactor: MovieDetailReactor) {
