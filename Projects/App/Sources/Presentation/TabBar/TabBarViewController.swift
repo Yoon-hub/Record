@@ -28,7 +28,7 @@ final class TabBarViewController: UITabBarController {
             
             // movie
             let movie = MovieViewControllerWrapper().viewController
-            movie.tabBarItem = UITabBarItem(title: "영화", image: DesignAsset.movie.image.resize(targetSize: CGSize(width: 30, height: 30)), tag: 0)
+            movie.tabBarItem = UITabBarItem(title: "영화", image: UIImage(systemName: "tray.fill"), tag: 0)
             
             let navi = mainNaivagtor.navigationController
             navi.viewControllers = [movie]
