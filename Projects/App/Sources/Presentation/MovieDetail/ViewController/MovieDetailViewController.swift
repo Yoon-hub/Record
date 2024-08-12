@@ -31,13 +31,9 @@ final class MovieDetailViewController: BaseViewController<MovieDetailReactor, Mo
     }
     
     private func setNavigation() {
-        let deleteMenuItem = UIAction(title: "삭제", image: UIImage(systemName: "trash")) { [weak self] action in
-            self?.reactor?.action.onNext(.didTapDeleteButton)
-        }
+        let deleteMenuItem = UIAction(title: "삭제", image: UIImage(systemName: "trash")) { [weak self] action in self?.reactor?.action.onNext(.didTapDeleteButton)}
         
-        let fixMenuItem = UIAction(title: "수정", image: UIImage(systemName: "eraser")) { [weak self] action in
-            
-        }
+        let fixMenuItem = UIAction(title: "수정", image: UIImage(systemName: "eraser")) { [weak self] action in self?.reactor?.action.onNext(.didTapFixButton)}
         
         let menu = UIMenu(image: UIImage(systemName: "ellipsis.circle"), children: [deleteMenuItem, fixMenuItem])
         let barButtonItem = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: menu)
@@ -105,6 +101,14 @@ extension MovieDetailViewController {
         reactor.state.map {$0.movie.heart}
             .withUnretained(self)
             .bind { $0.0.contentView.heartLabel.text = "\($0.1)"}
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$fixMovie)
+            .withUnretained(self)
+            .bind {
+                $0.0.contentView.bind(movie: reactor.currentState.movie)
+                NotificationCenterService.reloadMoive.post()
+            }
             .disposed(by: disposeBag)
     }
 }

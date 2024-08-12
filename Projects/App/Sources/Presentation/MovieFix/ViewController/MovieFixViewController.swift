@@ -1,8 +1,8 @@
 //
-//  MovieAddViewController.swift
+//  MovieFixViewController.swift
 //  App
 //
-//  Created by 윤제 on 7/16/24.
+//  Created by 윤제 on 8/9/24.
 //
 
 import UIKit
@@ -15,11 +15,19 @@ import ReactorKit
 import RxSwift
 import RxCocoa
 
-final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAddView> {
+final class MovieFixViewController: BaseViewController<MovieFixReactor, MovieAddView> {
     
-    typealias R = MovieAddReactor
+    typealias R = MovieFixReactor
     
     @Navigator var navigator: MainNaviagatorProtocol
+    
+    var completion: (() -> Void)?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        reactor?.action.onNext(.viewDidLoad)
+    }
     
     override func bind(reactor: R) {
         super.bind(reactor: reactor)
@@ -42,7 +50,7 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
     private func makeNavigationItem() {
         let rightBarButtonItem = UIBarButtonItem(title: "저장", style: .plain, target: nil, action: nil)
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
-        self.title = "추가하기"
+        self.title = "수정하기"
     }
     
     private func bindInput(reactor: R) {
@@ -151,7 +159,10 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .subscribe(on: MainScheduler.instance)
             .filter { $0.1 }
             .bind { (vc, _) in
-                vc.showAlert(title: "알림", message: "저장이 완료되었습니다.") { vc.navigator.pop() }
+                vc.showAlert(title: "알림", message: "저장이 완료되었습니다.") {
+                    vc.completion?()
+                    vc.navigator.pop()
+                }
             }
             .disposed(by: disposeBag)
         
@@ -161,11 +172,22 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .bind { $0.0.changeStar($0.1)}
             .disposed(by: disposeBag)
         
+        reactor.pulse(\.$isSettingMovie)
+            .withUnretained(self)
+            .map { $0.0.contentView }
+            .bind {
+                $0.titleTextField.text = reactor.currentState.movie.title
+                $0.contentTextView.text = reactor.currentState.movie.content
+                $0.datePicker.date = reactor.currentState.movie.date
+                $0.dateLabel.text = reactor.currentState.movie.date.formattedDateString()
+                $0.contentTextView.textColor = .black
+            }
+            .disposed(by: disposeBag)
     }
 }
 
 // MARK: - Gallery
-extension MovieAddViewController: PHPickerViewControllerDelegate {
+extension MovieFixViewController: PHPickerViewControllerDelegate {
     
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
@@ -176,7 +198,7 @@ extension MovieAddViewController: PHPickerViewControllerDelegate {
                     print("Error loading file representation: \(String(describing: error))")
                     return
                 }
-
+                
                 do {
                     let data = try Data(contentsOf: url)
                     if let image = UIImage(data: data) {
@@ -203,7 +225,7 @@ extension MovieAddViewController: PHPickerViewControllerDelegate {
 }
 
 // MARK: - User Define
-extension MovieAddViewController {
+extension MovieFixViewController {
     private func changeStar(_ rate: Int) {
         let starButtons = [contentView.firstStarButton, contentView.secondStarButton, contentView.thirdStarButton, contentView.fourthStarButton, contentView.fifthStarButton]
         for i in 0..<rate {
@@ -216,3 +238,4 @@ extension MovieAddViewController {
     }
 
 }
+

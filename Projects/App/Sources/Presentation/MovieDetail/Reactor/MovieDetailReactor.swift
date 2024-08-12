@@ -19,12 +19,14 @@ final class MovieDetailReactor: Reactor {
         case didTapDeleteButton
         case didTapHeartButton
         case didTapResetHeartButton
+        case didTapFixButton
     }
     
     enum Mutation {
         case deleteMovie
         case heartIncrease
         case heartReset
+        case fixMovie
     }
     
     struct State {
@@ -32,6 +34,7 @@ final class MovieDetailReactor: Reactor {
         
         
         @Pulse var showAlert: String?
+        @Pulse var fixMovie: Bool = false
     }
     
     @Injected var deleteMovieUsecase: DeleteMovieUsecaseProtocol
@@ -54,6 +57,14 @@ extension MovieDetailReactor {
             return .just(.heartIncrease)
         case .didTapResetHeartButton:
             return .just(.heartReset)
+        case .didTapFixButton:
+            return Observable.create { [weak self] observer in
+                guard let self else {return Disposables.create()}
+                self.navigator.toMovieFix(movie: currentState.movie) {
+                    observer.onNext(.fixMovie)
+                }
+                return Disposables.create()
+            }
         }
     }
     
@@ -70,6 +81,8 @@ extension MovieDetailReactor {
             newState.movie.heart += 1
         case .heartReset:
             newState.movie.heart = 0
+        case .fixMovie:
+            newState.fixMovie = true
         }
         return newState
     }

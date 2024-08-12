@@ -12,8 +12,9 @@ import Domain
 
 protocol MainNaviagatorProtocol: BaseNavigator {
     func toMovieAdd()
-    func popToMain()
+    func pop()
     func toMovieDetail(movie: Movie)
+    func toMovieFix(movie: Movie, completion: @escaping (() -> Void))
 }
 
 final class MainNaviagator: MainNaviagatorProtocol {
@@ -29,7 +30,12 @@ final class MainNaviagator: MainNaviagatorProtocol {
         self.navigationController.pushViewController(movieAddView, animated: true)
     }
     
-    func popToMain() {
+    func toMovieFix(movie: Movie, completion: @escaping (() -> Void)) {
+        let movieFixView = MovieFixViewControllerWrapper(movie: movie, completion: completion).viewController
+        self.navigationController.pushViewController(movieFixView, animated: true)
+    }
+    
+    func pop() {
         self.navigationController.popViewController(animated: true)
     }
     
