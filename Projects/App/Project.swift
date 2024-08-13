@@ -15,6 +15,7 @@ let project = Project(name: "App", targets: [
         bundleId: "record.app.com",
         deploymentTargets: .iOS("17.0"),
         infoPlist: .extendingDefault(with: [
+            "CFBundleDisplayName": .string("Record"),
             "UILaunchStoryboardName": .string("LaunchScreen.storyboard"),
             "UIApplicationSceneManifest" : .dictionary([
                 "UIApplicationSupportsMultipleScenes" : .boolean(false),
@@ -38,7 +39,8 @@ let project = Project(name: "App", targets: [
             .external(name: "ReactorKit"),
             .external(name: "PinLayout"),
             .external(name: "RxCocoa"),
-            .external(name: "FocusCollectionView")
+            .external(name: "FocusCollectionView"),
+            .external(name: "FSCalendar")
         ]
     )
 ])

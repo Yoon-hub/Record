@@ -8,7 +8,7 @@ import PackageDescription
         // Customize the product types for specific package product
         // Default is .staticFramework
         // productTypes: ["Alamofire": .framework,] 
-        productTypes: [:]
+        productTypes: ["FSCalendar": .framework]
     )
 #endif
 
@@ -21,6 +21,7 @@ let package = Package(
         .package(url: "https://github.com/ReactorKit/ReactorKit.git", from: "3.2.0"),
         .package(url: "https://github.com/layoutBox/PinLayout.git", from: "1.10.5"),
         .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.0.0"),
-        .package(url: "https://github.com/Yoon-hub/FocusCollectionView.git", from: "1.1.1")
+        .package(url: "https://github.com/Yoon-hub/FocusCollectionView.git", from: "1.1.1"),
+        .package(url: "https://github.com/WenchaoD/FSCalendar.git", exact: "2.8.4")
     ]
 )
