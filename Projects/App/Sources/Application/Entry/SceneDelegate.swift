@@ -36,6 +36,6 @@ extension SceneDelegate {
         
         container.register(type: UIWindow.self) { _ in window }
         
-        NaviagtionDIContainer(mainNavigatorNaviagtionController: UINavigationController()).registerDependencies()
+        NaviagtionDIContainer(mainNavigatorNaviagtionController: UINavigationController(), calendarNavigatorNaviagtionController: UINavigationController()).registerDependencies()
     }
 }

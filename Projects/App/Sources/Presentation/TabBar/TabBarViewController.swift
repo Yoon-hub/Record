@@ -13,6 +13,7 @@ import Design
 final class TabBarViewController: UITabBarController {
     
     @Navigator var mainNaivagtor: MainNaviagatorProtocol
+    @Navigator var calendarNavigator: CalendarNavigatorProtocol
     
     override func viewDidLoad() {
             super.viewDidLoad()
@@ -30,9 +31,17 @@ final class TabBarViewController: UITabBarController {
             let movie = MovieViewControllerWrapper().viewController
             movie.tabBarItem = UITabBarItem(title: "영화", image: UIImage(systemName: "tray.fill"), tag: 0)
             
-            let navi = mainNaivagtor.navigationController
-            navi.viewControllers = [movie]
-            self.viewControllers = [navi]
+            // calendar
+            let calendar = CalendarViewControllerWrapper().viewController
+            calendar.tabBarItem = UITabBarItem(title: "캘린더", image: UIImage(systemName: "calendar"), tag: 1)
+            
+            let naviMovie = mainNaivagtor.navigationController
+            naviMovie.viewControllers = [movie]
+            
+            let naviCalendar = calendarNavigator.navigationController
+            naviCalendar.viewControllers = [calendar]
+            
+            self.viewControllers = [naviCalendar, naviMovie]
         }
     
 }

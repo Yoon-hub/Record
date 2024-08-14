@@ -8,6 +8,7 @@
 import UIKit
 
 import Core
+import Design
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
