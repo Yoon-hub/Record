@@ -19,4 +19,16 @@ public extension Date {
         // 현재 날짜를 문자열로 변환
         return dateFormatter.string(from: self)
     }
+    
+    func formatToMonth() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M"
+        return formatter.string(from: self)
+    }
+    
+    func formatToYear() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = ".YYYY"
+        return formatter.string(from: self)
+    }
 }
