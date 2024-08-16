@@ -19,7 +19,8 @@ let coreProject = Project(name: "Core", targets: [
             .external(name: "ReactorKit"),
             .external(name: "RxCocoa"),
             .project(target: "Design", path: "../Design"),
-            
+            .external(name: "Alamofire"),
+            .external(name: "RxAlamofire")
         ]
     )
 ])

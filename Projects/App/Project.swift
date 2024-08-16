@@ -28,7 +28,10 @@ let project = Project(name: "App", targets: [
                     ])
                 ])
             ]),
-            "UIUserInterfaceStyle": .string("Light")
+            "UIUserInterfaceStyle": .string("Light"),
+            "NSAppTransportSecurity": .dictionary([ // 추가 부분 시작
+                "NSAllowsArbitraryLoads": .boolean(true)
+            ]) // 추가 부분 끝
         ]),
         sources: ["Sources/**"],
         resources: ["Resources/**"],

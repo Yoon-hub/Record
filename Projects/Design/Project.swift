@@ -14,7 +14,7 @@ let coreProject = Project(name: "Design", targets: [
         product: .framework,
         bundleId: "record.Design.com",
         deploymentTargets: .iOS("15.0"),
-        sources: ["Sources/**"],
+      //  sources: ["Sources/**"],
         resources: ["Resources/**"],
         dependencies: [
             
