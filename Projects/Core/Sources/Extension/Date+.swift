@@ -31,4 +31,14 @@ public extension Date {
         formatter.dateFormat = ".YYYY"
         return formatter.string(from: self)
     }
+    
+    func surroundingYears() -> [String] {
+        let calendar = Calendar.current
+        let currentYear = calendar.component(.year, from: self)
+        
+        let previousYear = currentYear - 1
+        let nextYear = currentYear + 1
+        
+        return ["\(previousYear)", "\(currentYear)", "\(nextYear)"]
+    }
 }
