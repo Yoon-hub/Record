@@ -13,7 +13,7 @@ import Domain
 public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryProtocol {
     
     public init() {
-        let configure = ModelConfiguration()
+        let configure = ModelConfiguration("\(T.self)")
         do {
             print("configure Init")
             container = try ModelContainer(for: T.self, configurations: configure)
