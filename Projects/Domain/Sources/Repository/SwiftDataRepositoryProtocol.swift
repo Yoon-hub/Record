@@ -15,4 +15,5 @@ public protocol SwiftDataRepositoryProtocol {
     func insertData(data: T) async
     func fetchData() async throws -> [T]
     func deleteData(data: T) async
+    func deleteAllData() async
 }

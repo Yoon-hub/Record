@@ -57,4 +57,15 @@ public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryP
             print("Error saving context: \(error.localizedDescription)")
         }
     }
+    
+    public func deleteAllData() async {
+        do {
+            let data = try await fetchData()
+            for item in data {
+                await deleteData(data: item)
+            }
+        } catch {
+            print("Error fetching or deleting all data: \(error.localizedDescription)")
+        }
+    }
 }

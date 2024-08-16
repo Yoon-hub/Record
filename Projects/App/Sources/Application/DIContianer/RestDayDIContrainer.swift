@@ -28,7 +28,13 @@ final class RestDayDIContrainer: BaseContainer {
     
     private func makeFetchRestDayUsecase() -> FetchRestDayUsecaseProtocol {
         FetchRestDayUsecase(
-            repository: self.RestDayRePository
+            repository: self.restDayRepository
+        )
+    }
+    
+    private func makeDeleteRestDayUsecase() -> DeleteRestDayUsecaseProtocol {
+        DeleteRestDayUsecase(
+            repository: self.swiftDataRepository
         )
     }
     
@@ -36,7 +42,7 @@ final class RestDayDIContrainer: BaseContainer {
         SwiftDataRepository<RestDay>()
     }()
     
-    private var RestDayRePository = {
+    private var restDayRepository = {
         RestDayRepository()
     }()
     
@@ -53,6 +59,10 @@ final class RestDayDIContrainer: BaseContainer {
         
         container.register(type: FetchRestDayFromDBUsecaserotocol.self) { _ in
             self.makeFetchRestDayFromDBUsecase()
+        }
+        
+        container.register(type: DeleteRestDayUsecaseProtocol.self) { _ in
+            self.makeDeleteRestDayUsecase()
         }
     }
 }
