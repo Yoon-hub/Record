@@ -9,13 +9,25 @@ import Foundation
 
 public extension Date {
     // 날짜를 "2024.04.03" 형태로 포맷팅하는 함수
-    func formattedDateString() -> String {
+    
+    enum DateFormat: String {
+        case yearMonthDay = "yyyy.MM.dd"
+        case yearMonthDayWeek = "yyyy년 M월 d일(EEEE)"
+    }
+    
+    func formattedDateString(type: DateFormat) -> String {
         // DateFormatter 인스턴스 생성
         let dateFormatter = DateFormatter()
         
-        // 날짜 형식 설정
-        dateFormatter.dateFormat = "yyyy.MM.dd"
         
+        switch type {
+        case .yearMonthDay:
+            dateFormatter.dateFormat = "yyyy.MM.dd"
+        case .yearMonthDayWeek:
+            dateFormatter.dateFormat = "yyyy년 M월 d일(E)"
+        }
+        
+        dateFormatter.locale = Locale(identifier: "ko_KR")
         // 현재 날짜를 문자열로 변환
         return dateFormatter.string(from: self)
     }

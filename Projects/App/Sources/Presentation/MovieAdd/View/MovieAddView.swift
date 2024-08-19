@@ -74,7 +74,7 @@ final class MovieAddView: UIView, BaseView {
     }
     
     let dateLabel = UILabel().then {
-        $0.text = "\(Date().formattedDateString())"
+        $0.text = "\(Date().formattedDateString(type: .yearMonthDay))"
         $0.backgroundColor = .white
         $0.textColor = UIColor.systemGray3
         $0.font = UIFont.systemFont(ofSize: 15)

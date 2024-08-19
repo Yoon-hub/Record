@@ -123,7 +123,7 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .disposed(by: disposeBag)
         
         contentView.datePicker.rx.date
-            .map { $0.formattedDateString() }
+            .map { $0.formattedDateString(type: .yearMonthDay) }
             .withUnretained(self)
             .bind { $0.0.contentView.dateLabel.text = $0.1 }
             .disposed(by: disposeBag)

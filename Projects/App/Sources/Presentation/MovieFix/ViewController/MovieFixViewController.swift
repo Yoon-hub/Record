@@ -131,7 +131,7 @@ final class MovieFixViewController: BaseViewController<MovieFixReactor, MovieAdd
             .disposed(by: disposeBag)
         
         contentView.datePicker.rx.date
-            .map { $0.formattedDateString() }
+            .map { $0.formattedDateString(type: .yearMonthDay) }
             .withUnretained(self)
             .bind { $0.0.contentView.dateLabel.text = $0.1 }
             .disposed(by: disposeBag)
@@ -179,7 +179,7 @@ final class MovieFixViewController: BaseViewController<MovieFixReactor, MovieAdd
                 $0.titleTextField.text = reactor.currentState.movie.title
                 $0.contentTextView.text = reactor.currentState.movie.content
                 $0.datePicker.date = reactor.currentState.movie.date
-                $0.dateLabel.text = reactor.currentState.movie.date.formattedDateString()
+                $0.dateLabel.text = reactor.currentState.movie.date.formattedDateString(type: .yearMonthDay)
                 $0.contentTextView.textColor = .black
             }
             .disposed(by: disposeBag)

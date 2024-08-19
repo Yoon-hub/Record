@@ -120,7 +120,7 @@ final class MovieDetailView: UIView, BaseView {
     
     func bind(movie: Movie) {
         titleLabel.text = movie.title
-        dateLabel.text = movie.date.formattedDateString()
+        dateLabel.text = movie.date.formattedDateString(type: .yearMonthDay)
         contentLabel.text = movie.content
         heartLabel.text = "\(movie.heart)"
     }
