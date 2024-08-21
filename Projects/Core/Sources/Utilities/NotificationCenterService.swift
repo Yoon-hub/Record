@@ -26,11 +26,14 @@ public extension NotificationCenterHandler {
 
 public enum NotificationCenterService: NotificationCenterHandler {
     case reloadMoive
+    case reloadCalendar
 
     public var name: Notification.Name {
         switch self {
         case .reloadMoive:
             return Notification.Name("NotificationCenterService.reloadMoive")
+        case .reloadCalendar:
+            return Notification.Name("NotificationCenterService.reloadCalendar")
         }
     }
 }

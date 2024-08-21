@@ -18,6 +18,8 @@ import RxCocoa
 
 final class CalendarViewController: BaseViewController<CalendarReactor, CalendarView> {
     
+    @Navigator var navigator: CalendarNavigatorProtocol
+    
     override func setup() {
         setNavigation()
         contentView.calendar.delegate = self
@@ -54,7 +56,6 @@ extension CalendarViewController {
         contentView.eventTableView.rx.setDelegate(self)
             .disposed(by: disposeBag)
         
-        
         reactor.state.map { $0.selectedEvents }
             .bind(to: contentView.eventTableView.rx.items(cellIdentifier: EventCollectionViewCell.identifier, cellType: EventCollectionViewCell.self)
             ) { _, item, cell in
@@ -81,6 +82,11 @@ extension CalendarViewController {
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind { $0.0.contentView.eventRestDayLabel.text = $0.0.checkRestDayName(date: $0.1) }
+            .disposed(by: disposeBag)
+        
+        NotificationCenterService.reloadCalendar.addObserver()
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.today = Date()}
             .disposed(by: disposeBag)
     }
 }
@@ -167,6 +173,12 @@ extension CalendarViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         guard let footerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "NewEventFooterView") as? NewEventFooterView else { return UITableViewHeaderFooterView() }
+        
+        footerView.newEventButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.navigator.toEventAdd(vc: $0.0) }
+            .disposed(by: footerView.disposeBag)
         
         return footerView
     }

@@ -23,6 +23,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         registDepency(scene: scene)
         appNaviagtor.toTabBar()
     }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        NotificationCenterService.reloadCalendar.post()
+    }
 }
 
 extension SceneDelegate {
