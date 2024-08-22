@@ -70,7 +70,13 @@ extension MovieAddReactor {
             }
             
             let imageData = currentState.imageItems.map { $0.toData() }
-            let movie = Movie(title: title, content: content, image: imageData, date: date, rate: currentState.rate)
+            let movie = MovieBuilder()
+                .setTitle(title)
+                .setContent(content)
+                .setImage(imageData)
+                .setDate(date)
+                .setRate(currentState.rate)
+                .build()
             
             saveMovieUsecase.execute(movie: movie)
             return .just(.saveSucess)

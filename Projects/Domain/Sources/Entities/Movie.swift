@@ -34,3 +34,48 @@ final public class Movie {
         self.heart = 0
     }
 }
+
+final public class MovieBuilder {
+    private var title: String = ""
+    private var content: String = ""
+    private var image: [Data] = []
+    private var date: Date = Date()
+    private var rate: Int = 0
+    
+    public init() { }
+    
+    public func setTitle(_ title: String) -> MovieBuilder {
+        self.title = title
+        return self
+    }
+    
+    public func setContent(_ content: String) -> MovieBuilder {
+        self.content = content
+        return self
+    }
+    
+    public func setImage(_ image: [Data]) -> MovieBuilder {
+        self.image = image
+        return self
+    }
+    
+    public func setDate(_ date: Date) -> MovieBuilder {
+        self.date = date
+        return self
+    }
+    
+    public func setRate(_ rate: Int) -> MovieBuilder {
+        self.rate = rate
+        return self
+    }
+    
+    public func build() -> Movie {
+        return Movie(
+            title: title,
+            content: content,
+            image: image,
+            date: date,
+            rate: rate
+        )
+    }
+}
