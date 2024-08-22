@@ -44,6 +44,12 @@ public extension Date {
         return formatter.string(from: self)
     }
     
+    func formatToTime() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mma"
+        return formatter.string(from: self)
+    }
+    
     func surroundingYears() -> [String] {
         let calendar = Calendar.current
         let currentYear = calendar.component(.year, from: self)
