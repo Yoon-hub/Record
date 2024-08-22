@@ -17,4 +17,7 @@ extension IdentifierProtocol {
     }
 }
 
-extension UICollectionViewCell: IdentifierProtocol {}
+//extension UICollectionViewCell: IdentifierProtocol {}
+extension UICollectionReusableView: IdentifierProtocol {}
+extension UITableViewCell: IdentifierProtocol {}
+extension UITableViewHeaderFooterView: IdentifierProtocol {}
