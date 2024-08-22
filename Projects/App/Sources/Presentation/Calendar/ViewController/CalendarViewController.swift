@@ -177,7 +177,7 @@ extension CalendarViewController: UITableViewDelegate {
         footerView.newEventButton.rx.tap
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
-            .bind { $0.0.navigator.toEventAdd(vc: $0.0) }
+            .bind { $0.0.navigator.toEventAdd(vc: $0.0, seletedDate: $0.0.reactor!.currentState.selectedDate) }
             .disposed(by: footerView.disposeBag)
         
         return footerView
