@@ -24,7 +24,7 @@ let package = Package(
         .package(url: "https://github.com/Yoon-hub/FocusCollectionView.git", from: "1.1.1"),
         .package(url: "https://github.com/WenchaoD/FSCalendar.git", exact: "2.8.4"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.8.1"),
-        .package(url: "https://github.com/RxSwiftCommunity/RxAlamofire.git", exact: "6.1.2")
-
+        .package(url: "https://github.com/RxSwiftCommunity/RxAlamofire.git", exact: "6.1.2"),
+        .package(url: "https://github.com/RxSwiftCommunity/RxKeyboard.git", exact: "2.0.1")
     ]
 )

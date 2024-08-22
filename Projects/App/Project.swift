@@ -43,7 +43,8 @@ let project = Project(name: "App", targets: [
             .external(name: "PinLayout"),
             .external(name: "RxCocoa"),
             .external(name: "FocusCollectionView"),
-            .external(name: "FSCalendar")
+            .external(name: "FSCalendar"),
+            .external(name: "RxKeyboard")
         ]
     )
 ])
