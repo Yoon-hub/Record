@@ -134,3 +134,69 @@ It's easy to get dependency. like this
 @Injected var appNaviagtor: AppNavigatorProtocol
 ```
 
+### SwiftData 
+
+Create a repository that provides CRUD of **SwiftData**
+
+```swift
+public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryProtocol {
+    
+    public init() {
+        let configure = ModelConfiguration("\(T.self)")
+        do {
+            print("configure Init")
+            container = try ModelContainer(for: T.self, configurations: configure)
+        } catch {
+            fatalError(error.localizedDescription)
+        }
+    }
+    
+    let container: ModelContainer
+    
+    
+    public func insertData(data: T) {
+        Task { @MainActor in
+            let context = container.mainContext
+            context.insert(data)
+            
+            do {
+                try context.save()
+            } catch {
+                print("Error saving context: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    @MainActor
+    public func fetchData() async throws -> [T] {
+        let descriptor = FetchDescriptor<T>(predicate: nil)
+        
+        let context = container.mainContext
+        let data = try context.fetch(descriptor)
+        return data
+    }
+    
+    public func deleteData(data: T) async {
+        let context = await container.mainContext
+        context.delete(data)
+        
+        do {
+            try context.save()
+        } catch {
+            print("Error saving context: \(error.localizedDescription)")
+        }
+    }
+    
+    public func deleteAllData() async {
+        do {
+            let data = try await fetchData()
+            for item in data {
+                await deleteData(data: item)
+            }
+        } catch {
+            print("Error fetching or deleting all data: \(error.localizedDescription)")
+        }
+    }
+}
+```
+
