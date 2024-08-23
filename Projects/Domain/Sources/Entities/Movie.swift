@@ -18,7 +18,7 @@ final public class Movie {
     public var rate: Int
     public var heart: Int
     
-    public init(
+    internal init(
         title: String,
         content: String,
         image: [Data],
