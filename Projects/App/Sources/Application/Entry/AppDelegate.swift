@@ -27,7 +27,8 @@ import RxCocoa
         
         let containers: [BaseContainer] = [
             MovieDIContainer(),
-            RestDayDIContrainer()
+            RestDayDIContrainer(),
+            EventDIContainer()
         ]
         containers.forEach {
             $0.registerDependencies()
