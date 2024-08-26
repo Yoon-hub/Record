@@ -8,19 +8,32 @@
 import SwiftData
 import UIKit
 
+import Core
+import Design
+
 @Model
-final public class Event {
+final public class CalendarEvent {
+    
+    public enum Alarm: String, CaseIterable {
+        case none = "알림 없음"
+        case oneMinute = "1분 전"
+        case fiveMinute = "5분 전"
+        case tenMinute = "10분 전"
+        case thirtyMinute = "30분 전"
+        case oneHour = "1시간 전"
+    }
+    
     @Attribute(.unique) public var id: String?
     public var title: String
     public var date: Date
-    public var alarm: Date?
+    public var alarm: String?
     public var content: String?
     public var tagColor: String // hex String
     
     internal init(
         id: String? = nil,
         title: String,
-        alarm: Date?,
+        alarm: String?,
         date: Date,
         content: String?,
         tagColor: String
@@ -35,15 +48,16 @@ final public class Event {
 }
 
 final public class EventBuilder {
-    private var title: String = ""
+    private var title: String = "제목없음"
     private var date: Date = Date()
-    private var alarm: Date?
+    private var alarm: String = CalendarEvent.Alarm.none.rawValue
     private var content: String?
-    private var tagColor: String = ""
+    private var tagColor: String = DesignAsset.record.color.hexString
     
     public init() { }
     
-    public func setTitle(_ title: String) -> EventBuilder {
+    public func setTitle(_ title: String?) -> EventBuilder {
+        guard let title else {return self}
         self.title = title
         return self
     }
@@ -53,8 +67,8 @@ final public class EventBuilder {
         return self
     }
     
-    public func setAlarm(_ alarm: Date) -> EventBuilder {
-        self.alarm = alarm
+    public func setAlarm(_ alarm: CalendarEvent.Alarm) -> EventBuilder {
+        self.alarm = alarm.rawValue
         return self
     }
     
@@ -68,8 +82,8 @@ final public class EventBuilder {
         return self
     }
     
-    public func build() -> Event {
-        return Event(
+    public func build() -> CalendarEvent {
+        return CalendarEvent(
             title: title,
             alarm: alarm, 
             date: date,
