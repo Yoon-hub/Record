@@ -28,6 +28,7 @@ open class BaseViewController<R: Reactor, V: BaseView>: UIViewController, View {
         self.reactor = reactor
     }
     
+    @available(*, unavailable)
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
