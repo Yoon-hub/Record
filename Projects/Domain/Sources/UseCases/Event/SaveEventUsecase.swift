@@ -22,6 +22,7 @@ public final class SaveEventUsecase<Repository: SwiftDataRepositoryProtocol>: Sa
     public func excecute(event: CalendarEvent) {
         Task {
             await repository.insertData(data: event)
+            print("Event Save: \(event)")
         }
     }
 }
