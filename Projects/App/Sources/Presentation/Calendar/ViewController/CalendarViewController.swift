@@ -59,7 +59,7 @@ extension CalendarViewController {
         reactor.state.map { $0.selectedEvents }
             .bind(to: contentView.eventTableView.rx.items(cellIdentifier: EventCollectionViewCell.identifier, cellType: EventCollectionViewCell.self)
             ) { _, item, cell in
-                
+                cell.bind(item)
             }
             .disposed(by: disposeBag)
         
@@ -82,6 +82,12 @@ extension CalendarViewController {
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind { $0.0.contentView.eventRestDayLabel.text = $0.0.checkRestDayName(date: $0.1) }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map {$0.events}
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.1 }
             .disposed(by: disposeBag)
         
         NotificationCenterService.reloadCalendar.addObserver()
@@ -145,6 +151,7 @@ extension CalendarViewController: FSCalendarDelegate, FSCalendarDelegateAppearan
         // cell custom
         guard let cell = calendar.dequeueReusableCell(withIdentifier: FScalendarCustomCell.description(), for: date, at: position) as? FScalendarCustomCell else { return FScalendarCustomCell() }
         
+        
         return cell
     }
     
@@ -177,10 +184,24 @@ extension CalendarViewController: UITableViewDelegate {
         footerView.newEventButton.rx.tap
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
-            .bind { $0.0.navigator.toEventAdd(vc: $0.0, seletedDate: $0.0.reactor!.currentState.selectedDate) }
+            .bind { $0.0.navigator.toEventAdd(vc: $0.0, seletedDate: $0.0.reactor!.currentState.selectedDate) { self.reactor?.action.onNext(.reloadEvents) } }
             .disposed(by: footerView.disposeBag)
         
         return footerView
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
+            self?.reactor?.action.onNext(.didDeleteEvent(indexPath))
+            completionHandler(true)
+        }
+        
+        deleteAction.image = UIImage(systemName: "trash")?.withTintColor(.red)
+        deleteAction.backgroundColor = .white
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
     }
 }
 
