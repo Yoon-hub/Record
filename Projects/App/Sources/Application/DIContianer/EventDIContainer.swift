@@ -18,6 +18,13 @@ final class EventDIContainer: BaseContainer {
         SaveEventUsecase(repository: self.repository)
     }
     
+    private func makeFetchEventUsecase() -> FetchEventUsecaseProtocol {
+        FetchEventUsecase(repository: self.repository)
+    }
+    
+    private func makeDeleteEventUsecase() -> DeleteEventUsecaseProtocol {
+        DeleteEventUsecase(repository: self.repository)
+    }
     
     private var repository = {
         SwiftDataRepository<CalendarEvent>()
@@ -28,6 +35,14 @@ final class EventDIContainer: BaseContainer {
     func registerDependencies() {
         container.register(type: SaveEventUsecaseProtocol.self) { _ in
             self.makeSaveEventUsecase()
+        }
+        
+        container.register(type: FetchEventUsecaseProtocol.self) { _ in
+            self.makeFetchEventUsecase()
+        }
+        
+        container.register(type: DeleteEventUsecaseProtocol.self) { _ in
+            self.makeDeleteEventUsecase()
         }
     }
 }
