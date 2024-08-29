@@ -36,3 +36,41 @@ extension UIColor {
         }
     }
 }
+
+public extension String {
+    func toUIColor() -> UIColor? {
+        var cleanedHexString = self.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        
+        // "#"가 있으면 제거
+        if cleanedHexString.hasPrefix("#") {
+            cleanedHexString.remove(at: cleanedHexString.startIndex)
+        }
+
+        // RGB 또는 RGBA 형식 확인
+        let length = cleanedHexString.count
+        guard length == 6 || length == 8 else {
+            return nil
+        }
+
+        var rgbValue: UInt64 = 0
+        Scanner(string: cleanedHexString).scanHexInt64(&rgbValue)
+
+        if length == 6 {
+            return UIColor(
+                red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+                green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+                blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+                alpha: 1.0
+            )
+        } else if length == 8 {
+            return UIColor(
+                red: CGFloat((rgbValue & 0xFF000000) >> 24) / 255.0,
+                green: CGFloat((rgbValue & 0x00FF0000) >> 16) / 255.0,
+                blue: CGFloat((rgbValue & 0x0000FF00) >> 8) / 255.0,
+                alpha: CGFloat(rgbValue & 0x000000FF) / 255.0
+            )
+        } else {
+            return nil
+        }
+    }
+}
