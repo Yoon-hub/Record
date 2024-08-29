@@ -37,12 +37,13 @@ final class EventAddView: UIView, BaseView {
     
     let tagIcon = UIImageView().then {
         $0.tintColor = .black
-        $0.image = UIImage(systemName: "paintpalette")
+        $0.image = UIImage(systemName: "lasso")
     }
     
-    let tagButton = UIButton().then {
+    let tagButton = UIColorWell().then {
         $0.backgroundColor = .systemPink
-        $0.layer.cornerRadius = 12
+        $0.selectedColor = DesignAsset.record.color
+        $0.layer.cornerRadius = 15
     }
     
     let alarmIcon = UIImageView().then {
@@ -52,7 +53,7 @@ final class EventAddView: UIView, BaseView {
     
     let alarmButton = UIButton().then {
         $0.titleLabel?.font = DesignFontFamily.Pretendard.regular.font(size: 15)
-        $0.setTitle("알람 없음", for: .normal)
+        $0.setTitle("알림 없음", for: .normal)
         $0.setTitleColor(.black, for: .normal)
     }
     
@@ -131,7 +132,7 @@ final class EventAddView: UIView, BaseView {
             .below(of: timeIcon)
             .marginTop(30)
             .left(20)
-            .size(26)
+            .size(30)
         
         tagButton.pin
             .after(of: tagIcon)

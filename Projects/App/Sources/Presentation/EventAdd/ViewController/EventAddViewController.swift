@@ -8,6 +8,7 @@
 import UIKit
 
 import Core
+import Design
 
 import PinLayout
 import ReactorKit
@@ -17,9 +18,20 @@ final class EventAddViewController: BaseViewController<EventAddReactor, EventAdd
     
     let customPopView = CustomPopView()
     
+    let reloadTableView: (() -> Void)?
+    
+    init(contentView: EventAddView, reactor: EventAddReactor, reloadTableView: @escaping (() -> Void)) {
+        self.reloadTableView = reloadTableView
+        super.init(contentView: contentView, reactor: reactor)
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
             self.view.endEditing(true)
    }
+    
+    override func setup() {
+        setAlarmButtonMenu()
+    }
     
     override func bind(reactor: EventAddReactor) {
         bindInput(reactor: reactor)
@@ -45,12 +57,17 @@ extension EventAddViewController {
             }
             .disposed(by: disposeBag)
         
-        contentView.tagButton.rx.tap
+        contentView.tagButton.rx.controlEvent(.allEvents)
+            .withUnretained(self)
+            .map { Reactor.Action.didSeleteColor($0.0.contentView.tagButton.selectedColor ?? DesignAsset.record.color)}
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        contentView.saveButton.rx.tap
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
-            .bind {
-                $0.0.present(UIColorPickerViewController(), animated: true)
-            }
+            .map { Reactor.Action.didTapSaveButton($0.0.contentView.titleTextField.text, $0.0.contentView.textView.text) }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
     
@@ -59,6 +76,24 @@ extension EventAddViewController {
         reactor.state.map { $0.selectedTime }
             .withUnretained(self)
             .bind { $0.0.contentView.timeButton.setTitle("\($0.1.formatToTime())", for: .normal) }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.selectedColor }
+            .withUnretained(self)
+            .bind { $0.0.contentView.titleTagColor.backgroundColor = $0.1 }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.selectedAlarm }
+            .withUnretained(self)
+            .bind { $0.0.contentView.alarmButton.setTitle($0.1.rawValue, for: .normal) }
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$saveEvent)
+            .withUnretained(self)
+            .bind {
+                $0.0.dismiss(animated: true)
+                $0.0.reloadTableView?()
+            }
             .disposed(by: disposeBag)
     }
 }
@@ -91,4 +126,19 @@ extension EventAddViewController {
                    .disposed(by: disposeBag)
     }
     
+    
+    private func setAlarmButtonMenu() {
+        let timeOptions = Reactor.Alarm.allCases
+        
+        let actions = timeOptions.map { alarm in
+            return UIAction(title: alarm.rawValue) { [weak self] _ in
+                self?.reactor?.action.onNext(.didSeleteAlarm(alarm))
+            }
+        }
+        
+        let menu = UIMenu(children: actions)
+        
+        contentView.alarmButton.showsMenuAsPrimaryAction = true
+        contentView.alarmButton.menu = menu
+    }
 }

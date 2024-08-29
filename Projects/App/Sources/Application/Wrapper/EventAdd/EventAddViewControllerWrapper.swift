@@ -19,12 +19,15 @@ final class EventAddViewControllerWrapper: BaseWrapper {
     
     let seletedDate: Date
     
-    init(seletedDate: Date) {
+    let reloadTableView: (() -> Void)
+    
+    init(seletedDate: Date, reloadTableView: @escaping (() -> Void)) {
         self.seletedDate = seletedDate
+        self.reloadTableView = reloadTableView
     }
     
     func makeViewController() -> V {
-        return EventAddViewController(contentView: view, reactor: reactor)
+        return EventAddViewController(contentView: view, reactor: reactor, reloadTableView: reloadTableView)
     }
     
     func makeReactor() -> R {
