@@ -50,6 +50,12 @@ public extension Date {
         return formatter.string(from: self)
     }
     
+    func formatToTime24Hour() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: self)
+    }
+    
     func surroundingYears() -> [String] {
         let calendar = Calendar.current
         let currentYear = calendar.component(.year, from: self)
