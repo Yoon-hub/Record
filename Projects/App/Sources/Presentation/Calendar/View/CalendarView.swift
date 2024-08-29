@@ -15,6 +15,12 @@ import PinLayout
 
 final class CalendarView: UIView, BaseView {
     
+    let scrollView = UIScrollView().then {
+        $0.isScrollEnabled = true
+    }
+    
+    let containerView = UIView()
+    
     let calendar: FSCalendar = {
         let calendar = FSCalendar()
         calendar.locale = Locale(identifier: "ko_KR")
@@ -102,8 +108,12 @@ final class CalendarView: UIView, BaseView {
     
     func configure() {
         self.backgroundColor = .white
+        
+        self.addSubview(scrollView)
+        scrollView.addSubview(containerView)
+        
         [monthLabel, calendar, yearLabel, eventView].forEach {
-            self.addSubview($0)
+            containerView.addSubview($0)
         }
         
         [eventDateLabel, eventTableView, eventRestDayLabel].forEach {
@@ -112,8 +122,19 @@ final class CalendarView: UIView, BaseView {
     }
     
     func setUI() {
+        scrollView.pin
+            .all(self.pin.safeArea)
+        
+        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width, height: 800)
+        
+        containerView.pin
+            .top()
+            .horizontally()
+            .bottom()
+            .height(800)
+        
         monthLabel.pin
-            .top(self.pin.safeArea.top)
+            .top()
             .left(16)
             .height(46)
             .sizeToFit(.height)
@@ -134,7 +155,7 @@ final class CalendarView: UIView, BaseView {
             .below(of: calendar)
             .marginTop(16)
             .horizontally()
-            .bottom(self.pin.safeArea.bottom)
+            .bottom()
         
         eventDateLabel.pin
             .top()
