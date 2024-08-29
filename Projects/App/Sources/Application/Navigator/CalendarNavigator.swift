@@ -11,7 +11,7 @@ import Core
 import Domain
 
 protocol CalendarNavigatorProtocol: BaseNavigator {
-    func toEventAdd(vc: UIViewController, seletedDate: Date)
+    func toEventAdd(vc: UIViewController, seletedDate: Date, reloadTableView: @escaping () -> Void)
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -22,8 +22,8 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
         self.navigationController = navigationController
     }
 
-    func toEventAdd(vc: UIViewController, seletedDate: Date) {
-        let eventAddView = EventAddViewControllerWrapper(seletedDate: seletedDate).viewController
+    func toEventAdd(vc: UIViewController, seletedDate: Date, reloadTableView: @escaping () -> Void) {
+        let eventAddView = EventAddViewControllerWrapper(seletedDate: seletedDate, reloadTableView: reloadTableView).viewController
         vc.present(eventAddView, animated: true)
     }
 }
