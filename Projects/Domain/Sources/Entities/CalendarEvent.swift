@@ -10,9 +10,10 @@ import UIKit
 
 import Core
 import Design
+import Differentiator
 
 @Model
-final public class CalendarEvent {
+final public class CalendarEvent: IdentifiableType, Equatable {
     
     public enum Alarm: String, CaseIterable {
         case none = "알림 없음"
@@ -25,24 +26,31 @@ final public class CalendarEvent {
     
     @Attribute(.unique) public var id: String?
     public var title: String
-    public var date: Date
+    public var startDate: Date
+    public var endDate: Date
     public var alarm: String?
     public var content: String?
     public var tagColor: String // hex String
+    
+    public var identity: String? {
+        id
+    }
     
     internal init(
         id: String? = nil,
         title: String,
         alarm: String?,
         date: Date,
+        endDate: Date,
         content: String?,
         tagColor: String
     ) {
         self.id = id
         self.title = title
-        self.date = date
+        self.startDate = date
         self.alarm = alarm
         self.content = content
+        self.endDate = endDate
         self.tagColor = tagColor
     }
 }
@@ -50,6 +58,7 @@ final public class CalendarEvent {
 final public class EventBuilder {
     private var title: String = "제목없음"
     private var date: Date = Date()
+    private var endDate: Date = Date()
     private var alarm: String = CalendarEvent.Alarm.none.rawValue
     private var content: String?
     private var tagColor: String = DesignAsset.record.color.hexString
@@ -57,13 +66,21 @@ final public class EventBuilder {
     public init() { }
     
     public func setTitle(_ title: String?) -> EventBuilder {
-        guard let title else {return self}
-        self.title = title
+        self.title = title ?? "제목없음"
+        
+        if title == "" {
+            self.title = "no title"
+        }
         return self
     }
     
     public func setDate(_ date: Date) -> EventBuilder {
         self.date = date
+        return self
+    }
+    
+    public func setEndDate(_ endDate: Date) -> EventBuilder {
+        self.endDate = endDate
         return self
     }
     
@@ -85,8 +102,9 @@ final public class EventBuilder {
     public func build() -> CalendarEvent {
         return CalendarEvent(
             title: title,
-            alarm: alarm, 
+            alarm: alarm,
             date: date,
+            endDate: endDate,
             content: content,
             tagColor: tagColor
         )

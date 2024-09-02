@@ -29,10 +29,23 @@ final class EventAddView: UIView, BaseView {
         $0.image = UIImage(systemName: "watchface.applewatch.case")
     }
     
-    let timeButton = UIButton().then {
-        $0.titleLabel?.font = DesignFontFamily.Pretendard.regular.font(size: 18)
+    let startTimeButton = UIButton().then {
+        $0.titleLabel?.font = DesignFontFamily.Pretendard.regular.font(size: 16)
+        $0.titleLabel?.numberOfLines = 0
         $0.setTitle("8:00AM", for: .normal)
         $0.setTitleColor(.black, for: .normal)
+    }
+    
+    let endTimeButton = UIButton().then {
+        $0.titleLabel?.font = DesignFontFamily.Pretendard.regular.font(size: 16)
+        $0.titleLabel?.numberOfLines = 0
+        $0.setTitle("8:00AM", for: .normal)
+        $0.setTitleColor(.black, for: .normal)
+    }
+    
+    let tildeLabel = UILabel().then {
+        $0.font = DesignFontFamily.Pretendard.regular.font(size: 16)
+        $0.text = "~"
     }
     
     let tagIcon = UIImageView().then {
@@ -97,7 +110,7 @@ final class EventAddView: UIView, BaseView {
     
     func configure() {
         self.backgroundColor = .white
-        [titleTextField, titleTagColor, timeIcon, timeButton, tagIcon, tagButton, alarmIcon, alarmButton, memoIcon, textView, saveButton].forEach {
+        [titleTextField, titleTagColor, timeIcon, startTimeButton, tagIcon, tagButton, alarmIcon, alarmButton, memoIcon, textView, saveButton, tildeLabel, endTimeButton].forEach {
             self.addSubview($0)
         }
     }
@@ -122,9 +135,21 @@ final class EventAddView: UIView, BaseView {
             .left(20)
             .size(26)
         
-        timeButton.pin
+        startTimeButton.pin
             .after(of: timeIcon)
             .marginLeft(10)
+            .vCenter(to: timeIcon.edge.vCenter)
+            .sizeToFit()
+        
+        tildeLabel.pin
+            .after(of: startTimeButton)
+            .marginLeft(12)
+            .vCenter(to: timeIcon.edge.vCenter)
+            .sizeToFit()
+        
+        endTimeButton.pin
+            .after(of: tildeLabel)
+            .marginLeft(15)
             .vCenter(to: timeIcon.edge.vCenter)
             .sizeToFit()
         

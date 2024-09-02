@@ -24,6 +24,7 @@ final class CalendarReactor: Reactor {
     enum Mutation {
         case setRestDate([RestDay])
         case setSelectDate(Date)
+        case setSelectedEvents([CalendarEvent])
         case setEvents([CalendarEvent], Date)
     }
     
@@ -65,7 +66,10 @@ extension CalendarReactor {
                 return Disposables.create()
             }
         case .didSelectDate(let date):
-            return .just(.setSelectDate(date))
+            let setDateMutation = Observable.just(Mutation.setSelectDate(date))
+            let updateEventsMutation = Observable.just(Mutation.setSelectedEvents(filterEventsByDate(events: currentState.events, date: date).sorted { $0.startDate < $1.startDate }))
+            
+            return Observable.concat([setDateMutation, updateEventsMutation])
             
         case .reloadEvents:
             return Observable.create { [weak self] observer in
@@ -107,23 +111,28 @@ extension CalendarReactor {
             return newState
         case .setSelectDate(let date):
             newState.selectedDate = date
-            newState.selectedEvents = filterEventsByDate(events: newState.events, date: date).sorted { $0.date < $1.date }
+            return newState
+        case .setSelectedEvents(let events):
+            newState.selectedEvents = events
             return newState
         case .setEvents(let events, let date):
             newState.events = events
-            newState.selectedEvents = filterEventsByDate(events: newState.events, date: date).sorted { $0.date < $1.date }
+            newState.selectedEvents = filterEventsByDate(events: newState.events, date: date).sorted { $0.startDate < $1.startDate }
             return newState
         }
     }
 }
 
 extension CalendarReactor {
-    private func filterEventsByDate(events: [CalendarEvent], date: Date) -> [CalendarEvent] {
+    func filterEventsByDate(events: [CalendarEvent], date: Date) -> [CalendarEvent] {
         let calendar = Calendar.current
+        
         return events.filter { event in
-            let eventDate = calendar.startOfDay(for: event.date)
+            let eventStartDate = calendar.startOfDay(for: event.startDate)
+            let eventEndDate = calendar.startOfDay(for: event.endDate)
             let targetDate = calendar.startOfDay(for: date)
-            return eventDate == targetDate
+            
+            return eventStartDate <= targetDate && targetDate <= eventEndDate
         }
     }
 }
