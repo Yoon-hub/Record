@@ -13,6 +13,8 @@ public extension Date {
     enum DateFormat: String {
         case yearMonthDay = "yyyy.MM.dd"
         case yearMonthDayWeek = "yyyy년 M월 d일(EEEE)"
+        case yearMonthDayTime = "M월 d일 (E)\nHH:mm"
+        case simpleMonthDay = "M.d(E)"
     }
     
     func formattedDateString(type: DateFormat) -> String {
@@ -25,6 +27,10 @@ public extension Date {
             dateFormatter.dateFormat = "yyyy.MM.dd"
         case .yearMonthDayWeek:
             dateFormatter.dateFormat = "yyyy년 M월 d일(E)"
+        case .yearMonthDayTime:
+            dateFormatter.dateFormat = "M월 d일 (E)\nHH:mm"
+        case .simpleMonthDay:
+            dateFormatter.dateFormat = "M.d(E)"
         }
         
         dateFormatter.locale = Locale(identifier: "ko_KR")
