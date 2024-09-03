@@ -14,6 +14,7 @@ import Domain
 final class EventCollectionViewCell: UITableViewCell, BaseView {
     
     let timeLabel = UILabel().then {
+        $0.numberOfLines = 0
         $0.font = DesignFontFamily.Pretendard.medium.font(size: 14)
     }
     
@@ -69,14 +70,15 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
     
     func setUI() {
         timeLabel.pin
-            .vCenter(-3)
+            .before(of: tagView)
             .left(16)
-            .sizeToFit()
+            .vertically()
+            .marginBottom(6)
         
         tagView.pin
             .vCenter(-3)
-            .left(62)
-            .height(40)
+            .left(72)
+            .height(42)
             .width(3)
         
         labelStack.pin
@@ -90,8 +92,69 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
     func bind(_ event: CalendarEvent) {
         titleLabel.text = event.title
         contentLabel.text = event.content
-        timeLabel.text = event.date.formatToTime24Hour()
         tagView.backgroundColor = event.tagColor.toUIColor()
-        contentView.backgroundColor = event.tagColor.toUIColor()?.withAlphaComponent(0.08)
+        contentView.backgroundColor = event.tagColor.toUIColor()?.withAlphaComponent(0.12)
+        
+        if event.startDate == event.endDate {
+            timeLabel.font = DesignFontFamily.Pretendard.medium.font(size: 15)
+            timeLabel.text = event.startDate.formatToTime24Hour()
+        } else if Calendar.current.isDate(event.startDate, inSameDayAs: event.endDate) {
+            
+            let startTime = event.startDate.formatToTime24Hour()
+            let endTime = event.endDate.formatToTime24Hour()
+
+            let startFont = DesignFontFamily.Pretendard.medium.font(size: 15)
+            let endFont = DesignFontFamily.Pretendard.medium.font(size: 13)
+
+            let attributedText = NSMutableAttributedString(
+                string: startTime,
+                attributes: [NSAttributedString.Key.font: startFont]
+            )
+
+            attributedText.append(NSAttributedString(
+                string: "\n~\(endTime)",
+                attributes: [NSAttributedString.Key.font: endFont, NSAttributedString.Key.foregroundColor: UIColor.gray]
+            ))
+
+            timeLabel.attributedText = attributedText
+        } else {
+            
+            let startDate = event.startDate.formattedDateString(type: .simpleMonthDay)
+            let startTime = event.startDate.formatToTime24Hour()
+            
+            let endDate = event.endDate.formattedDateString(type: .simpleMonthDay)
+            let endTime = event.endDate.formatToTime24Hour()
+
+            
+            let dateFont = DesignFontFamily.Pretendard.medium.font(size: 9)
+            let timeFont = DesignFontFamily.Pretendard.medium.font(size: 13)
+
+            
+            let attributedText = NSMutableAttributedString(
+                string: startDate,
+                attributes: [NSAttributedString.Key.font: dateFont, NSAttributedString.Key.foregroundColor: UIColor.gray]
+            )
+            
+            attributedText.append(NSAttributedString(
+                string: "\n\(startTime)",
+                attributes: [NSAttributedString.Key.font: timeFont, NSAttributedString.Key.foregroundColor: UIColor.black]
+            ))
+            
+
+            attributedText.append(NSAttributedString(
+                string: "\n\(endDate)",
+                attributes: [NSAttributedString.Key.font: dateFont, NSAttributedString.Key.foregroundColor: UIColor.gray]
+            ))
+            
+            attributedText.append(NSAttributedString(
+                string: "\n~\(endTime)",
+                attributes: [NSAttributedString.Key.font: timeFont, NSAttributedString.Key.foregroundColor: UIColor.black]
+            ))
+
+            timeLabel.attributedText = attributedText
+            
+        }
+        
+        
     }
 }

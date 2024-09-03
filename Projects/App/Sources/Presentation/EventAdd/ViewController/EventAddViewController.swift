@@ -43,15 +43,29 @@ final class EventAddViewController: BaseViewController<EventAddReactor, EventAdd
 // MARK: - Bind
 extension EventAddViewController {
     private func bindInput(reactor: EventAddReactor) {
-        contentView.timeButton.rx.tap
+        contentView.startTimeButton.rx.tap
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .bind {
                 $0.0.customPopView.show($0.0)
-                let datePickerView = DatePickerView(frame: .zero, seletedDate: reactor.currentState.selectedTime)
+                let datePickerView = DatePickerView(frame: .zero, seletedDate: reactor.currentState.selectedStartDate)
                 datePickerView.completionHandler = {
                     [weak self] date in self?.customPopView.hide()
-                    self?.reactor?.action.onNext(.didSeleteTime(date))
+                    self?.reactor?.action.onNext(.didSeleteStartTime(date))
+                }
+                $0.0.customPopView.contentView = datePickerView
+            }
+            .disposed(by: disposeBag)
+        
+        contentView.endTimeButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .withUnretained(self)
+            .bind {
+                $0.0.customPopView.show($0.0)
+                let datePickerView = DatePickerView(frame: .zero, seletedDate: reactor.currentState.selectedEndDate)
+                datePickerView.completionHandler = {
+                    [weak self] date in self?.customPopView.hide()
+                    self?.reactor?.action.onNext(.didSeleceEndTime(date))
                 }
                 $0.0.customPopView.contentView = datePickerView
             }
@@ -73,9 +87,14 @@ extension EventAddViewController {
     
     private func bindOutput(reactor: EventAddReactor) {
         
-        reactor.state.map { $0.selectedTime }
+        reactor.state.map { $0.selectedStartDate }
             .withUnretained(self)
-            .bind { $0.0.contentView.timeButton.setTitle("\($0.1.formatToTime())", for: .normal) }
+            .bind { $0.0.contentView.startTimeButton.setTitle("\($0.1.formattedDateString(type: .yearMonthDayTime))", for: .normal) }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.selectedEndDate }
+            .withUnretained(self)
+            .bind { $0.0.contentView.endTimeButton.setTitle("\($0.1.formattedDateString(type: .yearMonthDayTime))", for: .normal) }
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.selectedColor }
@@ -93,6 +112,13 @@ extension EventAddViewController {
             .bind {
                 $0.0.dismiss(animated: true)
                 $0.0.reloadTableView?()
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$isAlert)
+            .withUnretained(self)
+            .bind {
+                $0.0.showAlert(title: "알림", message: "시작 날짜는 종료 날짜 이전이어야 합니다.")
             }
             .disposed(by: disposeBag)
     }
