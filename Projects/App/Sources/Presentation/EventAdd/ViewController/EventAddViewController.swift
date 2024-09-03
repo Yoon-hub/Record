@@ -47,6 +47,7 @@ extension EventAddViewController {
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .bind {
+                $0.0.view.endEditing(true)
                 $0.0.customPopView.show($0.0)
                 let datePickerView = DatePickerView(frame: .zero, seletedDate: reactor.currentState.selectedStartDate)
                 datePickerView.completionHandler = {
@@ -61,6 +62,7 @@ extension EventAddViewController {
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
             .bind {
+                $0.0.view.endEditing(true)
                 $0.0.customPopView.show($0.0)
                 let datePickerView = DatePickerView(frame: .zero, seletedDate: reactor.currentState.selectedEndDate)
                 datePickerView.completionHandler = {
