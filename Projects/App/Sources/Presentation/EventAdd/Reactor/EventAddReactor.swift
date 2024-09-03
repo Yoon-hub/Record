@@ -38,7 +38,7 @@ final class EventAddReactor: Reactor {
         var selectedDate: Date
         var selectedStartDate: Date
         var selectedEndDate: Date
-        var selectedColor = DesignAsset.record.color
+        var selectedColor = UserDefaultsWrapper.color.toUIColor() ?? DesignAsset.record.color
         var selectedAlarm: Alarm = .none
         
         @Pulse var isAlert = false
@@ -77,6 +77,9 @@ extension EventAddReactor {
                 .setTitle(title)
                 .setContent(content ?? "")
                 .build()
+            
+            // 마지막 색상 저장
+            UserDefaultsWrapper.color = currentState.selectedColor.hexString
             
             saveEventUsecase.excecute(event: event)
             return .just(.saveEvent)

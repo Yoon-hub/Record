@@ -54,8 +54,10 @@ final class EventAddView: UIView, BaseView {
     }
     
     let tagButton = UIColorWell().then {
+        @UserDefault(key: "lastSelectedColor") var color
+        
         $0.backgroundColor = .systemPink
-        $0.selectedColor = DesignAsset.record.color
+        $0.selectedColor = color.toUIColor() ?? DesignAsset.record.color
         $0.layer.cornerRadius = 15
     }
     
