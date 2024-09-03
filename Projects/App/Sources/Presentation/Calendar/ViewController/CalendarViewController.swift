@@ -151,7 +151,16 @@ extension CalendarViewController: FSCalendarDelegate, FSCalendarDelegateAppearan
         // cell custom
         guard let cell = calendar.dequeueReusableCell(withIdentifier: FScalendarCustomCell.description(), for: date, at: position) as? FScalendarCustomCell else { return FScalendarCustomCell() }
         
+        guard let reactor else { return FScalendarCustomCell() }
         
+        let beforeDateEvents = reactor.filterEventsByDate(events: reactor.currentState.events, date: date.addingTimeInterval(-86400)).sorted { $0.startDate < $1.startDate }
+        let events = reactor.filterEventsByDate(events: reactor.currentState.events, date: date).sorted { $0.startDate < $1.startDate }
+        let afterDateEvents = reactor.filterEventsByDate(events: reactor.currentState.events, date: date.addingTimeInterval(86400)).sorted { $0.startDate < $1.startDate }
+        
+        
+        let isSelected = date == reactor.currentState.selectedDate
+        
+        cell.bind(events, beforeDate: beforeDateEvents, afterDate: afterDateEvents, isSelected: isSelected)
         return cell
     }
     
@@ -161,10 +170,11 @@ extension CalendarViewController: FSCalendarDelegate, FSCalendarDelegateAppearan
         fillSelectionColorFor date: Date
     ) -> UIColor? {
         
-        if checkRestDay(date: date) { return .red }
+        if checkRestDay(date: date) { return .red.withAlphaComponent(0.6) }
         
-        return .black.withAlphaComponent(0.4)
+        return .black.withAlphaComponent(0.3)
     }
+    
 }
 
 

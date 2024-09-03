@@ -86,7 +86,7 @@ final class CalendarView: UIView, BaseView {
             forHeaderFooterViewReuseIdentifier: NewEventFooterView.identifier
         )
         
-        tableView.rowHeight = 64
+        tableView.rowHeight = 66
         tableView.separatorStyle = .none
         
         return tableView
@@ -149,7 +149,7 @@ final class CalendarView: UIView, BaseView {
             .below(of: monthLabel)
             .marginTop(8)
             .horizontally()
-            .height(UIScreen.main.bounds.height / 2.5)
+            .height(UIScreen.main.bounds.height / 2.1)
         
         eventView.pin
             .below(of: calendar)

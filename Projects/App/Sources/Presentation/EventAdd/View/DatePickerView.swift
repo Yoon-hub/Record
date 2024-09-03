@@ -19,8 +19,9 @@ final class DatePickerView: UIView, BaseView {
     let seletedDate: Date
     
     lazy var datePicker = UIDatePicker().then {
+        $0.locale = Locale(identifier: "ko_KR")
         $0.preferredDatePickerStyle = .wheels
-        $0.datePickerMode = .time
+        $0.datePickerMode = .dateAndTime
         $0.date = self.seletedDate
     }
     
