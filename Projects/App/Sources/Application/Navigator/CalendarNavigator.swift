@@ -12,6 +12,7 @@ import Domain
 
 protocol CalendarNavigatorProtocol: BaseNavigator {
     func toEventAdd(vc: UIViewController, seletedDate: Date, reloadTableView: @escaping () -> Void)
+    func toEventFix(vc: UIViewController, seletedDate: Date, currentEvent: CalendarEvent, reloadTableView: @escaping () -> Void)
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -25,6 +26,11 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
     func toEventAdd(vc: UIViewController, seletedDate: Date, reloadTableView: @escaping () -> Void) {
         let eventAddView = EventAddViewControllerWrapper(seletedDate: seletedDate, reloadTableView: reloadTableView).viewController
         vc.present(eventAddView, animated: true)
+    }
+    
+    func toEventFix(vc: UIViewController, seletedDate: Date, currentEvent: CalendarEvent ,reloadTableView: @escaping () -> Void) {
+        let eventFixView = EventFixViewControllerWrapper(seletedDate: seletedDate, currentEvent: currentEvent, reloadTableView: reloadTableView).viewController
+        vc.present(eventFixView, animated: true)
     }
 }
 

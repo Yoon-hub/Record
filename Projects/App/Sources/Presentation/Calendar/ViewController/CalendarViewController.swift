@@ -48,7 +48,14 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
 extension CalendarViewController {
     
     private func bindInput(reactor: CalendarReactor) {
-        
+        contentView.eventTableView.rx.itemSelected
+            .withUnretained(self)
+            .bind {
+                $0.0.navigator.toEventFix(vc: $0.0, seletedDate: $0.0.reactor!.currentState.selectedDate, currentEvent: $0.0.reactor!.currentState.selectedEvents[$0.1.row]) {
+                    self.reactor?.action.onNext(.reloadEvents)
+                }
+            }
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: CalendarReactor) {
