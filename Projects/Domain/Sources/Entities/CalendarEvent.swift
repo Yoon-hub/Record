@@ -45,7 +45,7 @@ final public class CalendarEvent: IdentifiableType, Equatable {
         content: String?,
         tagColor: String
     ) {
-        self.id = id
+        self.id = UUID().uuidString
         self.title = title
         self.startDate = date
         self.alarm = alarm
