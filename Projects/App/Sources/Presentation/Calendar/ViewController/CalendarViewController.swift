@@ -116,10 +116,48 @@ extension CalendarViewController: FSCalendarDelegate, FSCalendarDelegateAppearan
     }
     
     func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
+        
         // month 변경
         contentView.monthLabel.text = calendar.currentPage.formatToMonth()
         contentView.yearLabel.text = calendar.currentPage.formatToYear()
         contentView.setNeedsLayout()
+        
+        let currentPage = calendar.currentPage
+        let calendarInstance = Calendar.current
+        
+        // Get the first day of the current page (month)
+        var components = calendarInstance.dateComponents([.year, .month], from: currentPage)
+        components.day = 1
+        
+        if let firstDayOfMonth = calendarInstance.date(from: components) {
+            let today = Date()
+            var calendarCurrent = Calendar.current
+
+            // TimeZone을 한국 표준시(KST)로 설정
+            calendarCurrent.timeZone = TimeZone(identifier: "Asia/Seoul")!
+
+            // 현재 날짜에서 연, 월, 일 정보를 가져옴
+            var components = calendarCurrent.dateComponents([.year, .month, .day], from: today)
+
+            // 시간을 00:00:00으로 설정
+            components.hour = 0
+            components.minute = 0
+            components.second = 0
+
+            // 새로운 날짜 생성
+            guard let updatedToday = calendarCurrent.date(from: components) else {return}
+            
+            // Check if the current month is the same as today's month and year
+            let isCurrentMonth = calendarInstance.isDate(today, equalTo: firstDayOfMonth, toGranularity: .month) &&
+            calendarInstance.isDate(today, equalTo: firstDayOfMonth, toGranularity: .year)
+            
+            let dateToSelect = isCurrentMonth ? updatedToday : firstDayOfMonth
+            calendar.select(dateToSelect)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.reactor?.action.onNext(.didSelectDate(dateToSelect))
+            }
+        }
     }
     
     func calendar(
