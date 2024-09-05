@@ -60,6 +60,10 @@ final class CalendarView: UIView, BaseView {
         $0.textColor = .systemGray
     }
     
+    let todayButton = UIButton().then {
+        $0.backgroundColor = .clear
+    }
+    
     let eventView = UIView()
     
     let eventDateLabel = UILabel().then {
@@ -112,7 +116,7 @@ final class CalendarView: UIView, BaseView {
         self.addSubview(scrollView)
         scrollView.addSubview(containerView)
         
-        [monthLabel, calendar, yearLabel, eventView].forEach {
+        [monthLabel, calendar, yearLabel, eventView, todayButton].forEach {
             containerView.addSubview($0)
         }
         
@@ -144,6 +148,12 @@ final class CalendarView: UIView, BaseView {
             .bottom(to: monthLabel.edge.bottom)
             .marginBottom(8)
             .sizeToFit()
+        
+        todayButton.pin
+            .top()
+            .left(16)
+            .height(46)
+            .width(120)
         
         calendar.pin
             .below(of: monthLabel)

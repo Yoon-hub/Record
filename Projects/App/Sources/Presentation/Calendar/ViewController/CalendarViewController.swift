@@ -56,6 +56,11 @@ extension CalendarViewController {
                 }
             }
             .disposed(by: disposeBag)
+    
+        contentView.todayButton.rx.tap
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.setCurrentPage(Date(), animated: true) }
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: CalendarReactor) {
