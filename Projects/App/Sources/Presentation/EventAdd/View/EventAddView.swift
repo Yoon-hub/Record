@@ -67,6 +67,7 @@ final class EventAddView: UIView, BaseView {
     }
     
     let alarmButton = UIButton().then {
+        $0.titleLabel?.textAlignment = .right
         $0.titleLabel?.font = DesignFontFamily.Pretendard.regular.font(size: 15)
         $0.setTitle("알림 없음", for: .normal)
         $0.setTitleColor(.black, for: .normal)
@@ -178,7 +179,8 @@ final class EventAddView: UIView, BaseView {
             .after(of: alarmIcon)
             .marginLeft(10)
             .vCenter(to: alarmIcon.edge.vCenter)
-            .sizeToFit()
+            .width(60)
+            .height(40)
         
         memoIcon.pin
             .below(of: alarmIcon)

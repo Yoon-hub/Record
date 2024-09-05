@@ -85,7 +85,7 @@ extension EventAddReactor {
                             observer.onCompleted()
                             return
                         } else {
-                            LocalPushService.shared.addNotification(identifier: event.id!, title: event.title, body: event.content ?? "", date: self.currentState.selectedAlarm.timeBefore(from: event.startDate) ?? event.startDate)
+                            LocalPushService.shared.addNotification(identifier: event.id, title: event.title, body: event.content ?? "", date: self.currentState.selectedAlarm.timeBefore(from: event.startDate) ?? event.startDate)
                         }
                     }
                     

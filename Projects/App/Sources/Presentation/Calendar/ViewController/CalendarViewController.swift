@@ -250,12 +250,20 @@ extension CalendarViewController: UITableViewDelegate {
         return footerView
     }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+
+        guard let reactor else {return UISwipeActionsConfiguration()}
         
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
             self?.reactor?.action.onNext(.didDeleteEvent(indexPath))
             completionHandler(true)
         }
+        
+        let id = reactor.currentState.selectedEvents[indexPath.row].id
+        LocalPushService.shared.removeNotification(identifiers: [id]) 
         
         deleteAction.image = UIImage(systemName: "trash")?.withTintColor(.red)
         deleteAction.backgroundColor = .white

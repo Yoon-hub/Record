@@ -143,5 +143,11 @@ extension EventFixReactor {
         currentState.currentCalendarEvent.endDate = event.endDate
         currentState.currentCalendarEvent.content = event.content
         currentState.currentCalendarEvent.alarm = event.alarm
+        
+        LocalPushService.shared.removeNotification(identifiers: [event.id])
+        
+        if event.alarm != .none {
+            LocalPushService.shared.addNotification(identifier: event.id, title: event.title, body: event.content ?? "", date: Alarm(rawValue: event.alarm ?? Alarm.none.rawValue)?.timeBefore(from: event.startDate) ?? Date())
+        }
     }
 }

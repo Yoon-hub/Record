@@ -41,7 +41,7 @@ final public class CalendarEvent: Equatable {
         }
     }
     
-    @Attribute(.unique) public var id: String?
+    @Attribute(.unique) public var id: String
     public var title: String
     public var startDate: Date
     public var endDate: Date
