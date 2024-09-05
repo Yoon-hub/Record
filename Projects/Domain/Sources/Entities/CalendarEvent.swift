@@ -10,10 +10,9 @@ import UIKit
 
 import Core
 import Design
-import Differentiator
 
 @Model
-final public class CalendarEvent: IdentifiableType, Equatable {
+final public class CalendarEvent: Equatable {
     
     public enum Alarm: String, CaseIterable {
         case none = "알림 없음"
@@ -22,6 +21,24 @@ final public class CalendarEvent: IdentifiableType, Equatable {
         case tenMinute = "10분 전"
         case thirtyMinute = "30분 전"
         case oneHour = "1시간 전"
+        
+        // 특정 Date 기준으로 알람 시간 계산
+        public func timeBefore(from date: Date) -> Date? {
+            switch self {
+            case .none:
+                return nil // 알림 없음은 시간 계산이 필요 없음
+            case .oneMinute:
+                return Calendar.current.date(byAdding: .minute, value: -1, to: date)
+            case .fiveMinute:
+                return Calendar.current.date(byAdding: .minute, value: -5, to: date)
+            case .tenMinute:
+                return Calendar.current.date(byAdding: .minute, value: -10, to: date)
+            case .thirtyMinute:
+                return Calendar.current.date(byAdding: .minute, value: -30, to: date)
+            case .oneHour:
+                return Calendar.current.date(byAdding: .hour, value: -1, to: date)
+            }
+        }
     }
     
     @Attribute(.unique) public var id: String?
