@@ -16,7 +16,7 @@ import RxSwift
 import RxCocoa
 
 @main
- class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     
     let disposebag = DisposeBag()
     
@@ -35,12 +35,13 @@ import RxCocoa
         }
         
         fetchRestDay()
+        setNotification()
         
         return true
     }
 }
 
-extension AppDelegate {
+extension AppDelegate: UNUserNotificationCenterDelegate {
     
     /// 최초 실행 시 공휴일 데이터 받아오는 메서드
     func fetchRestDay() {
@@ -64,5 +65,20 @@ extension AppDelegate {
                     .disposed(by: disposebag)
             }
         }
+    }
+    
+    /// Noti 설정
+    private func setNotification() {
+        UNUserNotificationCenter.current().delegate = self
+    }
+    
+    
+    /// foreground 노티 받기
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([ .list, .banner, .badge, .sound])
     }
 }
