@@ -18,7 +18,7 @@ final public class LocalPushService {
         let center = UNUserNotificationCenter.current()
         
         do {
-            return try await center.requestAuthorization()
+            return try await center.requestAuthorization(options: UNAuthorizationOptions(arrayLiteral: .alert, .sound, .badge))
         } catch {
             return false
         }

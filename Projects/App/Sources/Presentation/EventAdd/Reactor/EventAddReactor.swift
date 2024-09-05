@@ -76,6 +76,13 @@ extension EventAddReactor {
                         .setTitle(title)
                         .setContent(content ?? "")
                         .build()
+
+                    // 날짜 유효성 검사
+                    if self.checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
+                        observer.onNext(.popAlert("시작 날짜는 종료 날짜 이전이어야 합니다."))
+                        observer.onCompleted()
+                        return
+                    }
                     
                     // 권한 요청 비동기 처리
                     if self.currentState.selectedAlarm != .none {
@@ -89,12 +96,6 @@ extension EventAddReactor {
                         }
                     }
                     
-                    // 날짜 유효성 검사
-                    if self.checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
-                        observer.onNext(.popAlert("시작 날짜는 종료 날짜 이전이어야 합니다."))
-                        observer.onCompleted()
-                        return
-                    }
                     
                     // 마지막 색상 저장
                     UserDefaultsWrapper.color = self.currentState.selectedColor.hexString

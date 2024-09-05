@@ -21,6 +21,8 @@ final public class CalendarEvent: Equatable {
         case tenMinute = "10분 전"
         case thirtyMinute = "30분 전"
         case oneHour = "1시간 전"
+        case twoHour = "2시간 전"
+        case threeHour = "3시간 전"
         
         // 특정 Date 기준으로 알람 시간 계산
         public func timeBefore(from date: Date) -> Date? {
@@ -37,6 +39,10 @@ final public class CalendarEvent: Equatable {
                 return Calendar.current.date(byAdding: .minute, value: -30, to: date)
             case .oneHour:
                 return Calendar.current.date(byAdding: .hour, value: -1, to: date)
+            case .twoHour:
+                return Calendar.current.date(byAdding: .hour, value: -2, to: date)
+            case .threeHour:
+                return Calendar.current.date(byAdding: .hour, value: -3, to: date)
             }
         }
     }
