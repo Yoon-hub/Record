@@ -90,26 +90,31 @@ extension EventAddViewController {
     private func bindOutput(reactor: EventAddReactor) {
         
         reactor.state.map { $0.selectedStartDate }
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind { $0.0.contentView.startTimeButton.setTitle("\($0.1.formattedDateString(type: .yearMonthDayTime))", for: .normal) }
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.selectedEndDate }
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind { $0.0.contentView.endTimeButton.setTitle("\($0.1.formattedDateString(type: .yearMonthDayTime))", for: .normal) }
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.selectedColor }
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind { $0.0.contentView.titleTagColor.backgroundColor = $0.1 }
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.selectedAlarm }
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind { $0.0.contentView.alarmButton.setTitle($0.1.rawValue, for: .normal) }
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$saveEvent)
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind {
                 $0.0.dismiss(animated: true)
@@ -118,9 +123,10 @@ extension EventAddViewController {
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$isAlert)
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind {
-                $0.0.showAlert(title: "알림", message: "시작 날짜는 종료 날짜 이전이어야 합니다.")
+                $0.0.showAlert(title: "알림", message: $0.1)
             }
             .disposed(by: disposeBag)
     }

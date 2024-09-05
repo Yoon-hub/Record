@@ -31,7 +31,7 @@ final class EventAddReactor: Reactor {
         case setColor(UIColor)
         case saveEvent
         case setAlarm(Alarm)
-        case popAlert
+        case popAlert(String)
     }
     
     struct State {
@@ -41,7 +41,7 @@ final class EventAddReactor: Reactor {
         var selectedColor = UserDefaultsWrapper.color.toUIColor() ?? DesignAsset.record.color
         var selectedAlarm: Alarm = .none
         
-        @Pulse var isAlert = false
+        @Pulse var isAlert: String = ""
         @Pulse var saveEvent = false
     }
 
@@ -64,25 +64,49 @@ extension EventAddReactor {
         case .didSeleteColor(let color):
             return .just(.setColor(color))
         case .didTapSaveButton(let title, let content):
-            
-            if checkDateValidation(startDate: currentState.selectedStartDate, endDate: currentState.selectedEndDate) {
-                return .just(.popAlert)
+            return Observable.create { [weak self] observer in
+                guard let self else {return Disposables.create()}
+                Task {
+                    // 이벤트 생성
+                    let event = EventBuilder()
+                        .setAlarm(self.currentState.selectedAlarm)
+                        .setDate(self.currentState.selectedStartDate)
+                        .setEndDate(self.currentState.selectedEndDate)
+                        .setTagColor(self.currentState.selectedColor.hexString)
+                        .setTitle(title)
+                        .setContent(content ?? "")
+                        .build()
+                    
+                    // 권한 요청 비동기 처리
+                    if self.currentState.selectedAlarm != .none {
+                        let result = await LocalPushService.shared.requestAuthorization()
+                        if !result {
+                            observer.onNext(.popAlert("알림 사용을 하기 위해서는 권한 허용이 필요합니다."))
+                            observer.onCompleted()
+                            return
+                        } else {
+                            LocalPushService.shared.addNotification(identifier: event.id!, title: event.title, body: event.content ?? "", date: self.currentState.selectedAlarm.timeBefore(from: event.startDate) ?? event.startDate)
+                        }
+                    }
+                    
+                    // 날짜 유효성 검사
+                    if self.checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
+                        observer.onNext(.popAlert("시작 날짜는 종료 날짜 이전이어야 합니다."))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    // 마지막 색상 저장
+                    UserDefaultsWrapper.color = self.currentState.selectedColor.hexString
+                    // 이벤트 저장
+                    self.saveEventUsecase.excecute(event: event)
+                    
+                    observer.onNext(.saveEvent)
+                    observer.onCompleted()
+                }
+                
+                return Disposables.create()
             }
-            
-            let event = EventBuilder()
-                .setAlarm(currentState.selectedAlarm)
-                .setDate(currentState.selectedStartDate)
-                .setEndDate(currentState.selectedEndDate)
-                .setTagColor(currentState.selectedColor.hexString)
-                .setTitle(title)
-                .setContent(content ?? "")
-                .build()
-            
-            // 마지막 색상 저장
-            UserDefaultsWrapper.color = currentState.selectedColor.hexString
-            
-            saveEventUsecase.excecute(event: event)
-            return .just(.saveEvent)
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
         }
@@ -95,8 +119,8 @@ extension EventAddReactor {
         var newState = state
         
         switch mutation {
-        case .popAlert:
-            newState.isAlert = true
+        case .popAlert(let message):
+            newState.isAlert = message
         case .saveEvent:
             newState.saveEvent = true
         case .setTime(let date):
