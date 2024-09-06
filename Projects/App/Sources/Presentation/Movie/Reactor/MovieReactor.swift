@@ -19,7 +19,7 @@ final class MovieReactor: Reactor {
         case didTapRightBarButtonItem
     }
     
-    enum TranstionTo {
+    enum TranstionTo: Equatable {
         case addMovie
     }
     

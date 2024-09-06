@@ -46,5 +46,16 @@ let project = Project(name: "App", targets: [
             .external(name: "FSCalendar"),
             .external(name: "RxKeyboard")
         ]
+    ),
+    .target(
+        name: "AppUnitTest",
+        destinations: .iOS,
+        product: .unitTests,
+        bundleId: "record.app.unitTest",
+        deploymentTargets: .iOS("17.0"),
+        sources: ["Tests/**"],
+        dependencies: [
+            .project(target: "App", path: "./")
+        ]
     )
 ])
