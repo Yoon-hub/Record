@@ -18,7 +18,11 @@ final class EventFixViewController: BaseViewController<EventFixReactor, EventAdd
     
     let reloadTableView: (() -> Void)?
     
-    init(contentView: EventAddView, reactor: EventFixReactor, reloadTableView: @escaping (() -> Void)) {
+    init(
+        contentView: EventAddView,
+        reactor: EventFixReactor,
+        reloadTableView: @escaping (() -> Void)
+    ) {
         self.reloadTableView = reloadTableView
         super.init(contentView: contentView, reactor: reactor)
     }
