@@ -85,6 +85,12 @@ extension EventAddViewController {
             .map { Reactor.Action.didTapSaveButton($0.0.contentView.titleTextField.text, $0.0.contentView.textView.text) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        contentView.allDayButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .map { Reactor.Action.didTapAlldayButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: EventAddReactor) {
@@ -111,6 +117,16 @@ extension EventAddViewController {
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind { $0.0.contentView.alarmButton.setTitle($0.1.rawValue, for: .normal) }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.selectedStartDate}
+            .observe(on: MainScheduler.instance)
+            .map {
+                $0 == EventAddReactor.makeDefaultTime(date: reactor.currentState.selectedDate, hour: 0) &&
+                reactor.currentState.selectedEndDate == EventAddReactor.makeDefaultTime(date: reactor.currentState.selectedDate, hour: 23, minute: 59)
+            }
+            .withUnretained(self)
+            .bind {  $0.1 ? $0.0.contentView.allDayButton.setTitleColor(.black, for: .normal) : $0.0.contentView.allDayButton.setTitleColor(.systemGray, for: .normal)}
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$saveEvent)

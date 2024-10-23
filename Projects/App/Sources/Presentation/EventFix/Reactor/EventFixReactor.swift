@@ -24,6 +24,7 @@ final class EventFixReactor: Reactor {
         case didTapSaveButton(String?, String?)
         case didSeleteAlarm(Alarm)
         case viewDidLoad
+        case didTapAlldayButton
     }
     
     enum Mutation {
@@ -101,6 +102,13 @@ extension EventFixReactor {
             return .just(.saveEvent)
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
+        case .didTapAlldayButton:
+            return .concat([
+                .just(.setTime(EventAddReactor.makeDefaultTime(date: currentState.selectedDate, hour: 0))),
+                .just(.setEndTime(EventAddReactor.makeDefaultTime(date: currentState.selectedDate, hour: 23, minute: 59))
+                )
+            ])
+
         }
     }
     

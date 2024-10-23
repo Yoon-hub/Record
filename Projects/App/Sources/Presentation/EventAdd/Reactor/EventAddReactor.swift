@@ -23,6 +23,7 @@ final class EventAddReactor: Reactor {
         case didSeleteColor(UIColor)
         case didTapSaveButton(String?, String?)
         case didSeleteAlarm(Alarm)
+        case didTapAlldayButton
     }
     
     enum Mutation {
@@ -116,6 +117,12 @@ extension EventAddReactor {
             }
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
+        case .didTapAlldayButton:
+            return .concat([
+                .just(.setTime(EventAddReactor.makeDefaultTime(date: currentState.selectedDate, hour: 0))),
+                .just(.setEndTime(EventAddReactor.makeDefaultTime(date: currentState.selectedDate, hour: 23, minute: 59))
+                )
+            ])
         }
     }
     
@@ -145,10 +152,10 @@ extension EventAddReactor {
 
 // MARK: - UserDefione
 extension EventAddReactor {
-    static private func makeDefaultTime(date: Date, hour: Int) -> Date {
+    static public func makeDefaultTime(date: Date, hour: Int, minute: Int = 0) -> Date {
         var components = Calendar.current.dateComponents([.year, .month, .day], from: date)
         components.hour = hour
-        components.minute = 0
+        components.minute = minute
 
         return Calendar.current.date(from: components) ?? Date()
     }

@@ -95,10 +95,23 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
         tagView.backgroundColor = event.tagColor.toUIColor()
         contentView.backgroundColor = event.tagColor.toUIColor()?.withAlphaComponent(0.12)
         
-        if event.startDate == event.endDate {
+        makeDateString(event)
+    }
+    
+    private func makeDateString(_ event: CalendarEvent) {
+        if event.startDate == event.endDate { // 끝과 시작이 같을 경우
             timeLabel.font = DesignFontFamily.Pretendard.medium.font(size: 15)
             timeLabel.text = event.startDate.formatToTime24Hour()
-        } else if Calendar.current.isDate(event.startDate, inSameDayAs: event.endDate) {
+        } else if Calendar.current.isDate(event.startDate, inSameDayAs: event.endDate) { // 같은 날짜일 경우
+            
+            let startDateComponent = Calendar.current.dateComponents([.hour, .minute], from: event.startDate)
+            let endDateComponent = Calendar.current.dateComponents([.hour, .minute], from: event.endDate)
+            
+            if startDateComponent.hour == 0 && startDateComponent.minute == 00 && endDateComponent.hour == 23 && endDateComponent.minute == 59 { // 하루 종일 일 경우
+                timeLabel.text = "AllDay"
+                timeLabel.font = DesignFontFamily.Pretendard.medium.font(size: 14)
+                return
+            }
             
             let startTime = event.startDate.formatToTime24Hour()
             let endTime = event.endDate.formatToTime24Hour()
@@ -117,7 +130,7 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
             ))
 
             timeLabel.attributedText = attributedText
-        } else {
+        } else { // 다른 날짜일 경우
             
             let startDate = event.startDate.formattedDateString(type: .simpleMonthDay)
             let startTime = event.startDate.formatToTime24Hour()
@@ -140,7 +153,6 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
                 attributes: [NSAttributedString.Key.font: timeFont, NSAttributedString.Key.foregroundColor: UIColor.black]
             ))
             
-
             attributedText.append(NSAttributedString(
                 string: "\n\(endDate)",
                 attributes: [NSAttributedString.Key.font: dateFont, NSAttributedString.Key.foregroundColor: UIColor.gray]
@@ -152,9 +164,7 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
             ))
 
             timeLabel.attributedText = attributedText
-            
         }
-        
         
     }
 }

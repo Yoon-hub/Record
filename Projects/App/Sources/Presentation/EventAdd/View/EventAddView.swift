@@ -96,6 +96,12 @@ final class EventAddView: UIView, BaseView {
         $0.backgroundColor = .black
     }
     
+    let allDayButton = UIButton().then {
+        $0.titleLabel?.font = DesignFontFamily.Pretendard.regular.font(size: 14)
+        $0.setTitleColor(.systemGray, for: .normal)
+        $0.setTitle("하루종일", for: .normal)
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -113,7 +119,7 @@ final class EventAddView: UIView, BaseView {
     
     func configure() {
         self.backgroundColor = .white
-        [titleTextField, titleTagColor, timeIcon, startTimeButton, tagIcon, tagButton, alarmIcon, alarmButton, memoIcon, textView, saveButton, tildeLabel, endTimeButton].forEach {
+        [titleTextField, titleTagColor, timeIcon, startTimeButton, tagIcon, tagButton, alarmIcon, alarmButton, memoIcon, textView, saveButton, tildeLabel, endTimeButton, allDayButton].forEach {
             self.addSubview($0)
         }
     }
@@ -154,6 +160,12 @@ final class EventAddView: UIView, BaseView {
             .after(of: tildeLabel)
             .marginLeft(15)
             .vCenter(to: timeIcon.edge.vCenter)
+            .sizeToFit()
+        
+        allDayButton.pin
+            .right()
+            .marginRight(24)
+            .vCenter(to: endTimeButton.edge.vCenter)
             .sizeToFit()
         
         tagIcon.pin
