@@ -60,6 +60,12 @@ extension EventAddReactor {
         case .didSeleceEndTime(let date):
             return .just(.setEndTime(date))
         case .didSeleteStartTime(let date):
+            if date > currentState.selectedEndDate {
+                return .concat([
+                    .just(.setTime(date)),
+                    .just(.setEndTime(date.addingTimeInterval(3600)))
+                    ])
+            }
             return .just(.setTime(date))
         case .didSeleteColor(let color):
             return .just(.setColor(color))

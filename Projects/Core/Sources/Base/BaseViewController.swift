@@ -40,6 +40,7 @@ open class BaseViewController<R: Reactor, V: BaseView>: UIViewController, View {
     
     open override func viewDidLoad() {
         super.viewDidLoad()
+        print("\(type(of: self))🥶🥶")
         setup()
     }
     
