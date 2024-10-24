@@ -49,6 +49,10 @@ final class MovieImageViewController: UIViewController, UIScrollViewDelegate {
         doubleTapGesture.numberOfTapsRequired = 2
         scrollView.addGestureRecognizer(doubleTapGesture)
         
+        // Pan Gesture 설정
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+        view.addGestureRecognizer(panGesture)
+        
         bind(image: self.image!)
         setUI()
     }
@@ -81,5 +85,30 @@ final class MovieImageViewController: UIViewController, UIScrollViewDelegate {
     
     @objc func closeButtonTapped() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: view)
+        
+        // 최소 이동 거리 설정 (예: 50포인트)
+        let minimumDragDistance: CGFloat = 20.0
+        
+        // Y축으로 일정 거리 이상 이동했을 때만 처리
+        if translation.y > minimumDragDistance {
+            view.transform = CGAffineTransform(translationX: 0, y: translation.y - minimumDragDistance)
+        }
+        
+        // 제스처가 끝난 경우
+        if gesture.state == .ended {
+            if translation.y > 200 {
+                // 200포인트 이상 드래그하면 dismiss
+                self.dismiss(animated: true, completion: nil)
+            } else {
+                // 그렇지 않으면 원래 위치로 돌아감
+                UIView.animate(withDuration: 0.3) {
+                    self.view.transform = .identity
+                }
+            }
+        }
     }
 }
