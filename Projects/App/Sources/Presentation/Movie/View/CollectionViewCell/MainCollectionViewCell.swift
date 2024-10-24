@@ -8,6 +8,7 @@
 import UIKit
 
 import Core
+import Design
 import Domain
 
 import PinLayout
@@ -20,6 +21,7 @@ final class MainCollectionViewCell: UICollectionViewCell, BaseView {
         $0.contentMode = .scaleAspectFit
         $0.layer.masksToBounds = true
         $0.layer.cornerRadius = 10
+        $0.image = DesignAsset.thumnailImage.image
     }
     
     let titleLabel = UILabel().then {
