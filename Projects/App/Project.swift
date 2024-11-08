@@ -15,7 +15,7 @@ let project = Project(name: "App", targets: [
         bundleId: "record.app.com",
         deploymentTargets: .iOS("17.0"),
         infoPlist: .extendingDefault(with: [
-            "CFBundleDisplayName": .string("Record"),
+            "CFBundleDisplayName": .string("TomatO"),
             "UILaunchStoryboardName": .string("LaunchScreen.storyboard"),
             "UIApplicationSceneManifest" : .dictionary([
                 "UIApplicationSupportsMultipleScenes" : .boolean(false),
@@ -35,6 +35,7 @@ let project = Project(name: "App", targets: [
         ]),
         sources: ["Sources/**"],
         resources: ["Resources/**"],
+        entitlements: .file(path: "App.entitlements"),
         dependencies: [
             .project(target: "Core", path: "../Core"),
             .project(target: "Domain", path: "../Domain"),
@@ -45,7 +46,8 @@ let project = Project(name: "App", targets: [
             .external(name: "FocusCollectionView"),
             .external(name: "FSCalendar"),
             .external(name: "RxKeyboard"),
-            .external(name: "FlexLayout")
+            .external(name: "FlexLayout"),
+            .target(name: "Widget")
         ]
     ),
     .target(
@@ -58,5 +60,23 @@ let project = Project(name: "App", targets: [
         dependencies: [
             .project(target: "App", path: "./")
         ]
-    )
+    ),
+    .target(
+        name: "Widget",
+        destinations: .iOS,
+        product: .appExtension,
+        bundleId: "record.app.com.widget",
+        deploymentTargets: .iOS("17.0"),
+        infoPlist: .extendingDefault(with: [
+            "NSExtension": .dictionary([
+                "NSExtensionPointIdentifier": .string("com.apple.widgetkit-extension")
+            ])
+        ]),
+        sources: ["Widget/**"],
+        entitlements: .file(path: "Widget/Widget.entitlements"),
+        dependencies: [
+            .project(target: "Domain", path: "../Domain"),
+            .project(target: "Core", path: "../Core"),
+            .project(target: "Data", path: "../Data"),
+    ])
 ])
