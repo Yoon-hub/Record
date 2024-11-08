@@ -60,7 +60,7 @@ struct WidgetExtensionEntryView: View {
 }
 
 struct WidgetExtension: Widget {
-    let kind: String = "WidgetExtension"
+    let kind: String = "tomatoWidget"
     
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
@@ -73,8 +73,8 @@ struct WidgetExtension: Widget {
                     .background()
             }
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("토마토 위젯")
+        .description("토마토 위젯입니다.")
     }
 }
 

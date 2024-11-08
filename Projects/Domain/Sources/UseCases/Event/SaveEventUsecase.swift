@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import WidgetKit
 
 public protocol SaveEventUsecaseProtocol {
     func excecute(event: CalendarEvent)
 }
 
-public final class SaveEventUsecase<Repository: SwiftDataRepositoryProtocol>: SaveEventUsecaseProtocol where Repository.T == CalendarEvent {
+public final class SaveEventUsecase<Repository: SwiftDataRepositoryProtocol>: WidgetReloadProtocol, SaveEventUsecaseProtocol where Repository.T == CalendarEvent {
     
     private let repository: Repository
     
@@ -22,6 +23,7 @@ public final class SaveEventUsecase<Repository: SwiftDataRepositoryProtocol>: Sa
     public func excecute(event: CalendarEvent) {
         Task {
             await repository.insertData(data: event)
+            reloadWidget()
             print("Event Save: \(event)")
         }
     }
