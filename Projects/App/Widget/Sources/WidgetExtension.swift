@@ -45,37 +45,16 @@ struct SimpleEntry: TimelineEntry {
 
 struct WidgetExtensionEntryView: View {
     var entry: Provider.Entry
-    
-    let repository: any SwiftDataRepositoryProtocol
-    
-    @State private var events: [CalendarEvent] = []
+    var eventsToday: [CalendarEvent] = WidgetEventProvider.default.todayEvents
+    var eventsNextDay: [CalendarEvent] = WidgetEventProvider.default.nextDayEvnets
     
     var body: some View {
         VStack {
-            if events.isEmpty {
-                Text("\(events.count)")
-            } else {
-                ForEach(events, id: \.id) { event in
-                    Text(event.title)
-                }
-            }
+            ToDayView(date: Date(),eventsToday: eventsToday)
+            ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: eventsNextDay)
         }
         .task {
-            await loadEvents()
-        }
-    }
-    
-    private func loadEvents() async {
-        do {
-            if let fetchedEvents = try await repository.fetchData() as? [CalendarEvent] {
-                await MainActor.run {
-                    events = fetchedEvents
-                }
-            } else {
-                print("Data 형식이 맞지 않습니다.")
-            }
-        } catch {
-            print("데이터를 가져오는데 실패했습니다: \(error.localizedDescription)")
+            WidgetEventProvider.default.fetchEvent()
         }
     }
 }
@@ -86,10 +65,10 @@ struct WidgetExtension: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             if #available(iOS 17.0, *) {
-                WidgetExtensionEntryView(entry: entry, repository: SwiftDataRepository<CalendarEvent>())
+                WidgetExtensionEntryView(entry: entry)
                     .containerBackground(.fill.tertiary, for: .widget)
             } else {
-                WidgetExtensionEntryView(entry: entry, repository: SwiftDataRepository<CalendarEvent>())
+                WidgetExtensionEntryView(entry: entry)
                     .padding()
                     .background()
             }

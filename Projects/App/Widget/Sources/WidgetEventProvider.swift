@@ -23,7 +23,7 @@ class WidgetEventProvider {
             let events = try await repository.fetchData()
             self.events = events
             getTodayEvent()
-            getNextDayEvnet()
+            getNextDayEvent()
         }
     }
     
@@ -31,7 +31,7 @@ class WidgetEventProvider {
         self.todayEvents = filterEventsByDate(events: self.events, date: Date())
     }
     
-    private func getNextDayEvnet() {
+    private func getNextDayEvent() {
         self.nextDayEvnets = filterEventsByDate(events: self.events, date: Date().addingTimeInterval(24 * 60 * 60))
     }
     
