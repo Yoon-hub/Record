@@ -10,6 +10,11 @@ import SwiftUI
 
 @main
 struct WidgetExtensionBundle: WidgetBundle {
+    
+    init() {
+        WidgetEventProvider.default.fetchEvent()
+    }
+    
     var body: some Widget {
         WidgetExtension()
     }
