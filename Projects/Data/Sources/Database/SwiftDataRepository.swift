@@ -12,8 +12,10 @@ import Domain
 
 public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryProtocol {
     
+    private let groupIdentifier = "group.com.ktcs.whowho.iosver"
+    
     public init() {
-        let configure = ModelConfiguration("\(T.self)")
+        let configure = ModelConfiguration("\(T.self)", groupContainer: .identifier(groupIdentifier))
         do {
             print("configure Init")
             container = try ModelContainer(for: T.self, configurations: configure)
