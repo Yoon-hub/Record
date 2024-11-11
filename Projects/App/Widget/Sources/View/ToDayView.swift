@@ -15,12 +15,20 @@ struct ToDayView: View {
     
     let date: Date
     let eventsToday: [CalendarEvent]
+    var restDay: RestDay?
     
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(date.formattedDateString(type: .simpleMonthDay))
-                    .font(.system(size: 13, weight: .semibold))
+                HStack {
+                    Text(date.formattedDateString(type: .simpleMonthDay))
+                        .font(.system(size: 13, weight: .semibold))
+                    Spacer()
+                    Text(restDay?.dateName ?? "")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.red)
+                }
+                
                 
                 Spacer()
                     .frame(height: 2)

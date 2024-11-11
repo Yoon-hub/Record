@@ -17,7 +17,16 @@ public class WidgetEventProvider {
     public var todayEvents: [CalendarEvent] = []
     public var nextDayEvnets: [CalendarEvent] = []
     
-    @objc public func fetchEvent() {
+    var restDays: [RestDay] = []
+    public var todayRestDay: RestDay?
+    public var nextDayRestDay: RestDay?
+    
+    public func fetch() {
+        fetchEvent()
+        fetchRestDay()
+    }
+    
+    public func fetchEvent() {
         let repository = SwiftDataRepository<CalendarEvent>()
         Task {
             let events = try await repository.fetchData()
@@ -25,6 +34,24 @@ public class WidgetEventProvider {
             getTodayEvent()
             getNextDayEvent()
         }
+    }
+    
+    public func fetchRestDay() {
+        let repository = SwiftDataRepository<RestDay>()
+        Task {
+            let restDays = try await repository.fetchData()
+            self.restDays = restDays
+            getTodayRestDay()
+            getNextDayRestDay()
+        }
+    }
+    
+    private func getTodayRestDay() {
+        self.todayRestDay = filterRestDayByDate(restDays: self.restDays, date: Date())
+    }
+    
+    private func getNextDayRestDay() {
+        self.nextDayRestDay = filterRestDayByDate(restDays: self.restDays, date: Date().addingTimeInterval(24 * 60 * 60))
     }
     
     private func getTodayEvent() {
@@ -44,6 +71,17 @@ public class WidgetEventProvider {
             let targetDate = calendar.startOfDay(for: date)
             
             return eventStartDate <= targetDate && targetDate <= eventEndDate
+        }
+    }
+    
+    private func filterRestDayByDate(restDays: [RestDay], date: Date) -> RestDay? {
+        let calendar = Calendar.current
+        
+        return restDays.first { restDay in
+            let restDayDate = calendar.startOfDay(for: restDay.date)
+            let targetDate = calendar.startOfDay(for: date)
+            
+            return restDayDate == targetDate
         }
     }
 

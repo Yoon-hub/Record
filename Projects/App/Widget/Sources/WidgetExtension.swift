@@ -58,15 +58,18 @@ struct WidgetExtensionEntryView: View {
     var eventsToday: [CalendarEvent] = WidgetEventProvider.default.todayEvents
     var eventsNextDay: [CalendarEvent] = WidgetEventProvider.default.nextDayEvnets
     
+    var restDayToday: RestDay? = WidgetEventProvider.default.todayRestDay
+    var restDayNextDay: RestDay? = WidgetEventProvider.default.nextDayRestDay
+    
     init(entry: Provider.Entry) {
-        WidgetEventProvider.default.fetchEvent()
+        WidgetEventProvider.default.fetch()
         self.entry = entry
     }
     
     var body: some View {
         VStack {
-            ToDayView(date: Date(),eventsToday: eventsToday)
-            ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: eventsNextDay)
+            ToDayView(date: Date(),eventsToday: eventsToday, restDay: restDayToday)
+            ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: eventsNextDay, restDay: restDayNextDay)
         }
     }
 }
