@@ -10,14 +10,18 @@ import Foundation
 import Domain
 import Data
 
-class WidgetEventProvider {
-    static let `default` = WidgetEventProvider()
+public class WidgetEventProvider {
+    public static let `default` = WidgetEventProvider()
     
     var events: [CalendarEvent] = []
-    var todayEvents: [CalendarEvent] = []
-    var nextDayEvnets: [CalendarEvent] = []
+    public var todayEvents: [CalendarEvent] = []
+    public var nextDayEvnets: [CalendarEvent] = []
     
-    func fetchEvent() {
+    init() {
+        NotificationCenter.default.addObserver(self, selector: #selector(fetchEvent), name: .NSCalendarDayChanged, object: nil)
+    }
+    
+    @objc public func fetchEvent() {
         let repository = SwiftDataRepository<CalendarEvent>()
         Task {
             let events = try await repository.fetchData()

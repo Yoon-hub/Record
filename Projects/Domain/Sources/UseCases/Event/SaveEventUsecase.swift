@@ -8,6 +8,8 @@
 import Foundation
 import WidgetKit
 
+import Core
+
 public protocol SaveEventUsecaseProtocol {
     func excecute(event: CalendarEvent)
 }
