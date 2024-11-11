@@ -62,7 +62,7 @@ struct EventView: View {
             
             Text(event.title)
                 .font(.system(size: 12, weight: .medium))
-                .foregroundColor(Color(.black))
+                .foregroundColor(Color(uiColor: .label))
                 .lineLimit(1)
         }
     }

@@ -14,11 +14,11 @@ import Data
 struct Provider: TimelineProvider {
     
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+        SimpleEntry(date: Date())
     }
     
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
+        let entry = SimpleEntry(date: Date())
         completion(entry)
     }
     
@@ -26,11 +26,22 @@ struct Provider: TimelineProvider {
         var entries: [SimpleEntry] = []
         
         // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
-            entries.append(entry)
+        let current = Date()
+        
+        let entry1 = SimpleEntry(date: current)
+        entries.append(entry1)
+        
+        for i in 0..<1 {
+            let todayMonth = Calendar.current.dateComponents([.month, .year, .day, .hour], from: current)
+            
+            var dateComponents = DateComponents(hour: 0)
+            dateComponents.year = todayMonth.year
+            dateComponents.month = todayMonth.month
+            dateComponents.day = todayMonth.day! + 1
+            
+            let date = Calendar.current.date(from: dateComponents)
+            let entry2 = SimpleEntry(date: date!)
+            entries.append(entry2)
         }
         
         let timeline = Timeline(entries: entries, policy: .atEnd)
@@ -40,7 +51,6 @@ struct Provider: TimelineProvider {
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
-    let emoji: String
 }
 
 struct WidgetExtensionEntryView: View {
@@ -83,7 +93,7 @@ struct WidgetExtension: Widget {
 #Preview(as: .systemSmall) {
     WidgetExtension()
 } timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
+    SimpleEntry(date: .now)
+    SimpleEntry(date: .now)
 }
 

@@ -17,10 +17,6 @@ public class WidgetEventProvider {
     public var todayEvents: [CalendarEvent] = []
     public var nextDayEvnets: [CalendarEvent] = []
     
-    init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(fetchEvent), name: .NSCalendarDayChanged, object: nil)
-    }
-    
     @objc public func fetchEvent() {
         let repository = SwiftDataRepository<CalendarEvent>()
         Task {
