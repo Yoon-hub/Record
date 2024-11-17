@@ -10,29 +10,22 @@ import Foundation
 import Domain
 import Data
 
-class WidgetEventProvider {
-    static let `default` = WidgetEventProvider()
+extension WidgetExtensionEntryView {
     
-    var events: [CalendarEvent] = []
-    var todayEvents: [CalendarEvent] = []
-    var nextDayEvnets: [CalendarEvent] = []
-    
-    func fetchEvent() {
-        let repository = SwiftDataRepository<CalendarEvent>()
-        Task {
-            let events = try await repository.fetchData()
-            self.events = events
-            getTodayEvent()
-            getNextDayEvnet()
-        }
+    func getTodayRestDay() -> RestDay? {
+        filterRestDayByDate(restDays: self.entry.restDays, date: Date())
     }
     
-    private func getTodayEvent() {
-        self.todayEvents = filterEventsByDate(events: self.events, date: Date())
+    func getNextDayRestDay() -> RestDay? {
+        filterRestDayByDate(restDays: self.entry.restDays, date: Date().addingTimeInterval(24 * 60 * 60))
     }
     
-    private func getNextDayEvnet() {
-        self.nextDayEvnets = filterEventsByDate(events: self.events, date: Date().addingTimeInterval(24 * 60 * 60))
+    func getTodayEvent() -> [CalendarEvent] {
+        filterEventsByDate(events: self.entry.events, date: Date())
+    }
+    
+    func getNextDayEvent() -> [CalendarEvent] {
+        filterEventsByDate(events: self.entry.events, date: Date().addingTimeInterval(24 * 60 * 60))
     }
     
     private func filterEventsByDate(events: [CalendarEvent], date: Date) -> [CalendarEvent] {
@@ -46,5 +39,15 @@ class WidgetEventProvider {
             return eventStartDate <= targetDate && targetDate <= eventEndDate
         }
     }
-
+    
+    private func filterRestDayByDate(restDays: [RestDay], date: Date) -> RestDay? {
+        let calendar = Calendar.current
+        
+        return restDays.first { restDay in
+            let restDayDate = calendar.startOfDay(for: restDay.date)
+            let targetDate = calendar.startOfDay(for: date)
+            
+            return restDayDate == targetDate
+        }
+    }
 }

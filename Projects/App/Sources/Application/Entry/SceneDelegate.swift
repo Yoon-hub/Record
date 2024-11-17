@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import WidgetKit
 
 import Core
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate, WidgetReloadProtocol {
     
     var window: UIWindow?
     
@@ -26,6 +27,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         NotificationCenterService.reloadCalendar.post()
+    }
+    
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        reloadWidget()
     }
 }
 

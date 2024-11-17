@@ -13,7 +13,7 @@ public protocol DeleteEventUsecaseProtocol {
     func execute(event: CalendarEvent)
 }
 
-public final class DeleteEventUsecase<Repository: SwiftDataRepositoryProtocol>: DeleteEventUsecaseProtocol where Repository.T == CalendarEvent {
+public final class DeleteEventUsecase<Repository: SwiftDataRepositoryProtocol>: WidgetReloadProtocol, DeleteEventUsecaseProtocol where Repository.T == CalendarEvent{
     
     private let repository: Repository
     
@@ -25,6 +25,7 @@ public final class DeleteEventUsecase<Repository: SwiftDataRepositoryProtocol>: 
         Task {
             await repository.deleteData(data: event)
             NotificationCenterService.reloadMoive.post()
+            reloadWidget()
         }
     }
 }

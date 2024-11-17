@@ -12,97 +12,83 @@ import Domain
 import Data
 
 struct Provider: TimelineProvider {
-    
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), emoji: "😀")
+    typealias Entry = WidgetEntry
+
+    func placeholder(in context: Context) -> WidgetEntry {
+        WidgetEntry(date: Date(), events: [], restDays: [])
     }
-    
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), emoji: "😀")
-        completion(entry)
-    }
-    
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-        
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 5 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate, emoji: "😀")
-            entries.append(entry)
+
+    func getSnapshot(in context: Context, completion: @escaping (WidgetEntry) -> Void) {
+        Task {
+            let entry = await fetchData()
+            completion(entry)
         }
-        
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<WidgetEntry>) -> Void) {
+        Task {
+            let entry = await fetchData()
+            let timeline = Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(3600))) // 1시간마다 갱신
+            completion(timeline)
+        }
+    }
+
+    private func fetchData() async -> WidgetEntry {
+        do {
+            let eventsRepository = SwiftDataRepository<CalendarEvent>()
+            let restDaysRepository = SwiftDataRepository<RestDay>()
+
+            let events = try await eventsRepository.fetchData()
+            let restDays = try await restDaysRepository.fetchData()
+
+            return WidgetEntry(date: Date(), events: events, restDays: restDays)
+        } catch {
+            // 에러가 발생하면 기본 데이터 반환
+            return WidgetEntry(date: Date(), events: [], restDays: [])
+        }
     }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct WidgetEntry: TimelineEntry {
     let date: Date
-    let emoji: String
+    let events: [CalendarEvent]
+    let restDays: [RestDay]
 }
 
 struct WidgetExtensionEntryView: View {
     var entry: Provider.Entry
     
-    let repository: any SwiftDataRepositoryProtocol
-    
-    @State private var events: [CalendarEvent] = []
-    
     var body: some View {
         VStack {
-            if events.isEmpty {
-                Text("\(events.count)")
-            } else {
-                ForEach(events, id: \.id) { event in
-                    Text(event.title)
-                }
-            }
-        }
-        .task {
-            await loadEvents()
-        }
-    }
-    
-    private func loadEvents() async {
-        do {
-            if let fetchedEvents = try await repository.fetchData() as? [CalendarEvent] {
-                await MainActor.run {
-                    events = fetchedEvents
-                }
-            } else {
-                print("Data 형식이 맞지 않습니다.")
-            }
-        } catch {
-            print("데이터를 가져오는데 실패했습니다: \(error.localizedDescription)")
+            ToDayView(date: Date(),eventsToday: getTodayEvent(), restDay: getTodayRestDay())
+            ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: getNextDayEvent(), restDay: getNextDayRestDay())
         }
     }
 }
 
 struct WidgetExtension: Widget {
-    let kind: String = "WidgetExtension"
+    let kind: String = "tomatoWidget"
     
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             if #available(iOS 17.0, *) {
-                WidgetExtensionEntryView(entry: entry, repository: SwiftDataRepository<CalendarEvent>())
+                WidgetExtensionEntryView(entry: entry)
                     .containerBackground(.fill.tertiary, for: .widget)
             } else {
-                WidgetExtensionEntryView(entry: entry, repository: SwiftDataRepository<CalendarEvent>())
+                WidgetExtensionEntryView(entry: entry)
                     .padding()
                     .background()
             }
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("토마토 위젯")
+        .description("토마토 위젯입니다.")
     }
 }
 
-#Preview(as: .systemSmall) {
-    WidgetExtension()
-} timeline: {
-    SimpleEntry(date: .now, emoji: "😀")
-    SimpleEntry(date: .now, emoji: "🤩")
-}
+//#Preview(as: .systemSmall) {
+//    WidgetExtension()
+//} timeline: {
+//    SimpleEntry(date: .now)
+//    SimpleEntry(date: .now)
+//}
 

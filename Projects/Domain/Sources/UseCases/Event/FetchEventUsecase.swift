@@ -6,12 +6,15 @@
 //
 
 import Foundation
+import WidgetKit
+
+import Core
 
 public protocol FetchEventUsecaseProtocol {
     func execute() async -> [CalendarEvent]
 }
 
-public final class FetchEventUsecase<Repository: SwiftDataRepositoryProtocol>: FetchEventUsecaseProtocol where Repository.T == CalendarEvent {
+public final class FetchEventUsecase<Repository: SwiftDataRepositoryProtocol>: WidgetReloadProtocol, FetchEventUsecaseProtocol where Repository.T == CalendarEvent {
     
     private let repository: Repository
     
@@ -22,6 +25,7 @@ public final class FetchEventUsecase<Repository: SwiftDataRepositoryProtocol>: F
     public func execute() async -> [CalendarEvent] {
         do {
             let data = try await repository.fetchData()
+            reloadWidget()
             return data
         } catch {
             fatalError(error.localizedDescription)
