@@ -10,56 +10,22 @@ import Foundation
 import Domain
 import Data
 
-public class WidgetEventProvider {
-    public static let `default` = WidgetEventProvider()
+extension WidgetExtensionEntryView {
     
-    var events: [CalendarEvent] = []
-    public var todayEvents: [CalendarEvent] = []
-    public var nextDayEvnets: [CalendarEvent] = []
-    
-    var restDays: [RestDay] = []
-    public var todayRestDay: RestDay?
-    public var nextDayRestDay: RestDay?
-    
-    public func fetch() {
-        fetchEvent()
-        fetchRestDay()
+    func getTodayRestDay() -> RestDay? {
+        filterRestDayByDate(restDays: self.entry.restDays, date: Date())
     }
     
-    public func fetchEvent() {
-        let repository = SwiftDataRepository<CalendarEvent>()
-        Task {
-            let events = try await repository.fetchData()
-            self.events = events
-            getTodayEvent()
-            getNextDayEvent()
-        }
+    func getNextDayRestDay() -> RestDay? {
+        filterRestDayByDate(restDays: self.entry.restDays, date: Date().addingTimeInterval(24 * 60 * 60))
     }
     
-    public func fetchRestDay() {
-        let repository = SwiftDataRepository<RestDay>()
-        Task {
-            let restDays = try await repository.fetchData()
-            self.restDays = restDays
-            getTodayRestDay()
-            getNextDayRestDay()
-        }
+    func getTodayEvent() -> [CalendarEvent] {
+        filterEventsByDate(events: self.entry.events, date: Date())
     }
     
-    private func getTodayRestDay() {
-        self.todayRestDay = filterRestDayByDate(restDays: self.restDays, date: Date())
-    }
-    
-    private func getNextDayRestDay() {
-        self.nextDayRestDay = filterRestDayByDate(restDays: self.restDays, date: Date().addingTimeInterval(24 * 60 * 60))
-    }
-    
-    private func getTodayEvent() {
-        self.todayEvents = filterEventsByDate(events: self.events, date: Date())
-    }
-    
-    private func getNextDayEvent() {
-        self.nextDayEvnets = filterEventsByDate(events: self.events, date: Date().addingTimeInterval(24 * 60 * 60))
+    func getNextDayEvent() -> [CalendarEvent] {
+        filterEventsByDate(events: self.entry.events, date: Date().addingTimeInterval(24 * 60 * 60))
     }
     
     private func filterEventsByDate(events: [CalendarEvent], date: Date) -> [CalendarEvent] {
@@ -84,5 +50,4 @@ public class WidgetEventProvider {
             return restDayDate == targetDate
         }
     }
-
 }

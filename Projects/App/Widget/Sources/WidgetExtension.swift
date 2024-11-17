@@ -12,64 +12,56 @@ import Domain
 import Data
 
 struct Provider: TimelineProvider {
-    
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date())
+    typealias Entry = WidgetEntry
+
+    func placeholder(in context: Context) -> WidgetEntry {
+        WidgetEntry(date: Date(), events: [], restDays: [])
     }
-    
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date())
-        completion(entry)
-    }
-    
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-        
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let current = Date()
-        
-        let entry1 = SimpleEntry(date: current)
-        entries.append(entry1)
-        
-        for i in 0..<1 {
-            let todayMonth = Calendar.current.dateComponents([.month, .year, .day, .hour], from: current)
-            
-            var dateComponents = DateComponents(hour: 0)
-            dateComponents.year = todayMonth.year
-            dateComponents.month = todayMonth.month
-            dateComponents.day = todayMonth.day! + 1
-            
-            let date = Calendar.current.date(from: dateComponents)
-            let entry2 = SimpleEntry(date: date!)
-            entries.append(entry2)
+
+    func getSnapshot(in context: Context, completion: @escaping (WidgetEntry) -> Void) {
+        Task {
+            let entry = await fetchData()
+            completion(entry)
         }
-        
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<WidgetEntry>) -> Void) {
+        Task {
+            let entry = await fetchData()
+            let timeline = Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(3600))) // 1시간마다 갱신
+            completion(timeline)
+        }
+    }
+
+    private func fetchData() async -> WidgetEntry {
+        do {
+            let eventsRepository = SwiftDataRepository<CalendarEvent>()
+            let restDaysRepository = SwiftDataRepository<RestDay>()
+
+            let events = try await eventsRepository.fetchData()
+            let restDays = try await restDaysRepository.fetchData()
+
+            return WidgetEntry(date: Date(), events: events, restDays: restDays)
+        } catch {
+            // 에러가 발생하면 기본 데이터 반환
+            return WidgetEntry(date: Date(), events: [], restDays: [])
+        }
     }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct WidgetEntry: TimelineEntry {
     let date: Date
+    let events: [CalendarEvent]
+    let restDays: [RestDay]
 }
 
 struct WidgetExtensionEntryView: View {
     var entry: Provider.Entry
-    var eventsToday: [CalendarEvent] = WidgetEventProvider.default.todayEvents
-    var eventsNextDay: [CalendarEvent] = WidgetEventProvider.default.nextDayEvnets
-    
-    var restDayToday: RestDay? = WidgetEventProvider.default.todayRestDay
-    var restDayNextDay: RestDay? = WidgetEventProvider.default.nextDayRestDay
-    
-    init(entry: Provider.Entry) {
-        WidgetEventProvider.default.fetch()
-        self.entry = entry
-    }
     
     var body: some View {
         VStack {
-            ToDayView(date: Date(),eventsToday: eventsToday, restDay: restDayToday)
-            ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: eventsNextDay, restDay: restDayNextDay)
+            ToDayView(date: Date(),eventsToday: getTodayEvent(), restDay: getTodayRestDay())
+            ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: getNextDayEvent(), restDay: getNextDayRestDay())
         }
     }
 }
@@ -93,10 +85,10 @@ struct WidgetExtension: Widget {
     }
 }
 
-#Preview(as: .systemSmall) {
-    WidgetExtension()
-} timeline: {
-    SimpleEntry(date: .now)
-    SimpleEntry(date: .now)
-}
+//#Preview(as: .systemSmall) {
+//    WidgetExtension()
+//} timeline: {
+//    SimpleEntry(date: .now)
+//    SimpleEntry(date: .now)
+//}
 

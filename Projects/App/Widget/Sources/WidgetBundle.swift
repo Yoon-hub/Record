@@ -10,11 +10,7 @@ import SwiftUI
 
 @main
 struct WidgetExtensionBundle: WidgetBundle {
-    
-    init() {
-        WidgetEventProvider.default.fetchEvent()
-        WidgetEventProvider.default.fetchRestDay()
-    }
+
     var body: some Widget {
         WidgetExtension()
     }
