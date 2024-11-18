@@ -7,6 +7,8 @@
 
 import ProjectDescription
 
+let teamID = "4EHY29FHRR"
+
 let project = Project(name: "App", targets: [
     .target(
         name: "App",
@@ -15,7 +17,7 @@ let project = Project(name: "App", targets: [
         bundleId: "record.app.com",
         deploymentTargets: .iOS("17.0"),
         infoPlist: .extendingDefault(with: [
-            "CFBundleDisplayName": .string("TomatO"),
+            "CFBundleDisplayName": .string("토마토"),
             "UILaunchStoryboardName": .string("LaunchScreen.storyboard"),
             "UIApplicationSceneManifest" : .dictionary([
                 "UIApplicationSupportsMultipleScenes" : .boolean(false),
@@ -48,7 +50,12 @@ let project = Project(name: "App", targets: [
             .external(name: "RxKeyboard"),
             .external(name: "FlexLayout"),
             .target(name: "Widget")
-        ]
+        ],
+        settings: .settings(
+            base: [
+                "DEVELOPMENT_TEAM": SettingValue(stringLiteral: teamID)
+            ]
+        )
     ),
     .target(
         name: "AppUnitTest",
@@ -78,5 +85,12 @@ let project = Project(name: "App", targets: [
             .project(target: "Domain", path: "../Domain"),
             .project(target: "Core", path: "../Core"),
             .project(target: "Data", path: "../Data"),
-    ])
+            .external(name: "FSCalendar"),
+    ],
+        settings: .settings(
+            base: [
+                "DEVELOPMENT_TEAM": SettingValue(stringLiteral: teamID)
+            ]
+        )
+    )
 ])
