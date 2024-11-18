@@ -10,15 +10,6 @@
       }
     },
     {
-      "identity" : "flexlayout",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/layoutBox/FlexLayout.git",
-      "state" : {
-        "revision" : "9b46c098c0471b847e6feee49692ae239633bae3",
-        "version" : "2.0.10"
-      }
-    },
-    {
       "identity" : "focuscollectionview",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Yoon-hub/FocusCollectionView.git",

@@ -42,13 +42,13 @@ let project = Project(name: "App", targets: [
             .project(target: "Core", path: "../Core"),
             .project(target: "Domain", path: "../Domain"),
             .project(target: "Data", path: "../Data"),
+            .xcframework(path: "../../Carthage/Build/FlexLayout.xcframework", status: .optional),
             .external(name: "ReactorKit"),
             .external(name: "PinLayout"),
             .external(name: "RxCocoa"),
             .external(name: "FocusCollectionView"),
             .external(name: "FSCalendar"),
             .external(name: "RxKeyboard"),
-            .external(name: "FlexLayout"),
             .target(name: "Widget")
         ],
         settings: .settings(
