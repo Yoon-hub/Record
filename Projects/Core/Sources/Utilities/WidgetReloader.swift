@@ -13,9 +13,6 @@ public protocol WidgetReloadProtocol {}
 extension WidgetReloadProtocol {
     public func reloadWidget() {
         WidgetCenter.shared.reloadAllTimelines()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-            WidgetCenter.shared.reloadAllTimelines()
-        }
     }
 }
+  

@@ -58,10 +58,26 @@ struct WidgetEntry: TimelineEntry {
 struct WidgetExtensionEntryView: View {
     var entry: Provider.Entry
     
+    @Environment(\.widgetFamily) var widgetFamily
+    @State private var date = Date()
+    
     var body: some View {
-        VStack {
-            ToDayView(date: Date(),eventsToday: getTodayEvent(), restDay: getTodayRestDay())
-            ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: getNextDayEvent(), restDay: getNextDayRestDay())
+        
+        switch widgetFamily {
+        case .systemMedium:
+            HStack {
+                VStack {
+                    ToDayView(date: Date(),eventsToday: getTodayEvent(), restDay: getTodayRestDay())
+                    ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: getNextDayEvent(), restDay: getNextDayRestDay())
+                }
+                CalenderView(month: Date(), offset: CGSize(width: 200, height: 30), restDays: entry.restDays)
+                    .frame(width: 182)
+            }
+        default:
+            VStack {
+                ToDayView(date: Date(),eventsToday: getTodayEvent(), restDay: getTodayRestDay())
+                ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: getNextDayEvent(), restDay: getNextDayRestDay())
+            }
         }
     }
 }
@@ -76,7 +92,7 @@ struct WidgetExtension: Widget {
                     .containerBackground(.fill.tertiary, for: .widget)
             } else {
                 WidgetExtensionEntryView(entry: entry)
-                    .padding()
+                        .padding()
                     .background()
             }
         }
