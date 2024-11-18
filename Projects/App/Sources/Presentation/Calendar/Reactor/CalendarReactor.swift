@@ -56,9 +56,7 @@ extension CalendarReactor {
                 Task {
                     let restDays = await self.fetchRestDayFromDBUsecase.execute()
                     observer.onNext(.setRestDate(restDays))
-                }
                 
-                Task {
                     let events = await self.fetchEventUsecase.execute()
                     observer.onNext(.setEvents(events, self.currentState.selectedDate))
                 }
