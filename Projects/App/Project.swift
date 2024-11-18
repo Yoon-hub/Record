@@ -85,7 +85,6 @@ let project = Project(name: "App", targets: [
             .project(target: "Domain", path: "../Domain"),
             .project(target: "Core", path: "../Core"),
             .project(target: "Data", path: "../Data"),
-            .external(name: "FSCalendar"),
     ],
         settings: .settings(
             base: [

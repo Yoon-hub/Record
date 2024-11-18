@@ -20,7 +20,7 @@ let package = Package(
         // You can read more about dependencies here: https://docs.tuist.io/documentation/tuist/dependencies
         .package(url: "https://github.com/ReactorKit/ReactorKit.git", from: "3.2.0"),
         .package(url: "https://github.com/layoutBox/PinLayout.git", from: "1.10.5"),
-        .package(url: "https://github.com/ReactiveX/RxSwift.git", from: "6.0.0"),
+        .package(url: "https://github.com/ReactiveX/RxSwift.git", exact: "6.7.1"),
         .package(url: "https://github.com/Yoon-hub/FocusCollectionView.git", from: "1.1.1"),
         .package(url: "https://github.com/WenchaoD/FSCalendar.git", exact: "2.8.4"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", exact: "5.8.1"),
