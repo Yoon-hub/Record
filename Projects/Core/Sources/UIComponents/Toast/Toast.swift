@@ -46,19 +46,23 @@ extension Toast {
             switch position {
             case .top:
                 toastView.pin
-                    .top(16)
+                    .top(window?.safeAreaInsets.top ?? 0 + 16)
                     .hCenter()
+                    .size(CGSize(width: 50, height: 50))
             case .bottom:
                 toastView.pin
-                    .bottom(16)
+                    .bottom(window?.safeAreaInsets.bottom ?? 0 + 16)
                     .hCenter()
+                    .size(toastView.backgroundView.frame.size)
             }
             
+            window?.layoutIfNeeded()
+            
             toastView.alpha = 0
-            UIView.animate(withDuration: duration.toTimeInterval()) {
+            UIView.animate(withDuration: 0.5) {
                 toastView.alpha = 1
             } completion: { _ in
-                UIView.animate(withDuration: duration.toTimeInterval(), delay: Duration.custom(duration: 0.1).toTimeInterval(), options: .curveEaseOut) {
+                UIView.animate(withDuration: 0.5, delay: duration.toTimeInterval(), options: .curveEaseOut) {
                     toastView.alpha = 0
                 } completion: { _ in
                     toastView.removeFromSuperview()
