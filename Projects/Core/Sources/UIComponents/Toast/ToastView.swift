@@ -23,7 +23,7 @@ final class ToastView: UIView, BaseView {
     let backgroundView = UIView().then {
         $0.backgroundColor = .black
         $0.alpha = 0.8
-        $0.layer.cornerRadius = 10
+        $0.layer.cornerRadius = 12
     }
     
     var onTap: (() -> Void)?
