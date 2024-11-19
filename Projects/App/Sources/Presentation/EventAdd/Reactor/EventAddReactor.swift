@@ -107,7 +107,7 @@ extension EventAddReactor {
                     // 마지막 색상 저장
                     UserDefaultsWrapper.color = self.currentState.selectedColor.hexString
                     // 이벤트 저장
-                    self.saveEventUsecase.excecute(event: event)
+                    await self.saveEventUsecase.excecute(event: event)
                     
                     observer.onNext(.saveEvent)
                     observer.onCompleted()

@@ -56,6 +56,7 @@ final class EventFixReactor: Reactor {
     }
     
     @Injected var saveEventUsecase: SaveEventUsecaseProtocol
+    @Injected var deleteEventUsecase: DeleteEventUsecaseProtocol
 }
     
 extension EventFixReactor {
@@ -83,23 +84,46 @@ extension EventFixReactor {
         case .didSeleteColor(let color):
             return .just(.setColor(color))
         case .didTapSaveButton(let title, let content):
-            
-            if checkDateValidation(startDate: currentState.selectedStartDate, endDate: currentState.selectedEndDate) {
-                return .just(.popAlert)
+            return Observable.create { [weak self] observer in
+                guard let self else {return Disposables.create()}
+                
+                if checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
+                    observer.onNext(.popAlert)
+                    return Disposables.create()
+                }
+                
+                Task {
+                    let event = EventBuilder()
+                        .setAlarm(self.currentState.selectedAlarm)
+                        .setDate(self.currentState.selectedStartDate)
+                        .setEndDate(self.currentState.selectedEndDate)
+                        .setTagColor(self.currentState.selectedColor.hexString)
+                        .setTitle(title)
+                        .setContent(content ?? "")
+                        .build()
+        
+                    await self.fixEvent(event: event)
+                    observer.onNext(.saveEvent)
+                }
+                return Disposables.create()
             }
             
-            let event = EventBuilder()
-                .setAlarm(currentState.selectedAlarm)
-                .setDate(currentState.selectedStartDate)
-                .setEndDate(currentState.selectedEndDate)
-                .setTagColor(currentState.selectedColor.hexString)
-                .setTitle(title)
-                .setContent(content ?? "")
-                .build()
-            
-            fixEvent(event: event)
-            
-            return .just(.saveEvent)
+//            if checkDateValidation(startDate: currentState.selectedStartDate, endDate: currentState.selectedEndDate) {
+//                return .just(.popAlert)
+//            }
+//            
+//            let event = EventBuilder()
+//                .setAlarm(currentState.selectedAlarm)
+//                .setDate(currentState.selectedStartDate)
+//                .setEndDate(currentState.selectedEndDate)
+//                .setTagColor(currentState.selectedColor.hexString)
+//                .setTitle(title)
+//                .setContent(content ?? "")
+//                .build()
+//            
+//            fixEvent(event: event)
+//            
+//            return .just(.saveEvent)
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
         case .didTapAlldayButton:
@@ -150,7 +174,7 @@ extension EventFixReactor {
         return startDate > endDate
     }
     
-    private func fixEvent(event: CalendarEvent) {
+    private func fixEvent(event: CalendarEvent) async {
         currentState.currentCalendarEvent.tagColor = event.tagColor
         currentState.currentCalendarEvent.title = event.title
         currentState.currentCalendarEvent.startDate = event.startDate
@@ -159,6 +183,9 @@ extension EventFixReactor {
         currentState.currentCalendarEvent.alarm = event.alarm
         
         LocalPushService.shared.removeNotification(identifiers: [event.id])
+        
+        await saveEventUsecase.excecute(event: event)
+        await deleteEventUsecase.execute(event: event)
         
         if event.alarm != .none {
             LocalPushService.shared.addNotification(identifier: event.id, title: event.title, body: event.content ?? "", date: Alarm(rawValue: event.alarm ?? Alarm.none.rawValue)?.timeBefore(from: event.startDate) ?? Date())

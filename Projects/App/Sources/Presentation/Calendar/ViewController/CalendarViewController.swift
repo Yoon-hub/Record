@@ -75,9 +75,10 @@ extension CalendarViewController {
             }
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.restDays }
+        reactor.state.map { $0.events }
             .observe(on: MainScheduler.instance)
-            .bind { self.contentView.calendar.reloadData() }
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.reloadData() }
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.selectedDate }
@@ -96,15 +97,16 @@ extension CalendarViewController {
             .bind { $0.0.contentView.eventRestDayLabel.text = $0.0.checkRestDayName(date: $0.1) }
             .disposed(by: disposeBag)
         
-        reactor.state.map {$0.events}
-            .observe(on: MainScheduler.instance)
-            .withUnretained(self)
-            .bind { $0.1 }
-            .disposed(by: disposeBag)
-        
         NotificationCenterService.reloadCalendar.addObserver()
             .withUnretained(self)
             .bind { $0.0.contentView.calendar.today = Date()}
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$isToast)
+            .observe(on: MainScheduler.instance)
+            .bind { Toast.show(message: $0, duration: .short, position: .top) {
+                print("삭제 취소")
+            }}
             .disposed(by: disposeBag)
     }
 }
