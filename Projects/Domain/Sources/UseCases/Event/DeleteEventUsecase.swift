@@ -10,7 +10,7 @@ import Foundation
 import Core
 
 public protocol DeleteEventUsecaseProtocol {
-    func execute(event: CalendarEvent)
+    func execute(event: CalendarEvent) async
 }
 
 public final class DeleteEventUsecase<Repository: SwiftDataRepositoryProtocol>: WidgetReloadProtocol, DeleteEventUsecaseProtocol where Repository.T == CalendarEvent{
@@ -21,13 +21,11 @@ public final class DeleteEventUsecase<Repository: SwiftDataRepositoryProtocol>: 
         self.repository = repository
     }
     
-    public func execute(event: CalendarEvent) {
-        Task {
-            await repository.deleteData(data: event)
-            NotificationCenterService.reloadMoive.post()
-            reloadWidget()
-            print("Event Delete: \(event.title)")
-        }
+    public func execute(event: CalendarEvent) async {
+        await repository.deleteData(data: event)
+        NotificationCenterService.reloadMoive.post()
+        reloadWidget()
+        print("Event Delete: \(event.title)")
     }
 }
 
