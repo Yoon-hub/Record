@@ -117,11 +117,11 @@ private struct CellView: View {
             RoundedRectangle(cornerRadius: 7) // 동그라미 모양을 만들기 위해 cornerRadius를 크게 설정
                 .frame(width: 14, height: 14)  // 동그라미 크기 설정
                 .opacity(0.1) // 배경에 약간의 투명도를 설정 (필요에 따라 조정)
-                .foregroundColor(isToday ? .black : .clear)
+                .foregroundColor(isToday ? Color(uiColor: .label) : .clear)
                 .overlay(
                     Text(String(day))
                         .font(.system(size: 11, weight: .regular))
-                        .foregroundColor(isRestDay ? .red : .black)
+                        .foregroundColor(isRestDay ? .red : Color(uiColor: .label))
                 )
             
             if clicked {
