@@ -37,10 +37,15 @@ extension Toast {
         public static func show(
             message: String,
             duration: Duration = .short,
-            position: postion = .bottom
+            position: postion = .bottom,
+            tapGesture: (() -> Void)? = nil
         ) {
             let window = UIApplication.shared.windows.first { $0.isKeyWindow }
             let toastView = ToastView(frame: .zero, message: message)
+            
+            /// 터치 이벤트 추가
+            if let tapGesture { toastView.onTap = tapGesture }
+            
             window?.addSubview(toastView)
             
             switch position {
@@ -58,11 +63,10 @@ extension Toast {
             
             window?.layoutIfNeeded()
             
-            toastView.alpha = 0
-            UIView.animate(withDuration: 0.5) {
-                toastView.alpha = 1
-            } completion: { _ in
-                UIView.animate(withDuration: 0.5, delay: duration.toTimeInterval(), options: .curveEaseOut) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration.toTimeInterval()) {
+                /// WithDrauton 1 -> 0 까지 걸리는 시간
+                /// delay: 특정 시간 이후에 동작
+                UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) {
                     toastView.alpha = 0
                 } completion: { _ in
                     toastView.removeFromSuperview()

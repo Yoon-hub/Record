@@ -104,8 +104,12 @@ extension CalendarViewController {
         
         reactor.pulse(\.$isToast)
             .observe(on: MainScheduler.instance)
-            .bind { Toast.show(message: $0, duration: .short, position: .top) {
-                print("삭제 취소")
+            .bind { Toast.show(
+                message: $0,
+                duration: .short,
+                position: .top
+            ) {
+                reactor.action.onNext(.undoDeleteEvent)
             }}
             .disposed(by: disposeBag)
     }

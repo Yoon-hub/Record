@@ -19,6 +19,7 @@ final class CalendarReactor: Reactor {
         case didSelectDate(Date)
         case reloadEvents
         case didDeleteEvent(IndexPath)
+        case undoDeleteEvent
     }
     
     enum Mutation {
@@ -26,6 +27,7 @@ final class CalendarReactor: Reactor {
         case setSelectDate(Date)
         case setSelectedEvents([CalendarEvent])
         case setEvents([CalendarEvent], Date)
+        case setToast(String)
     }
     
     struct State {
@@ -33,6 +35,8 @@ final class CalendarReactor: Reactor {
         var events: [CalendarEvent] = []
         var selectedEvents: [CalendarEvent] = []
         var selectedDate: Date = Date()
+        
+        @Pulse var isToast: String = ""
     }
     
     let initialState: State
@@ -44,7 +48,10 @@ final class CalendarReactor: Reactor {
     @Injected var fetchRestDayFromDBUsecase: FetchRestDayFromDBUsecaserotocol
     @Injected var fetchEventUsecase: FetchEventUsecaseProtocol
     @Injected var deleteEventUsecase: DeleteEventUsecaseProtocol
+    @Injected var saveEventUsecsae: SaveEventUsecaseProtocol
     
+    /// 삭제 취소를 윈한 변수
+    private var undoEvent: CalendarEvent?
 }
 
 extension CalendarReactor {
@@ -84,16 +91,28 @@ extension CalendarReactor {
             return Observable.create { [weak self] observer in
                 guard let self else { return Disposables.create() }
                 
-                self.deleteEventUsecase.execute(event: self.currentState.selectedEvents[indexPath.row])
+                let selectedEvent = self.currentState.selectedEvents[indexPath.row]
+                self.undoEvent = selectedEvent
                 
                 Task {
+                    await self.deleteEventUsecase.execute(event: selectedEvent)
                     let events = await self.fetchEventUsecase.execute()
                     observer.onNext(.setEvents(events, self.currentState.selectedDate))
+                    observer.onNext(.setToast("삭제 되돌리기"))
                 }
                 
                 return Disposables.create()
             }
-            
+        case .undoDeleteEvent:
+            return Observable.create { [weak self] observer in
+                guard let self, let undoEvent else { return Disposables.create() }
+                Task {
+                    await self.saveEventUsecsae.excecute(event: undoEvent)
+                    let events = await self.fetchEventUsecase.execute()
+                    observer.onNext(.setEvents(events, self.currentState.selectedDate))
+                }
+                return Disposables.create()
+            }
         }
     }
     
@@ -116,6 +135,9 @@ extension CalendarReactor {
         case .setEvents(let events, let date):
             newState.events = events
             newState.selectedEvents = filterEventsByDate(events: newState.events, date: date).sorted { $0.startDate < $1.startDate }
+            return newState
+        case .setToast(let message):
+            newState.isToast = message
             return newState
         }
     }

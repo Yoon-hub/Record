@@ -8,6 +8,8 @@
 import UIKit
 
 import PinLayout
+import RxSwift
+import RxCocoa
 
 final class ToastView: UIView, BaseView {
     
@@ -24,7 +26,11 @@ final class ToastView: UIView, BaseView {
         $0.layer.cornerRadius = 10
     }
     
+    var onTap: (() -> Void)?
+    
     let message: String
+    
+    private let disposeBag = DisposeBag()
     
     init(frame: CGRect, message: String) {
         self.message = message
@@ -45,12 +51,25 @@ final class ToastView: UIView, BaseView {
     func configure() {
         self.addSubview(backgroundView)
         backgroundView.addSubview(messageLabel)
+        
+        // 터치 제스처 추가
+        let tapGesture = UITapGestureRecognizer()
+        self.isUserInteractionEnabled = true
+        self.addGestureRecognizer(tapGesture)
+        
+        tapGesture.rx.event
+            .withUnretained(self)
+            .throttle(.milliseconds(3000), scheduler: MainScheduler.instance)
+            .bind {
+                $0.0.onTap?()
+            }
+            .disposed(by: disposeBag)
     }
     
     func setUI() {
         messageLabel.pin
-            .sizeToFit() // 텍스트 크기에 맞게 설정
-            .center()    // 부모 뷰 기준 중앙
+            .sizeToFit()
+            .center()
         
         backgroundView.pin
             .wrapContent(padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)) // messageLabel을 감싸는 여백
