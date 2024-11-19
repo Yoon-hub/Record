@@ -69,7 +69,7 @@ extension MovieAddReactor {
                 return .just(.errorMessage("이미지를 추가해 주세요"))
             }
             
-            let imageData = currentState.imageItems.map { $0.toData() }
+            let imageData = currentState.imageItems.map { $0.toData(compressionQuality: 0.5) }
             let movie = MovieBuilder()
                 .setTitle(title)
                 .setContent(content)
