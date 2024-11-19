@@ -26,6 +26,7 @@ public final class DeleteEventUsecase<Repository: SwiftDataRepositoryProtocol>: 
             await repository.deleteData(data: event)
             NotificationCenterService.reloadMoive.post()
             reloadWidget()
+            print("Event Delete: \(event.title)")
         }
     }
 }

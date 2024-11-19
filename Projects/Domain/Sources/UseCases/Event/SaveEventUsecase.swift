@@ -26,7 +26,7 @@ public final class SaveEventUsecase<Repository: SwiftDataRepositoryProtocol>: Wi
         Task {
             await repository.insertData(data: event)
             reloadWidget()
-            print("Event Save: \(event)")
+            print("Event Save: \(event.title)")
         }
     }
 }
