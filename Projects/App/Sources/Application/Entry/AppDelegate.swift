@@ -61,10 +61,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                     .bind {
                         $0.forEach { saveRestDayUsecase.execute(restDay: $0) }
                         isFetchRestDay = "Y"
-                        NotificationCenterService.reloadCalendar.post()
                     }
                     .disposed(by: disposebag)
             }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            NotificationCenterService.reloadCalendar.post()
         }
     }
     
