@@ -92,6 +92,12 @@ extension CalendarViewController {
             .bind { $0.0.contentView.calendar.reloadData() }
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.restDays }
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.reloadData() }
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.selectedDate }
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
@@ -109,8 +115,17 @@ extension CalendarViewController {
             .disposed(by: disposeBag)
         
         NotificationCenterService.reloadCalendar.addObserver()
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
-            .bind { $0.0.contentView.calendar.today = Date()}
+            .bind { _ in
+                reactor.action.onNext(.viewDidLoad)
+            }
+            .disposed(by: disposeBag)
+        
+        NotificationCenterService.reloadCalendar.addObserver()
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.today = Date() }
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$isToast)
