@@ -22,7 +22,7 @@ final class SettingReactor: Reactor {
     }
     
     struct State {
-        
+        let settingList = ["공휴일 업데이트", "알약 알리미"]
     }
 
     let initialState: State

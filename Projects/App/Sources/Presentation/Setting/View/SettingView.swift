@@ -13,7 +13,19 @@ import PinLayout
 
 final class SettinView: UIView, BaseView {
     
-    let tableView = UITableView()
+    var tableView: UITableView = {
+        let tableView = UITableView(frame: .zero)
+        
+        tableView.register(
+            SettingTableViewCell.self,
+            forCellReuseIdentifier: SettingTableViewCell.identifier
+        )
+        
+        tableView.rowHeight = 54
+        tableView.separatorStyle = .none
+        
+        return tableView
+    }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
