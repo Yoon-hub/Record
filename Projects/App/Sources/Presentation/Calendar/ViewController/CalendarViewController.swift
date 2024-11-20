@@ -26,9 +26,15 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         contentView.calendar.dataSource = self
     }
     
+    // MARK: - Navigation
     private func setNavigation() {
         self.navigationController?.navigationBar.tintColor = .recordColor
         self.title = "캘린더"
+        makeNaviagtionItem()
+    }
+    private func makeNaviagtionItem() {
+        let rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(gearTap))
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
     }
     
     // MARK: - ViewLifeCycle
@@ -41,6 +47,11 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         super.bind(reactor: reactor)
         bindInput(reactor: reactor)
         bindOutput(reactor: reactor)
+    }
+    
+    /// 설정 화면 Transtion
+    @objc private func gearTap() {
+        navigator.toSetting()
     }
 }
 
