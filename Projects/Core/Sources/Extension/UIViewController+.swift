@@ -30,6 +30,7 @@ extension UIViewController {
     public func showAlert(
         title: String?,
         message: String?,
+        cancel: Bool = false,
         completion: (() -> Void)?
     ) {
         let alertController = UIAlertController(
@@ -46,6 +47,15 @@ extension UIViewController {
         }
         
         alertController.addAction(okButton)
+        
+        if cancel {
+            let cancelButton = UIAlertAction(
+                title: "취소",
+                style: .cancel
+            )
+            alertController.addAction(cancelButton)
+        }
+            
         present(alertController, animated: true, completion: nil)
     }
 }

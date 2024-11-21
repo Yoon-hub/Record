@@ -49,6 +49,7 @@ let project = Project(name: "App", targets: [
             .external(name: "FocusCollectionView"),
             .external(name: "FSCalendar"),
             .external(name: "RxKeyboard"),
+            .external(name: "Lottie"),
             .target(name: "Widget")
         ],
         settings: .settings(

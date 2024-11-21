@@ -26,9 +26,15 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         contentView.calendar.dataSource = self
     }
     
+    // MARK: - Navigation
     private func setNavigation() {
         self.navigationController?.navigationBar.tintColor = .recordColor
         self.title = "캘린더"
+        makeNaviagtionItem()
+    }
+    private func makeNaviagtionItem() {
+        let rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(gearTap))
+        self.navigationItem.rightBarButtonItem = rightBarButtonItem
     }
     
     // MARK: - ViewLifeCycle
@@ -41,6 +47,11 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         super.bind(reactor: reactor)
         bindInput(reactor: reactor)
         bindOutput(reactor: reactor)
+    }
+    
+    /// 설정 화면 Transtion
+    @objc private func gearTap() {
+        navigator.toSetting()
     }
 }
 
@@ -81,6 +92,12 @@ extension CalendarViewController {
             .bind { $0.0.contentView.calendar.reloadData() }
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.restDays }
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.reloadData() }
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.selectedDate }
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
@@ -98,8 +115,17 @@ extension CalendarViewController {
             .disposed(by: disposeBag)
         
         NotificationCenterService.reloadCalendar.addObserver()
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
-            .bind { $0.0.contentView.calendar.today = Date()}
+            .bind { _ in
+                reactor.action.onNext(.viewDidLoad)
+            }
+            .disposed(by: disposeBag)
+        
+        NotificationCenterService.reloadCalendar.addObserver()
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.today = Date() }
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$isToast)

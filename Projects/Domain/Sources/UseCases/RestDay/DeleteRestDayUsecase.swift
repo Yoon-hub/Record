@@ -10,7 +10,7 @@ import Foundation
 import Core
 
 public protocol DeleteRestDayUsecaseProtocol {
-    func execute()
+    func execute() async
 }
 
 public final class DeleteRestDayUsecase<Repository: SwiftDataRepositoryProtocol>: DeleteRestDayUsecaseProtocol where Repository.T == RestDay {
@@ -21,10 +21,8 @@ public final class DeleteRestDayUsecase<Repository: SwiftDataRepositoryProtocol>
         self.repository = repository
     }
     
-    public func execute() {
-        Task {
-            await repository.deleteAllData()
-        }
+    public func execute() async {
+        await repository.deleteAllData()
     }
 }
 
