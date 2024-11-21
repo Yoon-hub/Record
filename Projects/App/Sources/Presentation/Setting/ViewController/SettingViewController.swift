@@ -48,17 +48,17 @@ extension SettingViewController {
             .bind(to: contentView.tableView.rx.items(cellIdentifier: SettingTableViewCell.identifier, cellType: SettingTableViewCell.self)
             ) { _, item, cell in
                 cell.titleLabel.text = item.title
+                if item == .version { cell.contentLabel.text = "1.0" }
             }
             .disposed(by: disposeBag)
     }
 }
 
-// MARK:
+// MARK: -
 extension SettingViewController {
     private func handleItemSelected(setting: Reactor.SettingList) {
         switch setting {
-            
-        case .pillAlarm:
+        case .version:
             print("alarm")
             
         case .restDayUpdate:

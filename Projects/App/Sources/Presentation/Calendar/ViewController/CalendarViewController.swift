@@ -33,8 +33,12 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         makeNaviagtionItem()
     }
     private func makeNaviagtionItem() {
-        let rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(gearTap))
-        self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        let rightBarSettingButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(gearTap))
+                let rightBarPillButtonItem = UIBarButtonItem(image: UIImage(systemName: "pill"), style: .plain, target: self, action: #selector(gearTap))
+
+        rightBarPillButtonItem.imageInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 0)
+
+        self.navigationItem.rightBarButtonItems = [rightBarSettingButtonItem, rightBarPillButtonItem]
     }
     
     // MARK: - ViewLifeCycle
@@ -295,7 +299,7 @@ extension CalendarViewController: UITableViewDelegate {
         }
         
         let id = reactor.currentState.selectedEvents[indexPath.row].id
-        LocalPushService.shared.removeNotification(identifiers: [id]) 
+        LocalPushService.shared.removeNotification(identifiers: [id])
         
         deleteAction.image = UIImage(systemName: "trash")?.withTintColor(.red)
         deleteAction.backgroundColor = .white

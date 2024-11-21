@@ -18,8 +18,9 @@ final class SettingTableViewCell: UITableViewCell, BaseView {
         $0.font = DesignFontFamily.Pretendard.light.font(size: 17)
     }
     
-    let underLine = UIView().then {
-        $0.backgroundColor = .systemGray6
+    let contentLabel = UILabel().then {
+        $0.textColor = .systemGray2
+        $0.font = DesignFontFamily.Pretendard.regular.font(size: 14)
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -38,7 +39,7 @@ final class SettingTableViewCell: UITableViewCell, BaseView {
     
     func configure() {
         self.selectionStyle = .none
-        [titleLabel, underLine].forEach { addSubview($0) }
+        [titleLabel, contentLabel].forEach { addSubview($0) }
     }
     
     func setUI() {
@@ -47,9 +48,9 @@ final class SettingTableViewCell: UITableViewCell, BaseView {
             .left(32)
             .sizeToFit()
         
-//        underLine.pin
-//            .height(1)
-//            .horizontally(16)
-//            .bottom()
+        contentLabel.pin
+            .vCenter()
+            .right(22)
+            .sizeToFit()
     }
 }
