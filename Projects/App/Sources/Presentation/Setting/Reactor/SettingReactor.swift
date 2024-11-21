@@ -16,14 +16,14 @@ final class SettingReactor: Reactor {
     
     enum SettingList: CaseIterable {
         case restDayUpdate
-        case pillAlarm
+        case version
         
         var title: String {
             switch self {
             case .restDayUpdate:
                 return "공휴일 업데이트"
-            case .pillAlarm:
-                return "알약 알리미"
+            case .version:
+                return "버전 정보"
             }
         }
     }
