@@ -8,8 +8,10 @@
 import UIKit
 
 import Core
+import Design
 
 import PinLayout
+import Lottie
 
 final class SettinView: UIView, BaseView {
     
@@ -27,7 +29,14 @@ final class SettinView: UIView, BaseView {
         return tableView
     }()
     
-    override init(frame: CGRect) {
+    let animationView: LottieAnimationView = {
+        let animationView = LottieAnimationView(name: "downloading.json")
+        animationView.loopMode = .loop
+        animationView.alpha = 0
+        return animationView
+    }()
+    
+    override init(frame: CGRect) {  
         super.init(frame: frame)
         configure()
     }
@@ -44,10 +53,15 @@ final class SettinView: UIView, BaseView {
     func configure() {
         self.backgroundColor = .white
         self.addSubview(tableView)
+        self.addSubview(animationView)
     }
     
     func setUI() {
         tableView.pin
             .all()
+        
+        animationView.pin
+            .size(50)
+            .center()
     }
 }

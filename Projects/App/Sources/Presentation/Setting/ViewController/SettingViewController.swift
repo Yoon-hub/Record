@@ -65,8 +65,26 @@ extension SettingViewController {
             showAlert(title: "공휴일 정보를 업데이트 하시겠습니까?", message: "임시 공휴일 등 새로운 정보를 받을 수 있어요.", cancel: true) { [weak self] in
                 guard let self else {return}
                 self.reactor?.action.onNext(.restDayUpdateTapped)
+                self.downlaodAnimation()
             }
             
+        }
+    }
+    
+    private func downlaodAnimation() {
+        let animationView = self.contentView.animationView
+        animationView.play()
+        animationView.alpha = 1
+        
+        self.view.isUserInteractionEnabled = false
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            animationView.stop()
+            animationView.alpha = 0
+            
+            self.showAlert(title: "공휴일 정보가 업데이트 되었습니다!", message: nil)
+            
+            self.view.isUserInteractionEnabled = true
         }
     }
 }

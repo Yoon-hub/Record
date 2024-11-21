@@ -14,10 +14,15 @@ let coreProject = Project(name: "Design", targets: [
         product: .framework,
         bundleId: "record.Design.com",
         deploymentTargets: .iOS("15.0"),
-      //  sources: ["Sources/**"],
+        //sources: ["Sources/**"],
         resources: ["Resources/**"],
         dependencies: [
             
         ]
     )
+], resourceSynthesizers: [
+    .custom(name: "Lottie", parser: .json, extensions: ["lottie"]),
+    .custom(name: "Assets", parser: .assets, extensions: ["xcassets"]),
+    .custom(name: "Fonts", parser: .fonts, extensions: ["ttf", "otf"]),
+    .custom(name: "JSON", parser: .json, extensions: ["json"]),
 ])
