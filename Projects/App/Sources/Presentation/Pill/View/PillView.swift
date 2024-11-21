@@ -19,16 +19,22 @@ final class PillView: UIView, BaseView {
         let tableView = UITableView(frame: .zero)
         
         tableView.register(
-            SettingTableViewCell.self,
-            forCellReuseIdentifier: SettingTableViewCell.identifier
+            PillTableViewCell.self,
+            forCellReuseIdentifier: PillTableViewCell.identifier
         )
         
-        tableView.rowHeight = 54
+        tableView.rowHeight = 82
         tableView.separatorStyle = .none
         
         return tableView
     }()
     
+    var addButton = UIButton().then {
+        $0.backgroundColor = DesignAsset.record.color.withAlphaComponent(0.9)
+        $0.setTitleColor(.white, for: .normal)
+        $0.setTitle("알리미 추가", for: .normal)
+        $0.titleLabel?.font = DesignFontFamily.Pretendard.bold.font(size: 16)
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -47,11 +53,19 @@ final class PillView: UIView, BaseView {
     func configure() {
         self.backgroundColor = .white
         self.addSubview(tableView)
+        self.addSubview(addButton)
     }
     
     func setUI() {
         tableView.pin
-            .all()
+            .horizontally()
+            .top()
+            .bottom(to: addButton.edge.top)
+        
+        addButton.pin
+            .horizontally()
+            .bottom()
+            .height(54)
     }
 }
 
