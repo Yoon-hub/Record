@@ -11,16 +11,16 @@ import UIKit
 @Model
 final public class Pill {
     public var title: String
-    public var tiem: String
+    public var time: String
     public var use: Bool
     
-    init(
+    public init(
         title: String,
-        tiem: String,
+        time: String,
         use: Bool
     ) {
         self.title = title
-        self.tiem = tiem
+        self.time = time
         self.use = use
     }
 }
