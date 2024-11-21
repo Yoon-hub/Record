@@ -14,6 +14,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toEventAdd(vc: UIViewController, seletedDate: Date, reloadTableView: @escaping () -> Void)
     func toEventFix(vc: UIViewController, seletedDate: Date, currentEvent: CalendarEvent, reloadTableView: @escaping () -> Void)
     func toSetting()
+    func toPill(_ vc: UIViewController)
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -37,6 +38,11 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
     func toSetting() {
         let settingView = SettingViewControllerWrapper().viewController
         self.navigationController.pushViewController(settingView, animated: true)
+    }
+    
+    func toPill(_ vc: UIViewController) {
+         let pillView = PillViewControllerWrapper().viewController
+        vc.presentFloatingBottomSheet(pillView)
     }
 }
 
