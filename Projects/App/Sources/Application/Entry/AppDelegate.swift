@@ -28,7 +28,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let containers: [BaseContainer] = [
             MovieDIContainer(),
             RestDayDIContrainer(),
-            EventDIContainer()
+            EventDIContainer(),
+            PillDIContainer()
         ]
         containers.forEach {
             $0.registerDependencies()
