@@ -50,6 +50,7 @@ let project = Project(name: "App", targets: [
             .external(name: "FSCalendar"),
             .external(name: "RxKeyboard"),
             .external(name: "Lottie"),
+            .external(name: "FloatingBottomSheet"),
             .target(name: "Widget")
         ],
         settings: .settings(

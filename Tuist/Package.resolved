@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "floatingbottomsheet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/OhKanghoon/FloatingBottomSheet.git",
+      "state" : {
+        "revision" : "bbb8c85d996045d4e9557f3c270d9ba8c28905e0",
+        "version" : "2.3.0"
+      }
+    },
+    {
       "identity" : "focuscollectionview",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Yoon-hub/FocusCollectionView.git",
