@@ -8,9 +8,11 @@
 import UIKit
 
 import Core
+import Domain
 import Design
 
 import PinLayout
+import RxSwift
 
 final class PillTableViewCell: UITableViewCell, BaseView {
 
@@ -30,6 +32,8 @@ final class PillTableViewCell: UITableViewCell, BaseView {
         $0.onTintColor = DesignAsset.record.color
     }
     
+    var disposeBag = DisposeBag()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configure()
@@ -42,6 +46,10 @@ final class PillTableViewCell: UITableViewCell, BaseView {
     override func layoutSubviews() {
         super.layoutSubviews()
         setUI()
+    }
+    
+    override func prepareForReuse() {
+        disposeBag = DisposeBag()
     }
     
     func configure() {
@@ -72,6 +80,27 @@ final class PillTableViewCell: UITableViewCell, BaseView {
             .vCenter()
             .right()
             .marginRight(16)
+    }
+}
+
+extension PillTableViewCell {
+    func bind(_ pill: Pill) {
+        timeLabel.text = formatTimeString(pill.time)
+        titleLabel.text = pill.title
+        `switch`.isOn = pill.use
+    }
+    
+    private func formatTimeString(_ time: String) -> String? {
+        guard time.count == 4, let hour = Int(time.prefix(2)), let minute = Int(time.suffix(2)) else {
+            return nil // 잘못된 형식일 경우 nil 반환
+        }
+        
+        // 시간과 분이 유효한지 확인 (00~23, 00~59)
+        guard (0...23).contains(hour), (0...59).contains(minute) else {
+            return nil
+        }
+        
+        return String(format: "%02d:%02d", hour, minute)
     }
 }
 

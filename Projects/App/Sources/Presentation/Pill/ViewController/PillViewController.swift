@@ -44,9 +44,14 @@ extension PillViewController {
         
         reactor.state.map { $0.pills }
             .bind(to: contentView.tableView.rx.items(cellIdentifier: PillTableViewCell.identifier, cellType: PillTableViewCell.self)
-            ) { [weak self] _, item, cell in
-                cell.timeLabel.text = self?.formatTimeString(item.time)
-                cell.titleLabel.text = item.title
+            ) { [weak self] row, item, cell in
+                guard let self else {return}
+                cell.bind(item)
+                cell.switch.rx.controlEvent(.valueChanged)
+                    .bind {
+                        self.reactor?.action.onNext(.switchTap(row))
+                    }
+                    .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
         
@@ -70,10 +75,9 @@ extension PillViewController: UITableViewDelegate {
         guard let reactor else {return UISwipeActionsConfiguration()}
         
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
-            //self?.reactor?.action.onNext(.didDeleteEvent(indexPath))
+            self?.reactor?.action.onNext(.deletePill(indexPath))
             completionHandler(true)
         }
-        
         
         deleteAction.image = UIImage(systemName: "trash")?.withTintColor(.red)
         
@@ -114,18 +118,6 @@ extension PillViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    private func formatTimeString(_ time: String) -> String? {
-        guard time.count == 4, let hour = Int(time.prefix(2)), let minute = Int(time.suffix(2)) else {
-            return nil // 잘못된 형식일 경우 nil 반환
-        }
-        
-        // 시간과 분이 유효한지 확인 (00~23, 00~59)
-        guard (0...23).contains(hour), (0...59).contains(minute) else {
-            return nil
-        }
-        
-        return String(format: "%02d:%02d", hour, minute)
-    }
 }
 
 //MARK: - FloatingBottomSheet

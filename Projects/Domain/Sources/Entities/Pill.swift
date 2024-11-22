@@ -10,6 +10,8 @@ import UIKit
 
 @Model
 final public class Pill {
+    
+    @Attribute(.unique) public var id: String
     public var title: String
     public var time: String
     public var use: Bool
@@ -19,6 +21,7 @@ final public class Pill {
         time: String,
         use: Bool
     ) {
+        self.id = UUID().uuidString
         self.title = title
         self.time = time
         self.use = use
