@@ -12,10 +12,10 @@
     {
       "identity" : "floatingbottomsheet",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/OhKanghoon/FloatingBottomSheet.git",
+      "location" : "https://github.com/Yoon-hub/FloatingBottomSheet.git",
       "state" : {
-        "revision" : "bbb8c85d996045d4e9557f3c270d9ba8c28905e0",
-        "version" : "2.3.0"
+        "branch" : "main",
+        "revision" : "88a8b7c947ea509feb0af762ecd4d29a120f9616"
       }
     },
     {
