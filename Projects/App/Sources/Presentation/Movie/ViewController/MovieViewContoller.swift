@@ -51,6 +51,32 @@ final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
         
         let rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: nil, action: nil)
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
+        
+        let leftBarPillButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down.circle"), style: .plain, target: self, action: nil)
+        leftBarPillButtonItem.menu = makeUIMenu()
+        self.navigationItem.leftBarButtonItems = [leftBarPillButtonItem]
+    }
+    
+    private func makeUIMenu() -> UIMenu {
+        // 정렬 옵션 메뉴 생성
+        let sortByName = UIAction(title: "생성일") { [weak self] _ in
+            UserDefaultsWrapper.sorted = Reactor.SortedBy.default.typeString
+            self?.reactor?.action.onNext(.didTapSort)
+        }
+
+        let sortByDate = UIAction(title: "날짜") { [weak self] _ in
+            UserDefaultsWrapper.sorted = Reactor.SortedBy.date.typeString
+            self?.reactor?.action.onNext(.didTapSort)
+            
+        }
+
+        let sortBySize = UIAction(title: "이름") { [weak self] _ in
+            UserDefaultsWrapper.sorted = Reactor.SortedBy.name.typeString
+            self?.reactor?.action.onNext(.didTapSort)
+        }
+
+        let menu = UIMenu(title: "정렬 방식 선택", children: [sortByName, sortByDate, sortBySize])
+        return menu
     }
 }
 

@@ -35,7 +35,7 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
     }
     private func makeNaviagtionItem() {
         let rightBarSettingButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(gearTap))
-                let rightBarPillButtonItem = UIBarButtonItem(image: UIImage(systemName: "pill"), style: .plain, target: self, action: #selector(pillTap))
+        let rightBarPillButtonItem = UIBarButtonItem(image: UIImage(systemName: "pill"), style: .plain, target: self, action: #selector(pillTap))
 
         rightBarPillButtonItem.imageInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 0)
 

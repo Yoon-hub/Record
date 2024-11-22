@@ -28,4 +28,5 @@ public struct UserDefault {
 
 public struct UserDefaultsWrapper {
     @UserDefault(key: "lastSelectedColor") public static var color
+    @UserDefault(key: "sortedBy") public static var sorted
 }

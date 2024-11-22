@@ -23,7 +23,7 @@ public final class DeleteEventUsecase<Repository: SwiftDataRepositoryProtocol>: 
     
     public func execute(event: CalendarEvent) async {
         await repository.deleteData(data: event)
-        NotificationCenterService.reloadMoive.post()
+        NotificationCenterService.reloadCalendar.post()
         reloadWidget()
         print("Event Delete: \(event.title)")
     }

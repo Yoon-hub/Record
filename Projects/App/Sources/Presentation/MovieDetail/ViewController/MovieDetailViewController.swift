@@ -104,6 +104,7 @@ extension MovieDetailViewController {
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$fixMovie)
+            .skip(1)
             .withUnretained(self)
             .bind {
                 $0.0.contentView.bind(movie: reactor.currentState.movie)
