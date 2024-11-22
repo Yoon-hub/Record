@@ -108,6 +108,7 @@ extension MovieDetailViewController {
             .withUnretained(self)
             .bind {
                 $0.0.contentView.bind(movie: reactor.currentState.movie)
+                $0.0.contentView.setNeedsLayout()
                 NotificationCenterService.reloadMoive.post()
             }
             .disposed(by: disposeBag)
