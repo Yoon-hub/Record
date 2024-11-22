@@ -10,7 +10,7 @@ import Foundation
 import Core
 
 public protocol SaveMovieUsecaseProtocol {
-    func execute(movie: Movie)
+    func execute(movie: Movie) async
 }
 
 public final class SaveMovieUsecase<Repository: SwiftDataRepositoryProtocol>: SaveMovieUsecaseProtocol where Repository.T == Movie {
@@ -21,10 +21,8 @@ public final class SaveMovieUsecase<Repository: SwiftDataRepositoryProtocol>: Sa
         self.repository = repository
     }
     
-    public func execute(movie: Movie) {
-        Task {
-            await repository.insertData(data: movie)
-            NotificationCenterService.reloadMoive.post()
-        }
+    public func execute(movie: Movie) async {
+        await repository.insertData(data: movie)
+        NotificationCenterService.reloadMoive.post()
     }
 }

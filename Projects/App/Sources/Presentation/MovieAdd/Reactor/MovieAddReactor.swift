@@ -57,29 +57,41 @@ extension MovieAddReactor {
             return .just(.addImage(image))
         case let .didTapSaveButton(title, content, date):
             
-            guard let title, let content else {
-                return .just(.errorMessage("title과 content를 입력해 주세요"))
+            return Observable.create { [weak self] observer in
+                guard let self else { return Disposables.create() }
+                
+                guard let title, let content else {
+                    observer.onNext(.errorMessage("title과 content를 입력해 주세요"))
+                    return Disposables.create()
+                }
+    
+                if title.isEmpty || content.isEmpty {
+                    observer.onNext(.errorMessage("title과 content를 입력해 주세요"))
+                    return Disposables.create()
+                }
+    
+                if currentState.imageItems.isEmpty {
+                    observer.onNext(.errorMessage("이미지를 추가해 주세요"))
+                    return Disposables.create()
+                }
+    
+                let imageData = currentState.imageItems.map { $0.toData(compressionQuality: 0.5) }
+                let movie = MovieBuilder()
+                    .setTitle(title)
+                    .setContent(content)
+                    .setImage(imageData)
+                    .setDate(date)
+                    .setRate(currentState.rate)
+                    .build()
+    
+                Task {
+                    await self.saveMovieUsecase.execute(movie: movie)
+                    observer.onNext(.saveSucess)
+                }
+                
+                return Disposables.create()
             }
             
-            if title.isEmpty || content.isEmpty {
-                return .just(.errorMessage("title과 content를 입력해 주세요"))
-            }
-            
-            if currentState.imageItems.isEmpty {
-                return .just(.errorMessage("이미지를 추가해 주세요"))
-            }
-            
-            let imageData = currentState.imageItems.map { $0.toData(compressionQuality: 0.5) }
-            let movie = MovieBuilder()
-                .setTitle(title)
-                .setContent(content)
-                .setImage(imageData)
-                .setDate(date)
-                .setRate(currentState.rate)
-                .build()
-            
-            saveMovieUsecase.execute(movie: movie)
-            return .just(.saveSucess)
         case .didTapRateStar(let number):
             return .just(.changeRate(number))
         }

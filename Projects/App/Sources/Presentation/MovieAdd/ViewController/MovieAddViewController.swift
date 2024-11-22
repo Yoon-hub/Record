@@ -142,13 +142,13 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
         reactor.pulse(\.$showAlert)
             .skip(1)
             .withUnretained(self)
-            .subscribe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bind { $0.0.showAlert(title: "알림", message: $0.1) }
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$isSaveSucess)
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
-            .subscribe(on: MainScheduler.instance)
             .filter { $0.1 }
             .bind { (vc, _) in
                 vc.showAlert(title: "알림", message: "저장이 완료되었습니다.") { vc.navigator.pop() }
@@ -156,8 +156,8 @@ final class MovieAddViewController: BaseViewController<MovieAddReactor, MovieAdd
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.rate }
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
-            .subscribe(on: MainScheduler.instance)
             .bind { $0.0.changeStar($0.1)}
             .disposed(by: disposeBag)
         
