@@ -53,48 +53,29 @@ final class MovieViewContoller: BaseViewController<MovieReactor, MovieView> {
         self.navigationItem.rightBarButtonItem = rightBarButtonItem
         
         let leftBarPillButtonItem = UIBarButtonItem(image: UIImage(systemName: "arrow.up.arrow.down.circle"), style: .plain, target: self, action: nil)
-      
         leftBarPillButtonItem.menu = makeUIMenu()
         self.navigationItem.leftBarButtonItems = [leftBarPillButtonItem]
     }
     
     private func makeUIMenu() -> UIMenu {
-        var defaultImage: UIImage? = nil
-        var dateImage: UIImage? = nil
-        var nameImage: UIImage? = nil
-        
-        if UserDefaultsWrapper.sorted == Reactor.SortedBy.name.typeString {
-            nameImage = UIImage(systemName: "checkmark")
-        } else if UserDefaultsWrapper.sorted == Reactor.SortedBy.date.typeString {
-            dateImage = UIImage(systemName: "checkmark")
-        } else {
-            defaultImage = UIImage(systemName: "checkmark")
-        }
-        
-        
         // 정렬 옵션 메뉴 생성
-        let sortByDefault = UIAction(title: "생성일", image: defaultImage) { [weak self] _ in
+        let sortByName = UIAction(title: "생성일") { [weak self] _ in
             UserDefaultsWrapper.sorted = Reactor.SortedBy.default.typeString
             self?.reactor?.action.onNext(.didTapSort)
-            
-            self?.navigationItem.leftBarButtonItems?.first?.menu = self?.makeUIMenu()
         }
 
-        let sortByDate = UIAction(title: "날짜", image: dateImage) { [weak self] _ in
+        let sortByDate = UIAction(title: "날짜") { [weak self] _ in
             UserDefaultsWrapper.sorted = Reactor.SortedBy.date.typeString
             self?.reactor?.action.onNext(.didTapSort)
-            self?.navigationItem.leftBarButtonItems?.first?.menu = self?.makeUIMenu()
             
         }
 
-        let sortByName = UIAction(title: "이름", image: nameImage) { [weak self] _ in
+        let sortBySize = UIAction(title: "이름") { [weak self] _ in
             UserDefaultsWrapper.sorted = Reactor.SortedBy.name.typeString
             self?.reactor?.action.onNext(.didTapSort)
-            self?.navigationItem.leftBarButtonItems?.first?.menu = self?.makeUIMenu()
         }
 
-        let menu = UIMenu(title: "정렬", children: [sortByDefault, sortByDate, sortByName])
-        
+        let menu = UIMenu(title: "정렬 방식 선택", children: [sortByName, sortByDate, sortBySize])
         return menu
     }
 }
