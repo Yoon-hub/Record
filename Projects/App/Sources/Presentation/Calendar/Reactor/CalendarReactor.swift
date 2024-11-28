@@ -100,6 +100,7 @@ extension CalendarReactor {
                 self.undoEvent = selectedEvent
                 
                 Task {
+                    LocalPushService.shared.removeNotification(identifiers: [selectedEvent.id])
                     await self.deleteEventUsecase.execute(event: selectedEvent)
                     let events = await self.fetchEventUsecase.execute()
                     observer.onNext(.setEvents(events, self.currentState.selectedDate))
