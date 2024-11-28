@@ -175,17 +175,10 @@ extension EventFixReactor {
     }
     
     private func fixEvent(event: CalendarEvent) async {
-        currentState.currentCalendarEvent.tagColor = event.tagColor
-        currentState.currentCalendarEvent.title = event.title
-        currentState.currentCalendarEvent.startDate = event.startDate
-        currentState.currentCalendarEvent.endDate = event.endDate
-        currentState.currentCalendarEvent.content = event.content
-        currentState.currentCalendarEvent.alarm = event.alarm
-        
-        LocalPushService.shared.removeNotification(identifiers: [event.id])
+        LocalPushService.shared.removeNotification(identifiers: [currentState.currentCalendarEvent.id])
         
         await saveEventUsecase.excecute(event: event)
-        await deleteEventUsecase.execute(event: event)
+        await deleteEventUsecase.execute(event: currentState.currentCalendarEvent)
         
         if event.alarm != .none {
             LocalPushService.shared.addNotification(identifier: event.id, title: event.title, body: event.content ?? "", date: Alarm(rawValue: event.alarm ?? Alarm.none.rawValue)?.timeBefore(from: event.startDate) ?? Date())

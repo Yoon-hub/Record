@@ -113,6 +113,11 @@ extension CalendarReactor {
                 guard let self, let undoEvent else { return Disposables.create() }
                 Task {
                     await self.saveEventUsecsae.excecute(event: undoEvent)
+                    
+                    if undoEvent.alarm != .none {
+                        LocalPushService.shared.addNotification(identifier: undoEvent.id, title: undoEvent.title, body: undoEvent.content ?? "", date: CalendarEvent.Alarm(rawValue: undoEvent.alarm ?? CalendarEvent.Alarm.none.rawValue)?.timeBefore(from: undoEvent.startDate) ?? Date())
+                    }
+                    
                     let events = await self.fetchEventUsecase.execute()
                     observer.onNext(.setEvents(events, self.currentState.selectedDate))
                 }
