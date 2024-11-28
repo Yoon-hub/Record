@@ -44,5 +44,10 @@ final class EventDIContainer: BaseContainer {
         container.register(type: DeleteEventUsecaseProtocol.self) { _ in
             self.makeDeleteEventUsecase()
         }
+        
+        /// Global State
+        container.register(type: GlobalStateProvider.self) { _ in
+            GlobalStateProviderImpl()
+        }
     }
 }

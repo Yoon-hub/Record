@@ -148,6 +148,12 @@ extension CalendarViewController {
                 reactor.action.onNext(.undoDeleteEvent)
             }}
             .disposed(by: disposeBag)
+
+        reactor.pulse(\.$calendarUIUpdate)
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.firstWeekday = UInt(UserDefaultsWrapper.firstWeekday) ?? 2}
+            .disposed(by: disposeBag)
     }
 }
 

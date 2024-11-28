@@ -16,14 +16,33 @@ final class SettingReactor: Reactor {
     
     enum SettingList: CaseIterable {
         case restDayUpdate
+        case firstWeekday
         case version
         
         var title: String {
             switch self {
             case .restDayUpdate:
                 return "공휴일 업데이트"
+            case .firstWeekday:
+                return "시작 요일"
             case .version:
                 return "버전 정보"
+            }
+        }
+        
+        enum FirstWeekday {
+            static let sunday = "1"
+            static let monday = "2"
+            
+            static func title(_ value: String) -> String {
+                switch value {
+                case sunday:
+                    return "일요일"
+                case monday:
+                    return "월요일"
+                default:
+                    return ""
+                }
             }
         }
     }

@@ -14,6 +14,8 @@ import RxCocoa
 
 final class SettingViewController: BaseViewController<SettingReactor, SettinView> {
     
+    @Injected var provider: GlobalStateProvider
+    
     override func setup() {
         setNavigation()
     }
@@ -48,7 +50,7 @@ extension SettingViewController {
             .bind(to: contentView.tableView.rx.items(cellIdentifier: SettingTableViewCell.identifier, cellType: SettingTableViewCell.self)
             ) { _, item, cell in
                 cell.titleLabel.text = item.title
-                if item == .version { cell.contentLabel.text = "\(Bundle.main.infoDictionary?["CFBundleVersion"] ?? "1.0")" }
+                self.setItemContentLabelText(item: item, cell: cell)
             }
             .disposed(by: disposeBag)
     }
@@ -56,6 +58,19 @@ extension SettingViewController {
 
 // MARK: -
 extension SettingViewController {
+    
+    private func setItemContentLabelText(
+        item: Reactor.SettingList,
+        cell: SettingTableViewCell
+    ) {
+        if item == .restDayUpdate { cell.contentLabel.text = "" }
+        if item == .version { cell.contentLabel.text = "1.0" }
+        if item == .firstWeekday {
+            let firstWeedDay = UserDefaultsWrapper.firstWeekday == "" ? "2" : UserDefaultsWrapper.firstWeekday
+            cell.contentLabel.text = SettingReactor.SettingList.FirstWeekday.title(firstWeedDay)
+        }
+    }
+    
     private func handleItemSelected(setting: Reactor.SettingList) {
         switch setting {
         case .version:
@@ -67,7 +82,10 @@ extension SettingViewController {
                 self.reactor?.action.onNext(.restDayUpdateTapped)
                 self.downlaodAnimation()
             }
-            
+        case .firstWeekday:
+            UserDefaultsWrapper.firstWeekday = UserDefaultsWrapper.firstWeekday == "1" ? "2" : "1"
+            provider.sendEvent(.caldenarUIUpdate)
+            self.contentView.tableView.reloadData()
         }
     }
     
@@ -88,3 +106,4 @@ extension SettingViewController {
         }
     }
 }
+    

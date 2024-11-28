@@ -28,6 +28,7 @@ final class CalendarReactor: Reactor {
         case setSelectedEvents([CalendarEvent])
         case setEvents([CalendarEvent], Date)
         case setToast(String)
+        case calendarUIUpdate
     }
     
     struct State {
@@ -37,6 +38,7 @@ final class CalendarReactor: Reactor {
         var selectedDate: Date = Date()
         
         @Pulse var isToast: String = ""
+        @Pulse var calendarUIUpdate = true
     }
     
     let initialState: State
@@ -49,6 +51,9 @@ final class CalendarReactor: Reactor {
     @Injected var fetchEventUsecase: FetchEventUsecaseProtocol
     @Injected var deleteEventUsecase: DeleteEventUsecaseProtocol
     @Injected var saveEventUsecsae: SaveEventUsecaseProtocol
+    
+    /// Globar State
+    @Injected var provider: GlobalStateProvider
     
     /// 삭제 취소를 윈한 변수
     private var undoEvent: CalendarEvent?
@@ -63,7 +68,7 @@ extension CalendarReactor {
                 Task {
                     let restDays = await self.fetchRestDayFromDBUsecase.execute()
                     observer.onNext(.setRestDate(restDays))
-                
+                    
                     let events = await self.fetchEventUsecase.execute()
                     observer.onNext(.setEvents(events, self.currentState.selectedDate))
                 }
@@ -79,7 +84,7 @@ extension CalendarReactor {
         case .reloadEvents:
             return Observable.create { [weak self] observer in
                 guard let self else { return Disposables.create() }
-
+                
                 Task {
                     let events = await self.fetchEventUsecase.execute()
                     observer.onNext(.setEvents(events, self.currentState.selectedDate))
@@ -139,7 +144,20 @@ extension CalendarReactor {
         case .setToast(let message):
             newState.isToast = message
             return newState
+        case .calendarUIUpdate:
+            newState.calendarUIUpdate = true
+            return newState
         }
+    }
+    
+    // MARK: - Transform
+    public func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        provider.event
+            .compactMap { event in
+                switch event {
+                case .caldenarUIUpdate: .calendarUIUpdate
+                }
+            }
     }
 }
 

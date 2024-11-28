@@ -27,7 +27,7 @@ final class CalendarView: UIView, BaseView {
         
         calendar.appearance.headerMinimumDissolvedAlpha = 0.0
         calendar.headerHeight = 0
-        calendar.firstWeekday = 2
+        calendar.firstWeekday = UInt(UserDefaultsWrapper.firstWeekday) ?? 2 
         
         calendar.appearance.weekdayTextColor = .black
         calendar.placeholderType = .none
