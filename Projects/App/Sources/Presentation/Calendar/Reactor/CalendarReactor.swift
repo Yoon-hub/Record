@@ -152,12 +152,14 @@ extension CalendarReactor {
     
     // MARK: - Transform
     public func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        provider.event
-            .compactMap { event in
+        let uiUpdateMutation = provider.event
+            .flatMap { event in
                 switch event {
-                case .caldenarUIUpdate: .calendarUIUpdate
+                case .caldenarUIUpdate:
+                    return Observable<Mutation>.just(.calendarUIUpdate)
                 }
             }
+        return Observable.merge(mutation, uiUpdateMutation)
     }
 }
 

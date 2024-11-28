@@ -152,7 +152,16 @@ extension CalendarViewController {
         reactor.pulse(\.$calendarUIUpdate)
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
-            .bind { $0.0.contentView.calendar.firstWeekday = UInt(UserDefaultsWrapper.firstWeekday) ?? 2}
+            .bind {
+                $0.0.contentView.calendar.firstWeekday = UInt(UserDefaultsWrapper.firstWeekday) ?? 2
+                if UserDefaultsWrapper.firstWeekday == SettingReactor.SettingList.FirstWeekday.sunday {
+                    $0.0.contentView.calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .gray
+                    $0.0.contentView.calendar.calendarWeekdayView.weekdayLabels[0].textColor = .gray
+                } else {
+                    $0.0.contentView.calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .gray
+                    $0.0.contentView.calendar.calendarWeekdayView.weekdayLabels[5].textColor = .gray
+                }
+            }
             .disposed(by: disposeBag)
     }
 }

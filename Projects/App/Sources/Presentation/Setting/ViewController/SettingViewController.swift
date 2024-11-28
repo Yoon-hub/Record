@@ -47,7 +47,9 @@ extension SettingViewController {
     
     private func bindOutput(reactor: Reactor) {
         reactor.state.map {$0.settingList}
-            .bind(to: contentView.tableView.rx.items(cellIdentifier: SettingTableViewCell.identifier, cellType: SettingTableViewCell.self)
+            .bind(to: contentView.tableView.rx.items(
+                cellIdentifier: SettingTableViewCell.identifier,
+                cellType: SettingTableViewCell.self)
             ) { _, item, cell in
                 cell.titleLabel.text = item.title
                 self.setItemContentLabelText(item: item, cell: cell)
@@ -63,9 +65,15 @@ extension SettingViewController {
         item: Reactor.SettingList,
         cell: SettingTableViewCell
     ) {
+        /// 공휴일 업데이트
         if item == .restDayUpdate { cell.contentLabel.text = "" }
+        
+        /// 버전 정보
         if item == .version { cell.contentLabel.text = "1.0" }
+        
+        /// 시작 날짜 선택
         if item == .firstWeekday {
+            
             let firstWeedDay = UserDefaultsWrapper.firstWeekday == "" ? "2" : UserDefaultsWrapper.firstWeekday
             cell.contentLabel.text = SettingReactor.SettingList.FirstWeekday.title(firstWeedDay)
         }
@@ -85,6 +93,12 @@ extension SettingViewController {
         case .firstWeekday:
             UserDefaultsWrapper.firstWeekday = UserDefaultsWrapper.firstWeekday == "1" ? "2" : "1"
             provider.sendEvent(.caldenarUIUpdate)
+            
+            /// 진동
+            let generator = UIImpactFeedbackGenerator(style: .heavy)
+            generator.prepare()
+            generator.impactOccurred()
+            
             self.contentView.tableView.reloadData()
         }
     }

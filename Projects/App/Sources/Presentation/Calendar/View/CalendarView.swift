@@ -41,9 +41,14 @@ final class CalendarView: UIView, BaseView {
         
         calendar.appearance.borderRadius = 0.3
         calendar.register(FScalendarCustomCell.self, forCellReuseIdentifier: FScalendarCustomCell.description())
-
-        calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .gray
-        calendar.calendarWeekdayView.weekdayLabels[5].textColor = .gray
+        
+        if UserDefaultsWrapper.firstWeekday == SettingReactor.SettingList.FirstWeekday.sunday {
+            calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .gray
+            calendar.calendarWeekdayView.weekdayLabels[0].textColor = .gray
+        } else {
+            calendar.calendarWeekdayView.weekdayLabels.last!.textColor = .gray
+            calendar.calendarWeekdayView.weekdayLabels[5].textColor = .gray
+        }
         
         return calendar
     }()
