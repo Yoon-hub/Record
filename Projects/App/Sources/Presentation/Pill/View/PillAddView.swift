@@ -14,6 +14,7 @@ import PinLayout
 import FlexLayout
 import Lottie
 
+@available(*, deprecated, message: "사용하지 않음")
 final class PillAddView: UIView, BaseView {
     
     let rootFlexContainer = UIView()
