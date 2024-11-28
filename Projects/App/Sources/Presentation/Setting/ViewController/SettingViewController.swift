@@ -48,7 +48,7 @@ extension SettingViewController {
             .bind(to: contentView.tableView.rx.items(cellIdentifier: SettingTableViewCell.identifier, cellType: SettingTableViewCell.self)
             ) { _, item, cell in
                 cell.titleLabel.text = item.title
-                if item == .version { cell.contentLabel.text = "1.0" }
+                if item == .version { cell.contentLabel.text = "\(Bundle.main.infoDictionary?["CFBundleVersion"] ?? "1.0")" }
             }
             .disposed(by: disposeBag)
     }
