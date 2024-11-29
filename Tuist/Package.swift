@@ -27,6 +27,7 @@ let package = Package(
         .package(url: "https://github.com/RxSwiftCommunity/RxAlamofire.git", exact: "6.1.2"),
         .package(url: "https://github.com/RxSwiftCommunity/RxKeyboard.git", exact: "2.0.1"),
         .package(url: "https://github.com/airbnb/lottie-ios.git", exact: "4.5.0"),
-        .package(url: "https://github.com/Yoon-hub/FloatingBottomSheet.git", branch: "main")
+        .package(url: "https://github.com/Yoon-hub/FloatingBottomSheet.git", branch: "main"),
+        .package(url: "https://github.com/RxSwiftCommunity/RxGesture.git", from: Version(4, 0, 4)),
     ]
 )

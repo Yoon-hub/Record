@@ -16,6 +16,7 @@ import FSCalendar
 import ReactorKit
 import RxSwift
 import RxCocoa
+import RxGesture
 
 final class CalendarViewController: BaseViewController<CalendarReactor, CalendarView> {
     

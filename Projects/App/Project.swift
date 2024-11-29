@@ -51,7 +51,8 @@ let project = Project(name: "App", targets: [
             .external(name: "RxKeyboard"),
             .external(name: "Lottie"),
             .external(name: "FloatingBottomSheet"),
-            .target(name: "Widget")
+            .target(name: "Widget"),
+            .external(name: "RxGesture")
         ],
         settings: .settings(
             base: [
