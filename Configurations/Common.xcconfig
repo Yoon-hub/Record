@@ -1,0 +1,7 @@
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+
+// 버전
+BUNDLE_SHORT_VERSION_STRING = 1.0.0
+BUNDLE_VERSION = 0
