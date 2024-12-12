@@ -37,6 +37,27 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
         $0.backgroundColor = .clear
     }
     
+    /// Tag Spot
+    let thirdTagSpot = UIView().then {
+        $0.layer.cornerRadius = 2
+        $0.backgroundColor = .clear
+    }
+    
+    let fourthTagSpot = UIView().then {
+        $0.layer.cornerRadius = 2
+        $0.backgroundColor = .clear
+    }
+    
+    let fifthTagSpot = UIView().then {
+        $0.layer.cornerRadius = 2
+        $0.backgroundColor = .clear
+    }
+    
+    let sixthTagSpot = UIView().then {
+        $0.layer.cornerRadius = 2
+        $0.backgroundColor = .clear
+    }
+    
     let secondTitle = UILabel().then {
         $0.font = DesignFontFamily.Pretendard.medium.font(size: 8)
         $0.textColor = .black.withAlphaComponent(0.8)
@@ -86,7 +107,18 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
     }
     
     func configure() {
-        [line, firsTagLine, firstTitle, secondTagLine, secondTitle, plusLabel, firstContinueView, secondContinueView].forEach {
+        [line,
+         firsTagLine,
+         firstTitle,
+         secondTagLine,
+         secondTitle,
+         plusLabel,
+         firstContinueView,
+         secondContinueView,
+         thirdTagSpot,
+         fourthTagSpot,
+         fifthTagSpot,
+         sixthTagSpot].forEach {
             self.addSubview($0)
         }
     }
@@ -134,8 +166,7 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
             .left(9)
             .below(of: secondTagLine)
             .marginTop(2)
-            .right()
-            .height(10)
+            .sizeToFit()
         
         firstContinueView.pin
             .top(18)
@@ -149,6 +180,34 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
             .left()
             .right()
             .height(10)
+        
+        thirdTagSpot.pin
+            .after(of: plusLabel)
+            .marginLeft(4)
+            .vCenter(to: plusLabel.edge.vCenter)
+            .height(7)
+            .width(2)
+        
+        fourthTagSpot.pin
+            .after(of: thirdTagSpot)
+            .marginLeft(2)
+            .vCenter(to: plusLabel.edge.vCenter)
+            .height(7)
+            .width(2)
+        
+        fifthTagSpot.pin
+            .after(of: fourthTagSpot)
+            .marginLeft(2)
+            .vCenter(to: plusLabel.edge.vCenter)
+            .height(7)
+            .width(2)
+        
+        sixthTagSpot.pin
+            .after(of: fifthTagSpot)
+            .marginLeft(2)
+            .vCenter(to: plusLabel.edge.vCenter)
+            .height(7)
+            .width(2)
         
     }
     
@@ -170,8 +229,13 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
         
         // 이벤트 수에따른 Cell UI 변경
         if events.count == 0 {
-            firsTagLine.backgroundColor = .clear
-            secondTagLine.backgroundColor = .clear
+            [firsTagLine,
+             secondTagLine,
+             thirdTagSpot,
+             fourthTagSpot,
+             fifthTagSpot,
+             sixthTagSpot
+            ].forEach { $0.backgroundColor = .clear }
             
             firstTitle.text = ""
             secondTitle.text = ""
@@ -190,6 +254,25 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
                 
                 if events.count > 2 {
                     plusLabel.text = "+\(events.count - 2)"
+                    
+                    for i in 0...events.count - 1 {
+                        if i == 2 {
+                            thirdTagSpot.backgroundColor = events[i].tagColor.toUIColor()
+                        }
+                        
+                        if i == 3 {
+                            fourthTagSpot.backgroundColor = events[i].tagColor.toUIColor()
+                        }
+                        
+                        if i == 4 {
+                            fifthTagSpot.backgroundColor = events[i].tagColor.toUIColor()
+                        }
+                         
+                        if i == 5 {
+                            sixthTagSpot.backgroundColor = events[i].tagColor.toUIColor()
+                        }
+
+                    }
                 }
             }
         }
