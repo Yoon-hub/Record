@@ -120,8 +120,9 @@ private struct CellView: View {
                 .foregroundColor(isToday ? Color(uiColor: .label) : .clear)
                 .overlay(
                     Text(String(day))
-                        .font(.system(size: 11, weight: .regular))
+                        .font(.system(size: 12, weight: .regular))
                         .foregroundColor(isRestDay ? .red : Color(uiColor: .label))
+                        .frame(width: 30)
                 )
             
             if clicked {
@@ -176,5 +177,5 @@ extension CalenderView {
         return formatter
     }()
     
-    static let weekdaySymbols = ["월", "화", "수", "목", "금", "토", "일"]
+    static let weekdaySymbols = ["일", "월", "화", "수", "목", "금", "토"]
 }
