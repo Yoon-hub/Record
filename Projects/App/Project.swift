@@ -8,6 +8,7 @@
 import ProjectDescription
 
 let teamID = "4EHY29FHRR"
+let kakaoAppKey = "e65abf7a0c734491e6f2309b53ed71dd"
 
 let project = Project(name: "App", targets: [
     .target(
@@ -38,8 +39,17 @@ let project = Project(name: "App", targets: [
                 .string("kakaokompassauth"),  // 카카오톡으로 로그인
                 .string("kakaolink"),         // 카카오톡 공유
                 .string("kakaoplus")          // 카카오톡 채널
-            ])
+            ]),
+            "CFBundleURLTypes": .array([
+                .dictionary([
+                    "CFBundleURLSchemes": .array([
+                        .string("kakao\(kakaoAppKey)")
+                    ])
+                ])
+            ]),
+            
         ]),
+
         sources: ["Sources/**"],
         resources: ["Resources/**"],
         entitlements: .file(path: "App.entitlements"),
