@@ -102,6 +102,11 @@ final class EventAddView: UIView, BaseView {
         $0.setTitle("하루종일", for: .normal)
     }
     
+    let kakaoSDKButton = UIButton().then {
+        $0.setImage(DesignAsset.kakao.image , for: .normal)
+        $0.isHidden = true
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -119,7 +124,22 @@ final class EventAddView: UIView, BaseView {
     
     func configure() {
         self.backgroundColor = .white
-        [titleTextField, titleTagColor, timeIcon, startTimeButton, tagIcon, tagButton, alarmIcon, alarmButton, memoIcon, textView, saveButton, tildeLabel, endTimeButton, allDayButton].forEach {
+        [titleTextField, 
+         titleTagColor,
+         timeIcon,
+         startTimeButton,
+         tagIcon,
+         tagButton,
+         alarmIcon,
+         alarmButton,
+         memoIcon,
+         textView,
+         saveButton,
+         tildeLabel,
+         endTimeButton,
+         allDayButton,
+         kakaoSDKButton,
+        ].forEach {
             self.addSubview($0)
         }
     }
@@ -212,6 +232,12 @@ final class EventAddView: UIView, BaseView {
             .marginBottom(30)
             .right(20)
             .size(54)
+        
+        kakaoSDKButton.pin
+            .bottom(self.pin.safeArea.bottom)
+            .marginBottom(38)
+            .left(20)
+            .size(46)
     }
     
 }

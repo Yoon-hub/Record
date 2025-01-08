@@ -17,6 +17,7 @@ let dataProject = Project(name: "Data", targets: [
         sources: ["Sources/**"],
         dependencies: [
             .project(target: "Domain", path: "../Domain"),
+            .external(name: "RxKakaoSDKTalk")
         ]
     )
 ])

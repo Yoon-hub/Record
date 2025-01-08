@@ -25,6 +25,7 @@ final class EventFixReactor: Reactor {
         case didSeleteAlarm(Alarm)
         case viewDidLoad
         case didTapAlldayButton
+        case didTapKakaoButton
     }
     
     enum Mutation {
@@ -57,6 +58,7 @@ final class EventFixReactor: Reactor {
     
     @Injected var saveEventUsecase: SaveEventUsecaseProtocol
     @Injected var deleteEventUsecase: DeleteEventUsecaseProtocol
+    @Injected var kakaoSDKUsecase: KakaoSDKUsecaseProtocol
 }
     
 extension EventFixReactor {
@@ -126,6 +128,20 @@ extension EventFixReactor {
 //            return .just(.saveEvent)
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
+        case .didTapKakaoButton:
+             kakaoSDKUsecase.excuteProfile()
+                .subscribe (onSuccess:{ (profile) in
+                    print("success.")
+
+                    // 성공 시 동작 구현
+                    _ = profile
+
+                }, onFailure: {error in
+                    print(error)
+                })
+            
+            return Observable.empty()
+            
         case .didTapAlldayButton:
             return .concat([
                 .just(.setTime(EventAddReactor.makeDefaultTime(date: currentState.selectedDate, hour: 0))),

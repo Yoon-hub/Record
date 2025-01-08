@@ -10,8 +10,12 @@ import UIKit
 import Core
 import Design
 
+import PinLayout
 import ReactorKit
 import RxKeyboard
+
+import KakaoSDKTalk
+import KakaoSDKAuth
 
 final class EventFixViewController: BaseViewController<EventFixReactor, EventAddView> {
     let customPopView = CustomPopView()
@@ -38,6 +42,7 @@ final class EventFixViewController: BaseViewController<EventFixReactor, EventAdd
     
     override func setup() {
         setAlarmButtonMenu()
+        showKakaoMessageButton()
     }
     
     override func bind(reactor: EventFixReactor) {
@@ -97,6 +102,12 @@ extension EventFixViewController {
         contentView.allDayButton.rx.tap
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .map { Reactor.Action.didTapAlldayButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        contentView.kakaoSDKButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .map { Reactor.Action.didTapKakaoButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
@@ -196,6 +207,10 @@ extension EventFixViewController {
                    .disposed(by: disposeBag)
     }
     
+    /// 카카오 메세지 버튼 노출
+    private func showKakaoMessageButton() {
+        contentView.kakaoSDKButton.isHidden = false
+    }
     
     private func setAlarmButtonMenu() {
         let timeOptions = Reactor.Alarm.allCases

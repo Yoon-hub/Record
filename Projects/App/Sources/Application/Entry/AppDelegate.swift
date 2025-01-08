@@ -29,7 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             MovieDIContainer(),
             RestDayDIContrainer(),
             EventDIContainer(),
-            PillDIContainer()
+            PillDIContainer(),
+            KakaSDKDIContainer() // 카카오 SDK 용
         ]
         containers.forEach {
             $0.registerDependencies()
