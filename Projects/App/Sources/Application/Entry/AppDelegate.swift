@@ -38,6 +38,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         fetchRestDay()
         setNotification()
         
+        /// 카카오 sdk
+        configureKakaoSdk()
+        
         return true
     }
 }
