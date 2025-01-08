@@ -8,7 +8,17 @@
 import Foundation
 
 import RxSwift
+
+// MARK: - Kakao SDK
+import RxKakaoSDKCommon
 import KakaoSDKTalk
+import RxKakaoSDKTalk
+import RxKakaoSDKAuth
+import KakaoSDKUser
+import RxKakaoSDKUser
+import KakaoSDKAuth
+import KakaoSDKUser
+import RxKakaoSDKUser
 
 public protocol KakaoSDKUsecaseProtocol {
     func executeConfigure()
@@ -28,5 +38,13 @@ public final class KakaoSDKUsecase: KakaoSDKUsecaseProtocol {
     
     public func excuteProfile() -> Single<TalkProfile> {
         repository.profile()
+    }
+    
+    public func executeValidLogin() -> Single<OAuthToken> {
+        if UserApi.isKakaoTalkLoginAvailable() {
+            return repository.validLogin()
+        } else {
+            return Single.error(KakaoSDKError.inAvalableLogin)
+        }
     }
 }

@@ -9,6 +9,7 @@ import Foundation
 
 import RxSwift
 import KakaoSDKTalk
+import KakaoSDKAuth
 
 public protocol KakaoSDKRepositoryProtocol {
     
@@ -17,5 +18,5 @@ public protocol KakaoSDKRepositoryProtocol {
     
     /// 프로필 정보 요청
     func profile() -> Single<TalkProfile>
-
+    func validLogin() -> Single<OAuthToken>
 }
