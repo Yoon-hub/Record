@@ -71,7 +71,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+        delay(5) {
             NotificationCenterService.reloadCalendar.post()
         }
     }
@@ -89,5 +89,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([ .list, .banner, .badge, .sound])
+    }
+    
+    /// `AppScheme Handler`
+    func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+    ) -> Bool {
+        cancelKakaoLogin(url)
     }
 }

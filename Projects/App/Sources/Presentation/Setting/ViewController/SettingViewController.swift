@@ -12,6 +12,8 @@ import Core
 import RxSwift
 import RxCocoa
 
+
+
 final class SettingViewController: BaseViewController<SettingReactor, SettinView> {
     
     @Injected var provider: GlobalStateProvider
@@ -55,6 +57,20 @@ extension SettingViewController {
                 self.setItemContentLabelText(item: item, cell: cell)
             }
             .disposed(by: disposeBag)
+        
+        /// 카카오 로그인 정보 업데이트
+        reactor.state.map { $0.isLogin }
+            .withUnretained(self)
+            .bind { (vc, _) in vc.contentView.tableView.reloadData() }
+            .disposed(by: disposeBag)
+        
+        /// alert 노출
+        reactor.pulse(\.$isShowAlert)
+            .withUnretained(self)
+            .bind { (vc, message) in
+                vc.showAlert(title: "알림", message: message)
+            }
+            .disposed(by: disposeBag)
     }
 }
 
@@ -65,17 +81,23 @@ extension SettingViewController {
         item: Reactor.SettingList,
         cell: SettingTableViewCell
     ) {
-        /// 공휴일 업데이트
+        // 공휴일 업데이트
         if item == .restDayUpdate { cell.contentLabel.text = "" }
         
-        /// 버전 정보
+        // 버전 정보
         if item == .version { cell.contentLabel.text = "1.0" }
         
-        /// 시작 날짜 선택
+        // 시작 날짜 선택
         if item == .firstWeekday {
             
             let firstWeedDay = UserDefaultsWrapper.firstWeekday == "" ? "2" : UserDefaultsWrapper.firstWeekday
             cell.contentLabel.text = SettingReactor.SettingList.FirstWeekday.title(firstWeedDay)
+        }
+        
+        // 카카오 로그인 정보
+        if item == .kakaoLogin {
+            guard let reactor else {return}
+            cell.contentLabel.text = reactor.currentState.isLogin ? "로그인" : "미로그인"
         }
     }
     
@@ -100,6 +122,8 @@ extension SettingViewController {
             generator.impactOccurred()
             
             self.contentView.tableView.reloadData()
+        case .kakaoLogin:
+            reactor?.action.onNext(.didTapKakaoLogin)
         }
     }
     
@@ -110,7 +134,7 @@ extension SettingViewController {
         
         self.view.isUserInteractionEnabled = false
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+        delay(3.0) {
             animationView.stop()
             animationView.alpha = 0
             

@@ -39,8 +39,7 @@ public final class KakaoSDKRespository: KakaoSDKRepositoryProtocol {
     }
     
     /// Kakao 로그인 가능여부 확인
-    public func validLogin() -> Single<OAuthToken> {
+    public func validLogin() -> Observable<OAuthToken> {
         UserApi.shared.rx.loginWithKakaoTalk()
-            .asSingle()
     }
 }

@@ -217,7 +217,7 @@ extension CalendarViewController: FSCalendarDelegate, FSCalendarDelegateAppearan
             let dateToSelect = isCurrentMonth ? updatedToday : firstDayOfMonth
             calendar.select(dateToSelect)
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            delay(0.1) {
                 self.reactor?.action.onNext(.didSelectDate(dateToSelect))
             }
         }

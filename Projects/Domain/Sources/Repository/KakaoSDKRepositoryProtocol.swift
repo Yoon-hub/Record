@@ -18,5 +18,5 @@ public protocol KakaoSDKRepositoryProtocol {
     
     /// 프로필 정보 요청
     func profile() -> Single<TalkProfile>
-    func validLogin() -> Single<OAuthToken>
+    func validLogin() -> Observable<OAuthToken>
 }

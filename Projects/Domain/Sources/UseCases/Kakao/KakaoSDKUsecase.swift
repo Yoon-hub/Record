@@ -23,6 +23,7 @@ import RxKakaoSDKUser
 public protocol KakaoSDKUsecaseProtocol {
     func executeConfigure()
     func excuteProfile() -> Single<TalkProfile>
+    func executeValidLogin() -> Observable<OAuthToken>
 }
 
 public final class KakaoSDKUsecase: KakaoSDKUsecaseProtocol {
@@ -40,11 +41,11 @@ public final class KakaoSDKUsecase: KakaoSDKUsecaseProtocol {
         repository.profile()
     }
     
-    public func executeValidLogin() -> Single<OAuthToken> {
+    public func executeValidLogin() -> Observable<OAuthToken> {
         if UserApi.isKakaoTalkLoginAvailable() {
             return repository.validLogin()
         } else {
-            return Single.error(KakaoSDKError.inAvalableLogin)
+            return Observable.error(KakaoSDKError.inAvalableLogin)
         }
     }
 }
