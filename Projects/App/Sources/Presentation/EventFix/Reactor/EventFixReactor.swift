@@ -12,6 +12,7 @@ import Domain
 import Design
 
 import ReactorKit
+import KakaoSDKCommon
 
 final class EventFixReactor: Reactor {
     
@@ -34,7 +35,7 @@ final class EventFixReactor: Reactor {
         case setColor(UIColor)
         case saveEvent
         case setAlarm(Alarm)
-        case popAlert
+        case popAlert(String)
     }
     
     struct State {
@@ -46,7 +47,7 @@ final class EventFixReactor: Reactor {
         
         var currentCalendarEvent: CalendarEvent
         
-        @Pulse var isAlert = false
+        @Pulse var isAlert = ""
         @Pulse var saveEvent = false
     }
 
@@ -90,7 +91,7 @@ extension EventFixReactor {
                 guard let self else {return Disposables.create()}
                 
                 if checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
-                    observer.onNext(.popAlert)
+                    observer.onNext(.popAlert("시작 날짜는 종료 날짜 이전이어야 합니다."))
                     return Disposables.create()
                 }
                 
@@ -129,14 +130,20 @@ extension EventFixReactor {
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
         case .didTapKakaoButton:
-            kakaoSDKMessageUsecase.executePicker()
+            return kakaoSDKMessageUsecase.executePicker()
                 .observe(on: MainScheduler.instance)
-                .subscribe(onNext: { [weak self] message in
-                    print(message)
-                })
-                
-                
-            return .empty()
+                .flatMap { selectedUsers in
+                    return Observable<Mutation>.empty() // 추후 선택 카카오 메세지 로그 추가 할 예정
+                }
+                .catch { error in
+                    if let sdkError = error as? KakaoSDKCommon.SdkError {
+                        let reason = sdkError.getClientError().reason
+                        if reason == .Cancelled {
+                            return .empty() // 사용자가 취소한 경우 아무 Mutation도 방출하지 않음
+                        }
+                    }
+                    return Observable.just(.popAlert("설정 > 카카오 로그인 후 사용이 가능합니다."))
+                }
             
         case .didTapAlldayButton:
             return .concat([
@@ -155,8 +162,8 @@ extension EventFixReactor {
         var newState = state
         
         switch mutation {
-        case .popAlert:
-            newState.isAlert = true
+        case .popAlert(let text):
+            newState.isAlert = text
         case .saveEvent:
             newState.saveEvent = true
         case .setTime(let date):

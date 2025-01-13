@@ -158,7 +158,10 @@ extension EventFixViewController {
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind {
-                $0.0.showAlert(title: "알림", message: "시작 날짜는 종료 날짜 이전이어야 합니다.")
+                $0.0.showAlert(
+                    title: "알림",
+                    message: $0.1
+                )
             }
             .disposed(by: disposeBag)
         
