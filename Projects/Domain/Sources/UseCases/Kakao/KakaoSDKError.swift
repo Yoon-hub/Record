@@ -10,4 +10,5 @@ import Foundation
 /// 카카오 SDK에서 활용할 error type
 public enum KakaoSDKError: Error {
     case inAvalableLogin
+    case inValidToken
 }

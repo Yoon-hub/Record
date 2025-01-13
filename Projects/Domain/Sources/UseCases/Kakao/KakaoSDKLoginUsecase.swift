@@ -20,13 +20,14 @@ import KakaoSDKAuth
 import KakaoSDKUser
 import RxKakaoSDKUser
 
-public protocol KakaoSDKUsecaseProtocol {
+public protocol KakaoSDKLoginUsecaseProtocol {
     func executeConfigure()
     func excuteProfile() -> Single<TalkProfile>
     func executeValidLogin() -> Observable<OAuthToken>
+    func executeCheckToken() -> Observable<Bool>
 }
 
-public final class KakaoSDKUsecase: KakaoSDKUsecaseProtocol {
+public final class KakaoSDKLoginUsecase: KakaoSDKLoginUsecaseProtocol {
     let repository: KakaoSDKRepositoryProtocol
     
     public init(repository: KakaoSDKRepositoryProtocol) {
@@ -47,5 +48,9 @@ public final class KakaoSDKUsecase: KakaoSDKUsecaseProtocol {
         } else {
             return Observable.error(KakaoSDKError.inAvalableLogin)
         }
+    }
+    
+    public func executeCheckToken() -> Observable<Bool> {
+        repository.checkToken()
     }
 }

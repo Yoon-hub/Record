@@ -14,8 +14,12 @@ import Domain
 
 final class KakaSDKDIContainer: BaseContainer {
     
-    private func makeKakaoSDKUsecase() -> KakaoSDKUsecaseProtocol {
-        KakaoSDKUsecase(repository: self.repository)
+    private func makeKakaoSDKLoginUsecase() -> KakaoSDKLoginUsecaseProtocol {
+        KakaoSDKLoginUsecase(repository: self.repository)
+    }
+    
+    private func makeKakaoSDKMesageUsecase() -> KakaoSDKMessageUsecaseProtocol {
+        KakaoSDKMessageUsecase(repository: self.repository)
     }
     
     private var repository: KakaoSDKRepositoryProtocol = {
@@ -25,8 +29,12 @@ final class KakaSDKDIContainer: BaseContainer {
     // MARK: - Make Repository
     
     func registerDependencies() {
-        container.register(type: KakaoSDKUsecaseProtocol.self) { _ in
-            self.makeKakaoSDKUsecase()
+        container.register(type: KakaoSDKLoginUsecaseProtocol.self) { _ in
+            self.makeKakaoSDKLoginUsecase()
+        }
+        
+        container.register(type: KakaoSDKMessageUsecaseProtocol.self) { _ in
+            self.makeKakaoSDKMesageUsecase()
         }
     }
 }
