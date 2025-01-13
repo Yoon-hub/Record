@@ -68,7 +68,7 @@ let project = Project(name: "App", targets: [
             .external(name: "FloatingBottomSheet"),
             .target(name: "Widget"),
             .external(name: "RxGesture"),
-            .external(name: "RxKakaoSDKTalk")
+            .external(name: "RxKakaoSDKTalk"),
         ],
         settings: .settings(
             base: [
