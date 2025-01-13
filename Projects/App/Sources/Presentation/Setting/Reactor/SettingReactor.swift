@@ -53,16 +53,17 @@ final class SettingReactor: Reactor {
     enum Action {
         case restDayUpdateTapped
         case didTapKakaoLogin
+        case viewDidload
     }
     
     enum Mutation {
         case showAlert(String)
-        case loginSucces
+        case loginSucces(Bool)
     }
     
     struct State {
         let settingList = SettingList.allCases
-        var isLogin: Bool
+        var isLogin: Bool = false
         
         @Pulse var isShowAlert: String = ""
     }
@@ -75,10 +76,10 @@ final class SettingReactor: Reactor {
     @Injected var deleteRestDayusecase: DeleteRestDayUsecaseProtocol
     
     // 카카오 sdk
-    @Injected var kakaoLoginUsecase: KakaoSDKUsecaseProtocol
+    @Injected var kakaoLoginUsecase: KakaoSDKLoginUsecaseProtocol
     
     init() {
-        self.initialState = State(isLogin: false)
+        self.initialState = State()
     }
 }
 
@@ -98,12 +99,16 @@ extension SettingReactor {
             }
         case .didTapKakaoLogin:
             return kakaoLoginUsecase.executeValidLogin()
-                .observeOn(MainScheduler.instance)
+                .observe(on: MainScheduler.instance)
                 .map {
-                    token in Mutation.loginSucces
+                    token in Mutation.loginSucces(true)
                 } // 성공 시 Mutation 반환
                 .catchAndReturn(Mutation.showAlert("로그인에 실패 하였습니다.")) // 에러 시 Mutation 반환
-            
+        case .viewDidload:
+            return kakaoLoginUsecase.executeCheckToken()
+                .flatMap { isInvalid in
+                    isInvalid ? Observable.just(Mutation.loginSucces(true)) : Observable.just(Mutation.loginSucces(false))
+                }
         }
     }
     
@@ -117,8 +122,8 @@ extension SettingReactor {
         case .showAlert(let text):
             newState.isShowAlert = text
             
-        case .loginSucces:
-            newState.isLogin = true
+        case .loginSucces(let result):
+            newState.isLogin = result
         }
         
         return newState

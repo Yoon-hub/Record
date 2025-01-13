@@ -18,6 +18,15 @@ final class SettingViewController: BaseViewController<SettingReactor, SettinView
     
     @Injected var provider: GlobalStateProvider
     
+    // MARK: - View Life Cycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // 카카오 로그인 여부 판단
+        reactor?.action.onNext(.viewDidload)
+    }
+    
+    // MARK: - SetUp
     override func setup() {
         setNavigation()
     }
