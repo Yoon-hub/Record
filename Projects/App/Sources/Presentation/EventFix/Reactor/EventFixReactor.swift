@@ -58,7 +58,7 @@ final class EventFixReactor: Reactor {
     
     @Injected var saveEventUsecase: SaveEventUsecaseProtocol
     @Injected var deleteEventUsecase: DeleteEventUsecaseProtocol
-    @Injected var kakaoSDKUsecase: KakaoSDKUsecaseProtocol
+    @Injected var kakaoSDKMessageUsecase: KakaoSDKMessageUsecaseProtocol
 }
     
 extension EventFixReactor {
@@ -113,7 +113,7 @@ extension EventFixReactor {
 //            if checkDateValidation(startDate: currentState.selectedStartDate, endDate: currentState.selectedEndDate) {
 //                return .just(.popAlert)
 //            }
-//            
+//
 //            let event = EventBuilder()
 //                .setAlarm(currentState.selectedAlarm)
 //                .setDate(currentState.selectedStartDate)
@@ -122,25 +122,21 @@ extension EventFixReactor {
 //                .setTitle(title)
 //                .setContent(content ?? "")
 //                .build()
-//            
+//
 //            fixEvent(event: event)
-//            
+//
 //            return .just(.saveEvent)
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
         case .didTapKakaoButton:
-             kakaoSDKUsecase.excuteProfile()
-                .subscribe (onSuccess:{ (profile) in
-                    print("success.")
-
-                    // 성공 시 동작 구현
-                    _ = profile
-
-                }, onFailure: {error in
-                    print(error)
+            kakaoSDKMessageUsecase.executePicker()
+                .observe(on: MainScheduler.instance)
+                .subscribe(onNext: { [weak self] message in
+                    print(message)
                 })
-            
-            return Observable.empty()
+                
+                
+            return .empty()
             
         case .didTapAlldayButton:
             return .concat([
@@ -197,7 +193,12 @@ extension EventFixReactor {
         await deleteEventUsecase.execute(event: currentState.currentCalendarEvent)
         
         if event.alarm != .none {
-            LocalPushService.shared.addNotification(identifier: event.id, title: event.title, body: event.content ?? "", date: Alarm(rawValue: event.alarm ?? Alarm.none.rawValue)?.timeBefore(from: event.startDate) ?? Date())
+            LocalPushService.shared.addNotification(
+                identifier: event.id,
+                title: event.title,
+                body: event.content ?? "",
+                date: Alarm(rawValue: event.alarm ?? Alarm.none.rawValue)?.timeBefore(from: event.startDate) ?? Date()
+            )
         }
     }
 }

@@ -9,6 +9,7 @@ import UIKit
 
 import Core
 import Design
+import Domain
 
 import PinLayout
 import ReactorKit
@@ -18,6 +19,9 @@ import KakaoSDKTalk
 import KakaoSDKAuth
 
 final class EventFixViewController: BaseViewController<EventFixReactor, EventAddView> {
+    
+    @Injected var kakaoSDKMessageUsecase: KakaoSDKMessageUsecaseProtocol
+    
     let customPopView = CustomPopView()
     
     let reloadTableView: (() -> Void)?
