@@ -63,7 +63,7 @@ extension Toast {
             
             window?.layoutIfNeeded()
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration.toTimeInterval()) {
+            delay(duration.toTimeInterval()) {
                 /// WithDrauton 1 -> 0 까지 걸리는 시간
                 /// delay: 특정 시간 이후에 동작
                 UIView.animate(withDuration: 0.5, delay: 0, options: .curveEaseOut) {

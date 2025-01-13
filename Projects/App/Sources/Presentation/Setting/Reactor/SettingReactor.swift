@@ -18,6 +18,7 @@ final class SettingReactor: Reactor {
         case restDayUpdate
         case firstWeekday
         case version
+        case kakaoLogin
         
         var title: String {
             switch self {
@@ -27,6 +28,8 @@ final class SettingReactor: Reactor {
                 return "시작 요일"
             case .version:
                 return "버전 정보"
+            case .kakaoLogin:
+                return "카카오 로그인"
             }
         }
         
@@ -49,14 +52,20 @@ final class SettingReactor: Reactor {
     
     enum Action {
         case restDayUpdateTapped
+        case didTapKakaoLogin
+        case viewDidload
     }
     
     enum Mutation {
-        
+        case showAlert(String)
+        case loginSucces(Bool)
     }
     
     struct State {
         let settingList = SettingList.allCases
+        var isLogin: Bool = false
+        
+        @Pulse var isShowAlert: String = ""
     }
     
     let initialState: State
@@ -65,6 +74,9 @@ final class SettingReactor: Reactor {
     @Injected var saveRestDayUsecase: SaveRestUsecaseProtocol
     @Injected var fetchRestDayUsecase: FetchRestDayUsecaseProtocol
     @Injected var deleteRestDayusecase: DeleteRestDayUsecaseProtocol
+    
+    // 카카오 sdk
+    @Injected var kakaoLoginUsecase: KakaoSDKLoginUsecaseProtocol
     
     init() {
         self.initialState = State()
@@ -85,6 +97,18 @@ extension SettingReactor {
                 }
                 return Disposables.create()
             }
+        case .didTapKakaoLogin:
+            return kakaoLoginUsecase.executeValidLogin()
+                .observe(on: MainScheduler.instance)
+                .map {
+                    token in Mutation.loginSucces(true)
+                } // 성공 시 Mutation 반환
+                .catchAndReturn(Mutation.showAlert("로그인에 실패 하였습니다.")) // 에러 시 Mutation 반환
+        case .viewDidload:
+            return kakaoLoginUsecase.executeCheckToken()
+                .flatMap { isInvalid in
+                    isInvalid ? Observable.just(Mutation.loginSucces(true)) : Observable.just(Mutation.loginSucces(false))
+                }
         }
     }
     
@@ -95,6 +119,11 @@ extension SettingReactor {
         var newState = state
         
         switch mutation {
+        case .showAlert(let text):
+            newState.isShowAlert = text
+            
+        case .loginSucces(let result):
+            newState.isLogin = result
         }
         
         return newState
@@ -116,7 +145,7 @@ extension SettingReactor {
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+        delay(5) {
             NotificationCenterService.reloadCalendar.post()
         }
     }

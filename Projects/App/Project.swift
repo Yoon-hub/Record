@@ -8,6 +8,7 @@
 import ProjectDescription
 
 let teamID = "4EHY29FHRR"
+let kakaoAppKey = "e65abf7a0c734491e6f2309b53ed71dd"
 
 let project = Project(name: "App", targets: [
     .target(
@@ -31,12 +32,29 @@ let project = Project(name: "App", targets: [
                 ])
             ]),
             "UIUserInterfaceStyle": .string("Light"),
-            "NSAppTransportSecurity": .dictionary([ // 추가 부분 시작
+            "NSAppTransportSecurity": .dictionary([
                 "NSAllowsArbitraryLoads": .boolean(true)
-            ]) // 추가 부분 끝
+            ]),
+            "LSApplicationQueriesSchemes": .array([
+                .string("kakaokompassauth"),  // 카카오톡으로 로그인
+                .string("kakaolink"),         // 카카오톡 공유
+                .string("kakaoplus")          // 카카오톡 채널
+            ]),
+            "CFBundleURLTypes": .array([
+                .dictionary([
+                    "CFBundleURLSchemes": .array([
+                        .string("kakao\(kakaoAppKey)")
+                    ])
+                ])
+            ]),
+            
         ]),
+
         sources: ["Sources/**"],
-        resources: ["Resources/**"],
+        resources: [
+            "Resources/**",
+            "../../Tuist/.build/checkouts/kakao-ios-sdk/Sources/KakaoSDKFriendCore/KakaoSDKFriendResources.bundle"
+                   ],
         entitlements: .file(path: "App.entitlements"),
         dependencies: [
             .project(target: "Core", path: "../Core"),
@@ -52,7 +70,8 @@ let project = Project(name: "App", targets: [
             .external(name: "Lottie"),
             .external(name: "FloatingBottomSheet"),
             .target(name: "Widget"),
-            .external(name: "RxGesture")
+            .external(name: "RxGesture"),
+            .external(name: "RxKakaoSDKTalk"),
         ],
         settings: .settings(
             base: [

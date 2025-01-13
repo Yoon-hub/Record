@@ -32,6 +32,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, WidgetReloadProtocol {
     func sceneDidEnterBackground(_ scene: UIScene) {
         reloadWidget()
     }
+    
+    /// KaKaoSDK
+    func scene(
+        _ scene: UIScene,
+        openURLContexts URLContexts: Set<UIOpenURLContext>
+    ) {
+        cancelKakaoLogin(URLContexts)
+    }
 }
 
 extension SceneDelegate {

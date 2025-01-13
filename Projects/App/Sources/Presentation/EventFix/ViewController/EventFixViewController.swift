@@ -9,11 +9,19 @@ import UIKit
 
 import Core
 import Design
+import Domain
 
+import PinLayout
 import ReactorKit
 import RxKeyboard
 
+import KakaoSDKTalk
+import KakaoSDKAuth
+
 final class EventFixViewController: BaseViewController<EventFixReactor, EventAddView> {
+    
+    @Injected var kakaoSDKMessageUsecase: KakaoSDKMessageUsecaseProtocol
+    
     let customPopView = CustomPopView()
     
     let reloadTableView: (() -> Void)?
@@ -38,6 +46,7 @@ final class EventFixViewController: BaseViewController<EventFixReactor, EventAdd
     
     override func setup() {
         setAlarmButtonMenu()
+        showKakaoMessageButton()
     }
     
     override func bind(reactor: EventFixReactor) {
@@ -99,6 +108,12 @@ extension EventFixViewController {
             .map { Reactor.Action.didTapAlldayButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        contentView.kakaoSDKButton.rx.tap
+            .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
+            .map { Reactor.Action.didTapKakaoButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: EventFixReactor) {
@@ -143,7 +158,10 @@ extension EventFixViewController {
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind {
-                $0.0.showAlert(title: "알림", message: "시작 날짜는 종료 날짜 이전이어야 합니다.")
+                $0.0.showAlert(
+                    title: "알림",
+                    message: $0.1
+                )
             }
             .disposed(by: disposeBag)
         
@@ -196,6 +214,10 @@ extension EventFixViewController {
                    .disposed(by: disposeBag)
     }
     
+    /// 카카오 메세지 버튼 노출
+    private func showKakaoMessageButton() {
+        contentView.kakaoSDKButton.isHidden = false
+    }
     
     private func setAlarmButtonMenu() {
         let timeOptions = Reactor.Alarm.allCases
