@@ -66,10 +66,10 @@ public final class KakaoSDKRespository: KakaoSDKRepositoryProtocol {
     /// 친구 목록
     public func friendsPicker() -> Observable<SelectedUsers> {
         let openPickerFriendRequestParams = OpenPickerFriendRequestParams(
-            title: "싱글 피커",
-            viewAppearance: .dark,
-            orientation: .portrait,
-            enableSearch: true,
+            title: "친구 목록",
+            viewAppearance: .light,
+            orientation: .auto,
+            enableSearch: false,
             enableIndex: true,
             showFavorite: true
         )
