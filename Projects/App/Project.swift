@@ -51,7 +51,10 @@ let project = Project(name: "App", targets: [
         ]),
 
         sources: ["Sources/**"],
-        resources: ["Resources/**"],
+        resources: [
+            "Resources/**",
+            "../../Tuist/.build/checkouts/kakao-ios-sdk/Sources/KakaoSDKFriendCore/KakaoSDKFriendResources.bundle"
+                   ],
         entitlements: .file(path: "App.entitlements"),
         dependencies: [
             .project(target: "Core", path: "../Core"),
