@@ -30,7 +30,7 @@ public protocol KakaoSDKMessageUsecaseProtocol {
     
     func excuteSendMessage(uuid: String, template: Data) -> Single<MessageSendResult>
     func excuteSendMessageToMe(template: Data)
-    func executeShareCustomContent(args: [String: String]) -> Single<SharingResult>
+    func executeShareCustomContent(args: [String: String]) -> Observable<SharingResult>
 }
 
 public final class KakaoSDKMessageUsecase: KakaoSDKMessageUsecaseProtocol {
@@ -87,8 +87,9 @@ public final class KakaoSDKMessageUsecase: KakaoSDKMessageUsecaseProtocol {
         repository.sendMessageToMe(template: templatable)
     }
     
-    public func executeShareCustomContent(args: [String: String]) -> Single<SharingResult> {
+    public func executeShareCustomContent(args: [String: String]) -> Observable<SharingResult> {
         repository.shareCustomContent(args: args)
+            .asObservable()
     }
     
 }

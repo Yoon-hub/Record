@@ -11,4 +11,5 @@ import Foundation
 public enum KakaoSDKError: Error {
     case inAvalableLogin
     case inValidToken
+    case inValidTemplate
 }
