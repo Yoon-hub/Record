@@ -163,6 +163,8 @@ extension CalendarReactor {
                 switch event {
                 case .caldenarUIUpdate:
                     return Observable<Mutation>.just(.calendarUIUpdate)
+                case .didRecivekakaoAppScheme:
+                    return .just(.setToast("새로운 이벤트 감지"))
                 }
             }
         return Observable.merge(mutation, uiUpdateMutation)

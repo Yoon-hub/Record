@@ -38,7 +38,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, WidgetReloadProtocol {
         _ scene: UIScene,
         openURLContexts URLContexts: Set<UIOpenURLContext>
     ) {
+        
+        // 로그인 취소 핸들링
         cancelKakaoLogin(URLContexts)
+        
+        // 이벤트 공유 핸들링
+        shareKakaoEvent(URLContexts)
     }
 }
 

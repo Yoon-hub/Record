@@ -86,6 +86,10 @@ final public class EventBuilder {
     private var content: String?
     private var tagColor: String = DesignAsset.record.color.hexString
     
+    enum EventBuilderError: Error {
+        case invalidDictionary
+    }
+    
     public init() { }
     
     public func setTitle(_ title: String?) -> EventBuilder {
@@ -131,5 +135,27 @@ final public class EventBuilder {
             content: content,
             tagColor: tagColor
         )
+    }
+    
+    /// 가져온 앱스킴 Evnet로 변경
+    public func buildWithDictionary(_ dictionary: [String: String]) -> Result<CalendarEvent, Error> {
+        guard let title = dictionary["title"],
+              let date = dictionary["startDate"],
+              let startDate = date.toDate(),
+              let endDate = dictionary["endDate"],
+              let endDateType = endDate.toDate(),
+              let alarm = dictionary["alarm"],
+              let content = dictionary["body"],
+              let tagColor = dictionary["tagColor"] else { return .failure(Self.EventBuilderError.invalidDictionary) }
+        
+        let event = CalendarEvent(
+            title: title,
+            alarm: alarm,
+            date: startDate,
+            endDate: endDateType,
+            content: content,
+            tagColor: "#" + tagColor
+        )
+        return .success(event)
     }
 }

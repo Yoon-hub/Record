@@ -134,9 +134,10 @@ extension EventFixReactor {
                                                                 ["title" : currentState.currentCalendarEvent.title,
                                                                  "content": "일정: \(currentState.currentCalendarEvent.startDate.formattedDateString(type: .simpleDate)) ~ \(currentState.currentCalendarEvent.endDate.formattedDateString(type: .simpleDate))",
                                                                  "body": currentState.currentCalendarEvent.content ?? "",
-                                                                 "tagColor": currentState.currentCalendarEvent.tagColor,
+                                                                 "tagColor": currentState.currentCalendarEvent.tagColor.replacingOccurrences(of: "#", with: ""),
                                                                  "startDate": currentState.currentCalendarEvent.startDate.toString(),
-                                                                 "endDate": currentState.currentCalendarEvent.startDate.toString()
+                                                                 "endDate": currentState.currentCalendarEvent.startDate.toString(),
+                                                                 "alarm": currentState.currentCalendarEvent.alarm ?? CalendarEvent.Alarm.none.rawValue
                                                                 ]
             )
             .observe(on: MainScheduler.instance)
