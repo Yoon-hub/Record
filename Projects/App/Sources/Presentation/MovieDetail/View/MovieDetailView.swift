@@ -32,6 +32,25 @@ final class MovieDetailView: UIView, BaseView {
         return focusCollectionView
     }()
     
+    var emoticionList = [
+        DesignAsset.nomalEmo1.image,
+        DesignAsset.nomalEmo2.image,
+        DesignAsset.nomalEmo3.image,
+        DesignAsset.nomalEmo4.image,
+        DesignAsset.nomalEmo5.image,
+        DesignAsset.nomalEmo6.image,
+        DesignAsset.nomalEmo7.image,
+        DesignAsset.nomalEmo8.image,
+        DesignAsset.nomalEmo9.image,
+        DesignAsset.nomalEmo10.image,
+        DesignAsset.nomalEmo11.image,
+        DesignAsset.nomalEmo12.image,
+        DesignAsset.nomalEmo13.image,
+        DesignAsset.nomalEmo14.image,
+        DesignAsset.nomalEmo15.image,
+        DesignAsset.nomalEmo16.image,
+    ]
+    
     let titleLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 19, weight: .semibold)
     }
@@ -62,6 +81,30 @@ final class MovieDetailView: UIView, BaseView {
         $0.isHidden = true
     }
     
+    lazy var randomEmoticonImageFirst = UIImageView().then {
+        let randomIndex = Int.random(in: 0..<emoticionList.count)
+        $0.image = self.emoticionList[randomIndex]
+        self.emoticionList.remove(at: randomIndex)
+    }
+    
+    lazy var randomEmoticonImageSecond = UIImageView().then {
+        let randomIndex = Int.random(in: 0..<emoticionList.count)
+        $0.image = self.emoticionList[randomIndex]
+        self.emoticionList.remove(at: randomIndex)
+    }
+    
+    lazy var randomEmoticonImageThird = UIImageView().then {
+        let randomIndex = Int.random(in: 0..<emoticionList.count)
+        $0.image = self.emoticionList[randomIndex]
+        self.emoticionList.remove(at: randomIndex)
+    }
+    
+    lazy var randomEmoticonImageFourth = UIImageView().then {
+        let randomIndex = Int.random(in: 0..<emoticionList.count)
+        $0.image = self.emoticionList[randomIndex]
+        self.emoticionList.remove(at: randomIndex)
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -78,7 +121,17 @@ final class MovieDetailView: UIView, BaseView {
     
     func configure() {
         self.backgroundColor = .white
-        [focusCollectionView, titleLabel, dateLabel, contentLabel, heartButton, heartLabel].forEach { addSubview($0) }
+        [focusCollectionView,
+         titleLabel,
+         dateLabel,
+         randomEmoticonImageFirst,
+         randomEmoticonImageSecond,
+         randomEmoticonImageThird,
+         randomEmoticonImageFourth,
+         contentLabel,
+         heartButton,
+         heartLabel,
+        ].forEach { addSubview($0) }
     }
     
     func setUI() {
@@ -116,6 +169,30 @@ final class MovieDetailView: UIView, BaseView {
             .marginTop(4)
             .horizontally()
             .height(20)
+        
+        randomEmoticonImageFirst.pin
+            .below(of: contentLabel)
+            .marginTop(20)
+            .left(Double.random(in: 16...80))
+            .size(Double.random(in: 50...120))
+        
+        randomEmoticonImageSecond.pin
+            .below(of: contentLabel)
+            .marginTop(60)
+            .right(Double.random(in: 16...80))
+            .size(Double.random(in: 50...120))
+        
+        randomEmoticonImageThird.pin
+            .below(of: contentLabel)
+            .marginTop(100)
+            .left(Double.random(in: 16...80))
+            .size(Double.random(in: 50...120))
+        
+        randomEmoticonImageFourth.pin
+            .below(of: contentLabel)
+            .marginTop(140)
+            .right(Double.random(in: 16...80))
+            .size(Double.random(in: 50...120))
     }
     
     func bind(movie: Movie) {
