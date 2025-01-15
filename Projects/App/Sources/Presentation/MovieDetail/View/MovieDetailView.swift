@@ -49,6 +49,19 @@ final class MovieDetailView: UIView, BaseView {
         DesignAsset.nomalEmo14.image,
         DesignAsset.nomalEmo15.image,
         DesignAsset.nomalEmo16.image,
+        DesignAsset.nomalEmo17.image,
+        DesignAsset.nomalEmo18.image,
+        DesignAsset.nomalEmo19.image,
+        DesignAsset.nomalEmo20.image,
+        DesignAsset.nomalEmo21.image,
+        DesignAsset.nomalEmo22.image,
+        DesignAsset.nomalEmo23.image,
+        DesignAsset.nomalEmo24.image,
+        DesignAsset.nomalEmo25.image,
+        DesignAsset.nomalEmo26.image,
+        DesignAsset.nomalEmo27.image,
+        DesignAsset.nomalEmo28.image,
+        DesignAsset.nomalEmo29.image,
     ]
     
     let titleLabel = UILabel().then {
@@ -81,25 +94,25 @@ final class MovieDetailView: UIView, BaseView {
         $0.isHidden = true
     }
     
-    lazy var randomEmoticonImageFirst = UIImageView().then {
+    lazy var randomEmoticonImageFirst = AnimationImageView(frame: .zero).then {
         let randomIndex = Int.random(in: 0..<emoticionList.count)
         $0.image = self.emoticionList[randomIndex]
         self.emoticionList.remove(at: randomIndex)
     }
     
-    lazy var randomEmoticonImageSecond = UIImageView().then {
+    lazy var randomEmoticonImageSecond = AnimationImageView(frame: .zero).then {
         let randomIndex = Int.random(in: 0..<emoticionList.count)
         $0.image = self.emoticionList[randomIndex]
         self.emoticionList.remove(at: randomIndex)
     }
     
-    lazy var randomEmoticonImageThird = UIImageView().then {
+    lazy var randomEmoticonImageThird = AnimationImageView(frame: .zero).then {
         let randomIndex = Int.random(in: 0..<emoticionList.count)
         $0.image = self.emoticionList[randomIndex]
         self.emoticionList.remove(at: randomIndex)
     }
     
-    lazy var randomEmoticonImageFourth = UIImageView().then {
+    lazy var randomEmoticonImageFourth = AnimationImageView(frame: .zero).then {
         let randomIndex = Int.random(in: 0..<emoticionList.count)
         $0.image = self.emoticionList[randomIndex]
         self.emoticionList.remove(at: randomIndex)
