@@ -40,7 +40,7 @@ extension SceneDelegate {
             appNaviagtor.toTabBar()
             
             // 이벤트 전달 
-            provider.sendEvent(.didRecivekakaoAppScheme)
+            provider.sendEvent(.didRecivekakaoAppScheme(event))
             
         case .failure(let error):
             return
