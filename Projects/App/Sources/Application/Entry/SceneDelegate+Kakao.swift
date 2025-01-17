@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import OSLog
 
 import Domain
 import Core
@@ -36,16 +37,19 @@ extension SceneDelegate {
         case .success(let event):
             @Injected var provider: GlobalStateProvider
             
+            os_log("🥶🥶🥶🥶🥶🥶🥶🥶🥶🥶🥶🥶SceneDelegate")
+            
             // window 초기화
             appNaviagtor.toTabBar()
             
-            // 이벤트 전달 
-            provider.sendEvent(.didRecivekakaoAppScheme(event))
+            delay(0.3) {
+                // window 초기화 후 kakao Event 발생
+                provider.sendEvent(.didRecivekakaoAppScheme(event))
+            }
             
         case .failure(let error):
             return
         }
-        
     }
     
     /// URLContexts -> QureryItems

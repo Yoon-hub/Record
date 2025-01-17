@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import OSLog
 import WidgetKit
 
 import Core
@@ -38,12 +39,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, WidgetReloadProtocol {
         _ scene: UIScene,
         openURLContexts URLContexts: Set<UIOpenURLContext>
     ) {
+        print("⚙️⚙️⚙️⚙️ Sceme: \(URLContexts)")
         
         // 로그인 취소 핸들링
         cancelKakaoLogin(URLContexts)
         
         // 이벤트 공유 핸들링
         shareKakaoEvent(URLContexts)
+    }
+    
+    /// Not Running 상태에서 Scheme 핸들링
+    private func handleAppScheme(connectionOptions: UIScene.ConnectionOptions) {
+        if let urlContext = connectionOptions.urlContexts.first {
+            os_log("🥶🥶🥶🥶🥶🥶🥶🥶🥶🥶🥶🥶 Scene \(urlContext)")
+            shareKakaoEvent(Set([urlContext]))
+        }
     }
 }
 
