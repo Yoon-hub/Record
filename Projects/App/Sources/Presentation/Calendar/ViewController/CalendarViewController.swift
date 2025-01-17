@@ -164,6 +164,15 @@ extension CalendarViewController {
                 }
             }
             .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$kakaoEvent)
+            .observe(on: MainScheduler.instance)
+            .compactMap {$0}
+            .withUnretained(self)
+            .bind {
+                $0.0.navigator.toKakaoShare($0.0)
+            }
+            .disposed(by: disposeBag)
     }
 }
 

@@ -29,6 +29,7 @@ final class CalendarReactor: Reactor {
         case setEvents([CalendarEvent], Date)
         case setToast(String)
         case calendarUIUpdate
+        case setKakaoEvent(CalendarEvent?)
     }
     
     struct State {
@@ -39,6 +40,7 @@ final class CalendarReactor: Reactor {
         
         @Pulse var isToast: String = ""
         @Pulse var calendarUIUpdate = true
+        @Pulse var kakaoEvent: CalendarEvent?
     }
     
     let initialState: State
@@ -153,6 +155,9 @@ extension CalendarReactor {
         case .calendarUIUpdate:
             newState.calendarUIUpdate = true
             return newState
+        case .setKakaoEvent(let event):
+            newState.kakaoEvent = event
+            return newState
         }
     }
     
@@ -163,8 +168,9 @@ extension CalendarReactor {
                 switch event {
                 case .caldenarUIUpdate:
                     return Observable<Mutation>.just(.calendarUIUpdate)
-                case .didRecivekakaoAppScheme:
-                    return .just(.setToast("새로운 이벤트 감지"))
+                case .didRecivekakaoAppScheme(let event):
+                    let kakaoEvent = event as? CalendarEvent
+                    return .just(.setKakaoEvent(kakaoEvent))
                 }
             }
         return Observable.merge(mutation, uiUpdateMutation)

@@ -15,6 +15,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toEventFix(vc: UIViewController, seletedDate: Date, currentEvent: CalendarEvent, reloadTableView: @escaping () -> Void)
     func toSetting()
     func toPill(_ vc: UIViewController)
+    func toKakaoShare(_ vc: UIViewController)
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -43,6 +44,11 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
     func toPill(_ vc: UIViewController) {
          let pillView = PillViewControllerWrapper().viewController
         vc.presentFloatingBottomSheet(pillView)
+    }
+    
+    func toKakaoShare(_ vc: UIViewController) {
+        let kakaoShareView = KakaoShareViewControllerWrapper().viewController
+        vc.presentFloatingBottomSheet(kakaoShareView)
     }
 }
 
