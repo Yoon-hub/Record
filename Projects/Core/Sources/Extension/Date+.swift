@@ -14,6 +14,7 @@ public extension Date {
         case yearMonthDay = "yyyy.MM.dd"
         case yearMonthDayWeek = "yyyy년 M월 d일(EEEE)"
         case yearMonthDayTime = "M월 d일 (E)\nHH:mm"
+        case yearMonthDayTime2 = "M월 d일 (E) HH:mm"
         case simpleMonthDay = "M.d(E)"
         
         // 카카오톡 공유에 사용
