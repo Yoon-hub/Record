@@ -11,7 +11,8 @@ import ReactorKit
 
 public enum GlobalEvent {
     case caldenarUIUpdate
-    case didRecivekakaoAppScheme
+    case didRecivekakaoAppScheme(EventRepresentable)
+    case calednarEventUpdate
 }
 
 public protocol GlobalStateProvider {
