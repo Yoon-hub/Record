@@ -136,7 +136,7 @@ extension EventFixReactor {
                                                                  "body": currentState.currentCalendarEvent.content ?? "",
                                                                  "tagColor": currentState.currentCalendarEvent.tagColor.replacingOccurrences(of: "#", with: ""),
                                                                  "startDate": currentState.currentCalendarEvent.startDate.toString(),
-                                                                 "endDate": currentState.currentCalendarEvent.startDate.toString(),
+                                                                 "endDate": currentState.currentCalendarEvent.endDate.toString(),
                                                                  "alarm": currentState.currentCalendarEvent.alarm ?? CalendarEvent.Alarm.none.rawValue
                                                                 ]
             )
