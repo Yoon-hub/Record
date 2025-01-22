@@ -14,30 +14,23 @@ public extension Date {
         case yearMonthDay = "yyyy.MM.dd"
         case yearMonthDayWeek = "yyyy년 M월 d일(EEEE)"
         case yearMonthDayTime = "M월 d일 (E)\nHH:mm"
+        case yearMonthDayTime2 = "M월 d일 (E) HH:mm"
         case simpleMonthDay = "M.d(E)"
+        
+        // 카카오톡 공유에 사용
+        case simpleDate = "MM.dd(E) H:mm"
     }
     
     func formattedDateString(type: DateFormat) -> String {
         // DateFormatter 인스턴스 생성
         let dateFormatter = DateFormatter()
         
-        
-        switch type {
-        case .yearMonthDay:
-            dateFormatter.dateFormat = "yyyy.MM.dd"
-        case .yearMonthDayWeek:
-            dateFormatter.dateFormat = "yyyy년 M월 d일(E)"
-        case .yearMonthDayTime:
-            dateFormatter.dateFormat = "M월 d일 (E)\nHH:mm"
-        case .simpleMonthDay:
-            dateFormatter.dateFormat = "M.d(E)"
-        }
-        
+        dateFormatter.dateFormat = type.rawValue
         dateFormatter.locale = Locale(identifier: "ko_KR")
         // 현재 날짜를 문자열로 변환
         return dateFormatter.string(from: self)
     }
-    
+     
     func formatToMonth() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "M"

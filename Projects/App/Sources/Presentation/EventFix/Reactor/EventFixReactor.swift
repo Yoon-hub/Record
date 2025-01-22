@@ -130,20 +130,25 @@ extension EventFixReactor {
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
         case .didTapKakaoButton:
-            return kakaoSDKMessageUsecase.executePicker()
-                .observe(on: MainScheduler.instance)
-                .flatMap { selectedUsers in
-                    return Observable<Mutation>.empty() // 추후 선택 카카오 메세지 로그 추가 할 예정
-                }
-                .catch { error in
-                    if let sdkError = error as? KakaoSDKCommon.SdkError {
-                        let reason = sdkError.getClientError().reason
-                        if reason == .Cancelled {
-                            return .empty() // 사용자가 취소한 경우 아무 Mutation도 방출하지 않음
-                        }
-                    }
-                    return Observable.just(.popAlert("설정 > 카카오 로그인 후 사용이 가능합니다."))
-                }
+            return kakaoSDKMessageUsecase.executeShareCustomContent(args:
+                                                                ["title" : currentState.currentCalendarEvent.title,
+                                                                 "content": "일정: \(currentState.currentCalendarEvent.startDate.formattedDateString(type: .simpleDate)) ~ \(currentState.currentCalendarEvent.endDate.formattedDateString(type: .simpleDate))",
+                                                                 "body": currentState.currentCalendarEvent.content ?? "",
+                                                                 "tagColor": currentState.currentCalendarEvent.tagColor.replacingOccurrences(of: "#", with: ""),
+                                                                 "startDate": currentState.currentCalendarEvent.startDate.toString(),
+                                                                 "endDate": currentState.currentCalendarEvent.endDate.toString(),
+                                                                 "alarm": currentState.currentCalendarEvent.alarm ?? CalendarEvent.Alarm.none.rawValue
+                                                                ]
+            )
+            .observe(on: MainScheduler.instance)
+            .flatMap { (sharingResult) in
+                UIApplication.shared.open(sharingResult.url, options: [:], completionHandler: nil)
+                return Observable<Mutation>.empty()
+            }
+            .catch { _ in
+                return Observable<Mutation>.just(.popAlert("카카오톡 로그인 후 사용해 주세요."))
+            }
+            
             
         case .didTapAlldayButton:
             return .concat([

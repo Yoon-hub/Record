@@ -17,6 +17,7 @@ let domainProject = Project(name: "Domain", targets: [
         sources: ["Sources/**"],
         dependencies: [
             .project(target: "Core", path: "../Core"),
+            .external(name: "RxKakaoSDKTalk")
         ]
     )
 ])

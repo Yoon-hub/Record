@@ -11,11 +11,13 @@ import ReactorKit
 
 public enum GlobalEvent {
     case caldenarUIUpdate
+    case didRecivekakaoAppScheme(EventRepresentable)
+    case calednarEventUpdate
 }
 
 public protocol GlobalStateProvider {
     var event: PublishSubject<GlobalEvent> { get }
-    func sendEvent(_ event: GlobalEvent) 
+    func sendEvent(_ event: GlobalEvent)
 }
 
 final public class GlobalStateProviderImpl: GlobalStateProvider {

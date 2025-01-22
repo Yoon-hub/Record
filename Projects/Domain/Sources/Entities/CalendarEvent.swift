@@ -12,7 +12,7 @@ import Core
 import Design
 
 @Model
-final public class CalendarEvent: Equatable {
+final public class CalendarEvent: Equatable, EventRepresentable {
     
     public enum Alarm: String, CaseIterable {
         case none = "알림 없음"
@@ -77,59 +77,4 @@ final public class CalendarEvent: Equatable {
         self.tagColor = tagColor
     }
 }
-
-final public class EventBuilder {
-    private var title: String = "제목없음"
-    private var date: Date = Date()
-    private var endDate: Date = Date()
-    private var alarm: String = CalendarEvent.Alarm.none.rawValue
-    private var content: String?
-    private var tagColor: String = DesignAsset.record.color.hexString
     
-    public init() { }
-    
-    public func setTitle(_ title: String?) -> EventBuilder {
-        self.title = title ?? "제목없음"
-        
-        if title == "" {
-            self.title = "no title"
-        }
-        return self
-    }
-    
-    public func setDate(_ date: Date) -> EventBuilder {
-        self.date = date
-        return self
-    }
-    
-    public func setEndDate(_ endDate: Date) -> EventBuilder {
-        self.endDate = endDate
-        return self
-    }
-    
-    public func setAlarm(_ alarm: CalendarEvent.Alarm) -> EventBuilder {
-        self.alarm = alarm.rawValue
-        return self
-    }
-    
-    public func setContent(_ content: String) -> EventBuilder {
-        self.content = content
-        return self
-    }
-    
-    public func setTagColor(_ tagColor: String) -> EventBuilder {
-        self.tagColor = tagColor
-        return self
-    }
-    
-    public func build() -> CalendarEvent {
-        return CalendarEvent(
-            title: title,
-            alarm: alarm,
-            date: date,
-            endDate: endDate,
-            content: content,
-            tagColor: tagColor
-        )
-    }
-}

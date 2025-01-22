@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import OSLog
 
 import Core
 import Domain
@@ -89,14 +90,5 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
         completionHandler([ .list, .banner, .badge, .sound])
-    }
-    
-    /// `AppScheme Handler`
-    func application(
-        _ app: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-    ) -> Bool {
-        cancelKakaoLogin(url)
     }
 }
