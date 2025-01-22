@@ -166,6 +166,16 @@ extension CalendarReactor {
         let uiUpdateMutation = provider.event
             .flatMap { event in
                 switch event {
+                case .calednarEventUpdate:
+                    return Observable<Mutation>.create { [weak self] observer in
+                        guard let self else { return Disposables.create() }
+                        Task {
+                            let events = await self.fetchEventUsecase.execute()
+                            observer.onNext(.setEvents(events, self.currentState.selectedDate))
+                        }
+                        
+                        return Disposables.create()
+                    }
                 case .caldenarUIUpdate:
                     return Observable<Mutation>.just(.calendarUIUpdate)
                 case .didRecivekakaoAppScheme(let event):

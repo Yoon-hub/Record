@@ -165,12 +165,19 @@ extension CalendarViewController {
             }
             .disposed(by: disposeBag)
         
+        reactor.pulse(\.$calendarUIUpdate)
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.reloadData() }
+            .disposed(by: disposeBag)
+
+        
         reactor.pulse(\.$kakaoEvent)
             .observe(on: MainScheduler.instance)
             .compactMap {$0}
             .withUnretained(self)
-            .bind {
-                $0.0.navigator.toKakaoShare($0.0)
+            .bind { (vc, event) in
+                vc.navigator.toKakaoShare(vc, kakaoEvent: event)
             }
             .disposed(by: disposeBag)
     }
