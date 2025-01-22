@@ -8,12 +8,19 @@
 import UIKit
 
 import Core
+import Domain
 
 final class KakaoShareViewControllerWrapper: BaseWrapper {
     
     typealias R = KakaoShareReactor
     typealias V = KakaoShareViewController
     typealias C = KakaoShareView
+    
+    let kakaoEvent: CalendarEvent
+    
+    init(kakaoEvent: CalendarEvent) {
+        self.kakaoEvent = kakaoEvent
+    }
     
     // MARK: - Make
     
@@ -25,7 +32,7 @@ final class KakaoShareViewControllerWrapper: BaseWrapper {
     }
     
     func makeReactor() -> R {
-        return KakaoShareReactor()
+        return KakaoShareReactor(kakaoEvent: kakaoEvent)
     }
     
     func makeView() -> C {
