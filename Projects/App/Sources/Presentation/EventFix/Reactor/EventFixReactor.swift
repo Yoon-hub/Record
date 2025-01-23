@@ -42,7 +42,7 @@ final class EventFixReactor: Reactor {
         var selectedDate: Date
         var selectedStartDate: Date
         var selectedEndDate: Date
-        var selectedColor = DesignAsset.record.color
+        var selectedColor = Theme.theme
         var selectedAlarm: Alarm = .none
         
         var currentCalendarEvent: CalendarEvent
@@ -68,7 +68,7 @@ extension EventFixReactor {
         case .viewDidLoad:
             let setEndTime = Observable.just(Mutation.setEndTime(currentState.currentCalendarEvent.endDate))
             let setStartTime = Observable.just(Mutation.setTime(currentState.currentCalendarEvent.startDate))
-            let setColor = Observable.just(Mutation.setColor(currentState.currentCalendarEvent.tagColor.toUIColor() ?? DesignAsset.record.color))
+            let setColor = Observable.just(Mutation.setColor(currentState.currentCalendarEvent.tagColor.toUIColor() ?? Theme.theme))
             
             let alarm = Alarm(rawValue: currentState.currentCalendarEvent.alarm ?? "알림 없음") ?? .none
             let setAlarm = Observable.just(Mutation.setAlarm(alarm))

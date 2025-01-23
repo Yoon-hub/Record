@@ -18,6 +18,8 @@ final class SettingViewController: BaseViewController<SettingReactor, SettinView
     
     @Injected var provider: GlobalStateProvider
     
+    let picker = UIColorPickerViewController()
+    
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,11 +92,14 @@ extension SettingViewController {
         item: Reactor.SettingList,
         cell: SettingTableViewCell
     ) {
+        // 테마 설정 시 사용
+        cell.themeColorView.isHidden = true
+        
         // 공휴일 업데이트
         if item == .restDayUpdate { cell.contentLabel.text = "" }
         
         // 버전 정보
-        if item == .version { cell.contentLabel.text = "1.0" }
+        if item == .version { cell.contentLabel.text = "1.1" }
         
         // 시작 날짜 선택
         if item == .firstWeekday {
@@ -107,6 +112,11 @@ extension SettingViewController {
         if item == .kakaoLogin {
             guard let reactor else {return}
             cell.contentLabel.text = reactor.currentState.isLogin ? "로그인" : "미로그인"
+        }
+        
+        // 테마
+        if item == .theme {
+            cell.themeColorView.isHidden = false
         }
     }
     
@@ -133,6 +143,14 @@ extension SettingViewController {
             self.contentView.tableView.reloadData()
         case .kakaoLogin:
             reactor?.action.onNext(.didTapKakaoLogin)
+        case .theme:
+            picker.delegate = self
+            picker.selectedColor = Theme.theme
+            present(
+                picker,
+                animated: true,
+                completion: nil
+            )
         }
     }
     
@@ -154,3 +172,19 @@ extension SettingViewController {
     }
 }
     
+// MARK: UIColorPickerDelegate
+extension SettingViewController: UIColorPickerViewControllerDelegate {
+    func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+        let selectedColor = viewController.selectedColor
+        
+        // 같은 테마 색상일 경우 변동 없음
+        if selectedColor == Theme.theme {
+            
+        } else { // 다른 생상일 경우 테마 변경
+            showAlert(title: "알림", message: "테마를 변경하시겠습니까?\n변경 후 앱을 재실행 하셔야합니다!", cancel: true) {
+                UserDefaultsWrapper.theme = selectedColor.hexString                
+                exit(0)
+            }
+        }
+    }
+}

@@ -28,7 +28,7 @@ final class DatePickerView: UIView, BaseView {
     let completeButton = UIButton().then {
         $0.titleLabel?.font = DesignFontFamily.Pretendard.bold.font(size: 16)
         $0.layer.cornerRadius = 10
-        $0.backgroundColor = DesignAsset.record.color
+        $0.backgroundColor = Theme.theme
         $0.setTitle("완료", for: .normal)
     }
     

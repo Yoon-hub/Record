@@ -82,7 +82,7 @@ final class MovieDetailView: UIView, BaseView {
     let heartButton = UIButton().then {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
         $0.setImage(UIImage(systemName: "heart.fill", withConfiguration: imageConfig), for: .normal)
-        $0.tintColor = DesignAsset.record.color
+        $0.tintColor = Theme.theme
         $0.adjustsImageWhenHighlighted = false
         $0.isHidden = true
     }

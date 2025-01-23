@@ -29,7 +29,7 @@ final class PillTableViewCell: UITableViewCell, BaseView {
     }
     
     let `switch` = UISwitch().then {
-        $0.onTintColor = DesignAsset.record.color
+        $0.onTintColor = Theme.theme
     }
     
     var disposeBag = DisposeBag()

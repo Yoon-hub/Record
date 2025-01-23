@@ -20,7 +20,7 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
     
     let tagView = UIView().then {
         $0.layer.cornerRadius = 2
-        $0.backgroundColor = DesignAsset.record.color
+        $0.backgroundColor = Theme.theme
     }
     
     let titleLabel = UILabel().then {

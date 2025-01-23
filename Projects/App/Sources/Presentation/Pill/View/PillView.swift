@@ -30,7 +30,7 @@ final class PillView: UIView, BaseView {
     }()
     
     var addButton = UIButton().then {
-        $0.backgroundColor = DesignAsset.record.color.withAlphaComponent(0.9)
+        $0.backgroundColor = Theme.theme.withAlphaComponent(0.9)
         $0.setTitleColor(.white, for: .normal)
         $0.setTitle("알리미 추가", for: .normal)
         $0.titleLabel?.font = DesignFontFamily.Pretendard.bold.font(size: 16)

@@ -11,7 +11,7 @@ import Design
 
 extension UIColor {
     public static var recordColor: UIColor {
-        DesignAsset.record.color
+        Theme.theme
     }
     
     public var hexString: String {

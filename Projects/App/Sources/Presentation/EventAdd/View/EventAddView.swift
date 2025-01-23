@@ -57,7 +57,7 @@ final class EventAddView: UIView, BaseView {
         @UserDefault(key: "lastSelectedColor") var color
         
         $0.backgroundColor = .systemPink
-        $0.selectedColor = color.toUIColor() ?? DesignAsset.record.color
+        $0.selectedColor = color.toUIColor() ?? Theme.theme
         $0.layer.cornerRadius = 15
     }
     

@@ -19,6 +19,7 @@ final class SettingReactor: Reactor {
         case firstWeekday
         case version
         case kakaoLogin
+        case theme
         
         var title: String {
             switch self {
@@ -30,6 +31,8 @@ final class SettingReactor: Reactor {
                 return "버전 정보"
             case .kakaoLogin:
                 return "카카오 로그인"
+            case .theme:
+                return "테마 색상"
             }
         }
         

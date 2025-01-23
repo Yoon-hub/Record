@@ -10,6 +10,7 @@ import UIKit
 import Core
 import Design
 
+import RxSwift
 import PinLayout
 
 final class SettingTableViewCell: UITableViewCell, BaseView {
@@ -21,6 +22,11 @@ final class SettingTableViewCell: UITableViewCell, BaseView {
     let contentLabel = UILabel().then {
         $0.textColor = .systemGray2
         $0.font = DesignFontFamily.Pretendard.regular.font(size: 14)
+    }
+    
+    let themeColorView = UIView().then {
+        $0.layer.cornerRadius = 7
+        $0.backgroundColor = Theme.theme
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -39,7 +45,10 @@ final class SettingTableViewCell: UITableViewCell, BaseView {
     
     func configure() {
         self.selectionStyle = .none
-        [titleLabel, contentLabel].forEach { addSubview($0) }
+        [titleLabel, 
+         contentLabel,
+         themeColorView
+        ].forEach { addSubview($0) }
     }
     
     func setUI() {
@@ -52,5 +61,10 @@ final class SettingTableViewCell: UITableViewCell, BaseView {
             .vCenter()
             .right(22)
             .sizeToFit()
+        
+        themeColorView.pin
+            .vCenter()
+            .size(25)
+            .right(22)
     }
 }

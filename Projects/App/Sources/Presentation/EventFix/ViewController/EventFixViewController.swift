@@ -92,7 +92,7 @@ extension EventFixViewController {
         
         contentView.tagButton.rx.controlEvent(.allEvents)
             .withUnretained(self)
-            .map { Reactor.Action.didSeleteColor($0.0.contentView.tagButton.selectedColor ?? DesignAsset.record.color)}
+            .map { Reactor.Action.didSeleteColor($0.0.contentView.tagButton.selectedColor ?? Theme.theme)}
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         

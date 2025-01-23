@@ -7,6 +7,7 @@
 
 import Foundation
 
+import Core
 import Design
 
 final public class EventBuilder {
@@ -15,7 +16,7 @@ final public class EventBuilder {
     private var endDate: Date = Date()
     private var alarm: String = CalendarEvent.Alarm.none.rawValue
     private var content: String?
-    private var tagColor: String = DesignAsset.record.color.hexString
+    private var tagColor: String = Theme.theme.hexString
     
     enum EventBuilderError: Error {
         case invalidDictionary

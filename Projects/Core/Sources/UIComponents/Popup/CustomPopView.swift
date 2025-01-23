@@ -42,7 +42,7 @@ public class CustomPopView: UIView {
     private var completeButton = UIButton().then {
         $0.setTitle("완료", for: .normal)
         $0.layer.cornerRadius = 10
-        $0.backgroundColor = DesignAsset.record.color
+        $0.backgroundColor = Theme.theme
         $0.setTitleColor(.white, for: .normal)
     }
     

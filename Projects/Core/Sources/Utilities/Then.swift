@@ -21,3 +21,4 @@ extension Then where Self: AnyObject {
 }
 
 extension UIView: Then {}
+extension UIViewController: Then {}
