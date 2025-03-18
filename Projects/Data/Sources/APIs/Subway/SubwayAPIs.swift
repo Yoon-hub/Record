@@ -20,7 +20,7 @@ public enum SubwayAPIs: API {
     public var spec: APISpec {
         switch self {
         case .fetchSubwayArrivalInfo(let station):
-            return APISpec(method: .get, url: "\(APIHost.subwayBaseURL)/\(serviceKey)/json/realtimeStationArrival/0/4/\(station)")
+            return APISpec(method: .get, url: "\(APIHost.subwayBaseURL)/\(serviceKey)/json/realtimeStationArrival/0/10/\(station)")
         }
     }
 }
