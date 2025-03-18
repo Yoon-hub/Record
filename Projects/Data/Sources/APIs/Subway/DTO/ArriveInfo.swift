@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ArriveInfo: Hashable {
+public class ArriveInfo: Hashable {
     
     /// 이전지하철역ID
     public let statnFid: String

@@ -14,6 +14,7 @@ import RxSwift
 struct SubwayView: View {
     
     @State var items: [ArriveInfo] = []
+    @State var stations: [Station] = []
     
     let disposBag = DisposeBag()
     
@@ -22,20 +23,24 @@ struct SubwayView: View {
         GeometryReader { proxy in
             List(items, id: \.self) { item in
                 
-                let arriveTimes = item.barvDt.forEach {
-                    Int($0) ?? 0 / 600
-                }
+                let arriveTimes = item.barvDt.compactMap { Int($0) }
+                let currentStation = stations.filter { $0.code == item.statnId }.first?.station ?? ""
+                let nextStation = stations.filter { $0.code == item.statnTid}.first?.station ?? ""
                 
-                
+                let subwayId = item.subWayId
+                 
                 SubwayCellView(
                     arrivalTimes: arriveTimes,
-                    curretStation: <#String#>,
-                    nextStation: <#String#>,
-                    subwayId: <#String#>
+                    curretStation: currentStation,
+                    nextStation: nextStation,
+                    subwayId: subwayId
                 )
                     .listRowSeparator(.hidden)
                }
             .listStyle(.plain)
+            .refreshable {   // ✅ 새로고침 기능 추가
+                 fetchData()
+             }
         }
         .onAppear {
             fetchData()
@@ -47,46 +52,73 @@ extension SubwayView {
     private func fetchData() {
         let subWayAPIsWorker = SubwayAPIs.Worker()
         
-        subWayAPIsWorker.fetchSubway(station: "신대방")
-            .subscribe { dto in
-                switch dto {
-                case .success(let dto):
-                    
-                    self.items.removeAll()
-                   
-                    /// 지하철 도착 정보
-                    dto?.realtimeArrivalList.forEach { realtimeArrival in
-                        
-                        let arriveInfo = ArriveInfo(
-                            statnFid: realtimeArrival.statnFid,
-                            statnTid: realtimeArrival.statnTid,
-                            statnId: realtimeArrival.statnId,
-                            subWayId: realtimeArrival.subwayId,
-                            barvDt: [realtimeArrival.barvlDt]
-                        )
-                        
-                        if let index = self.items.firstIndex(where: { $0 == arriveInfo }) {
+        stations = loadStations(from: "subwayStation") ?? []
+        
+        self.items.removeAll()
+        
+        ["을지로4가"].forEach {
+            subWayAPIsWorker.fetchSubway(station: $0)
+                .subscribe { dto in
+                    switch dto {
+                    case .success(let dto):
+                       
+                        /// 지하철 도착 정보
+                        dto?.realtimeArrivalList.forEach { realtimeArrival in
                             
-                            // 이미 존재하면 barvDt 배열에 새로운 값 추가
-                            self.items[index].barvDt.append(realtimeArrival.barvlDt)
-                        } else {
+                            let arriveInfo = ArriveInfo(
+                                statnFid: realtimeArrival.statnFid,
+                                statnTid: realtimeArrival.statnTid,
+                                statnId: realtimeArrival.statnId,
+                                subWayId: realtimeArrival.subwayId,
+                                barvDt: [realtimeArrival.barvlDt]
+                            )
                             
-                            // 존재하지 않으면 새로운 객체 추가
-                            self.items.append(arriveInfo)
+                            if let index = self.items.firstIndex(where: { $0 == arriveInfo }) {
+                                // 이미 존재하면 barvDt 배열에 추가
+                                self.items[index].barvDt.append(realtimeArrival.barvlDt)
+                            } else {
+                                // 존재하지 않으면 추가
+                                items.append(arriveInfo)
+                            }
                         }
+                        
+                        items.sort { $0.subWayId < $1.subWayId }
+                        
+                    case .failure:
+                        print("실패")
                     }
-                    
-                    print(self.items)
-                    
-                case .failure:
-                    print("실패")
                 }
-            }
-            .disposed(by: disposBag)
+                .disposed(by: disposBag)
+        }
+        
+    }
+    
+    /// Subway Station JSON 파일을 통해서 역 정보 가져오기
+    func loadStations(from filename: String) -> [Station]? {
+        // JSON 파일을 bundle에서 가져오기
+        guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
+            print("JSON 파일을 찾을 수 없습니다.")
+            return nil
+        }
+        
+        do {
+            // 파일에서 JSON 데이터 읽기
+            let data = try Data(contentsOf: url)
             
+            // JSON을 Codable 객체로 디코딩
+            let decoder = JSONDecoder()
+            let stations = try decoder.decode([Station].self, from: data)
+            
+            return stations
+        } catch {
+            print("JSON 디코딩 실패: \(error)")
+            return nil
+        }
     }
 }
 
-#Preview {
-    SubwayView()
+struct Station: Codable {
+    let code: String
+    let station: String
+    let line: String
 }
