@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 import Core
 import Domain
@@ -16,6 +17,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toSetting()
     func toPill(_ vc: UIViewController)
     func toKakaoShare(_ vc: UIViewController,kakaoEvent: CalendarEvent)
+    func toSubway()
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -52,6 +54,15 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
     ) {
         let kakaoShareView = KakaoShareViewControllerWrapper(kakaoEvent: kakaoEvent).viewController
         vc.presentFloatingBottomSheet(kakaoShareView)
+    }
+    
+    func toSubway() {
+        let subWayView = UIHostingController(rootView: SubwayView())
+        subWayView.title = "지하철"
+        self.navigationController.pushViewController(
+            subWayView,
+            animated: true
+        )
     }
 }
 
