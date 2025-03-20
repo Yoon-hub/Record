@@ -17,7 +17,8 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toSetting()
     func toPill(_ vc: UIViewController)
     func toKakaoShare(_ vc: UIViewController,kakaoEvent: CalendarEvent)
-    func toSubway()
+    //func toSubway()
+    func toSubwayStation()
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -56,9 +57,17 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
         vc.presentFloatingBottomSheet(kakaoShareView)
     }
     
-    func toSubway() {
-        let subWayView = UIHostingController(rootView: SubwayView())
-        subWayView.title = "지하철"
+//    func toSubway() {
+//        let subWayView = UIHostingController(rootView: SubwayView())
+//        subWayView.title = "지하철"
+//        self.navigationController.pushViewController(
+//            subWayView,
+//            animated: true
+//        )
+//    }
+    
+    func toSubwayStation() {
+        let subWayView = UIHostingController(rootView: SubwayStationView())
         self.navigationController.pushViewController(
             subWayView,
             animated: true

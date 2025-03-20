@@ -72,7 +72,7 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
     
     /// Subway Button
     @objc private func subwayTap() {
-        navigator.toSubway()
+        navigator.toSubwayStation()
     }
 }
 
