@@ -8,5 +8,10 @@
 import Foundation
 
 public enum APIHost {
-    static let baseURL = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService"
+    
+    /// 공휴일 정보
+    static let restDayBaseURL = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService"
+    
+    /// 지하철 도착 정보
+    static let subwayBaseURL = "http://swopenAPI.seoul.go.kr/api/subway"
 }

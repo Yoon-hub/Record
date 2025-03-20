@@ -19,7 +19,7 @@ public enum RestDayAPIs: API {
     public var spec: APISpec {
         switch self {
         case .fetchRestDay(let year, let month):
-            return APISpec(method: .get, url: "\(APIHost.baseURL)/getRestDeInfo?serviceKey=\(serviceKey)&solYear=\(year)&solMonth=\(month)&_type=json")
+            return APISpec(method: .get, url: "\(APIHost.restDayBaseURL)/getRestDeInfo?serviceKey=\(serviceKey)&solYear=\(year)&solMonth=\(month)&_type=json")
         }
     }
 }

@@ -17,7 +17,7 @@ public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryP
     public init() {
         let configure = ModelConfiguration("\(T.self)", groupContainer: .identifier(groupIdentifier))
         do {
-            print("configure Init")
+            print("configure Init \(T.self)")
             container = try ModelContainer(for: T.self, configurations: configure)
         } catch {
             fatalError(error.localizedDescription)
@@ -25,6 +25,10 @@ public final class SwiftDataRepository<T: PersistentModel>: SwiftDataRepositoryP
     }
     
     let container: ModelContainer
+    
+    deinit {
+        print("deinit \(T.self)")
+    }
     
     
     public func insertData(data: T) {

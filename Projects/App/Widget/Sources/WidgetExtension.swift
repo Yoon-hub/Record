@@ -13,6 +13,9 @@ import Data
 
 struct Provider: TimelineProvider {
     typealias Entry = WidgetEntry
+    
+    let eventsRepository = SwiftDataRepository<CalendarEvent>()
+    let restDaysRepository = SwiftDataRepository<RestDay>()
 
     func placeholder(in context: Context) -> WidgetEntry {
         WidgetEntry(date: Date(), events: [], restDays: [])
@@ -35,8 +38,6 @@ struct Provider: TimelineProvider {
 
     private func fetchData() async -> WidgetEntry {
         do {
-            let eventsRepository = SwiftDataRepository<CalendarEvent>()
-            let restDaysRepository = SwiftDataRepository<RestDay>()
 
             let events = try await eventsRepository.fetchData()
             let restDays = try await restDaysRepository.fetchData()
@@ -70,6 +71,8 @@ struct WidgetExtensionEntryView: View {
                     ToDayView(date: Date(),eventsToday: getTodayEvent(), restDay: getTodayRestDay())
                     ToDayView(date: Date().addingTimeInterval(24 * 60 * 60),eventsToday: getNextDayEvent(), restDay: getNextDayRestDay())
                 }
+                .padding(.top, 8)
+            
                 CalenderView(month: Date(), offset: CGSize(width: 200, height: 30), restDays: entry.restDays)
                     .frame(width: 182)
             }
