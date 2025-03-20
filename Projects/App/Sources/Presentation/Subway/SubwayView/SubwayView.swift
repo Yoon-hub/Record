@@ -16,6 +16,8 @@ struct SubwayView: View {
     @State var items: [ArriveInfo] = []
     @State var stations: [Station] = []
     
+    let selectedStation: String
+    
     let disposBag = DisposeBag()
     
     var body: some View {
@@ -45,6 +47,7 @@ struct SubwayView: View {
         .onAppear {
             fetchData()
         }
+        .navigationTitle(selectedStation)
     }
 }
 
@@ -56,8 +59,9 @@ extension SubwayView {
         
         self.items.removeAll()
         
-        ["을지로4가"].forEach {
+        [selectedStation].forEach {
             subWayAPIsWorker.fetchSubway(station: $0)
+                .catchAndReturn(nil)
                 .subscribe { dto in
                     switch dto {
                     case .success(let dto):
@@ -117,7 +121,7 @@ extension SubwayView {
     }
 }
 
-struct Station: Codable {
+struct Station: Codable, Hashable {
     let code: String
     let station: String
     let line: String
