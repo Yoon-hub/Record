@@ -115,6 +115,9 @@ final class MetamonView: UIView, BaseView {
         // 점프 애니메이션과 말풍선 동시 실행
         performJumpAnimation()
         showSpeechBubble()
+        
+        // 이모티콘 효과 실행
+        showEmoticonEffect()
     }
     
     private func performJumpAnimation() {
@@ -149,13 +152,9 @@ final class MetamonView: UIView, BaseView {
         speechTimer?.invalidate()
         speechTimer = nil
         
-        while true {
-            let randomDialogue = dialogues.randomElement() ?? "안녕! 나는 메타몽이야 😀"
-            if speechLabel.text != randomDialogue {
-                speechLabel.text = randomDialogue
-                break
-            }
-        }
+        // 랜덤 대사 선택
+        let randomDialogue = dialogues.randomElement() ?? "안녕!"
+        speechLabel.text = randomDialogue
         
         // 말풍선 위치 설정
         speechLabel.pin
@@ -169,13 +168,72 @@ final class MetamonView: UIView, BaseView {
             self.speechLabel.alpha = 1
         }) { _ in
             // 새로운 타이머 생성하여 2초 후 말풍선 사라지기
-            self.speechTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+            self.speechTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { _ in
                 UIView.animate(withDuration: 0.3) {
                     self.speechLabel.alpha = 0
                 }
                 self.speechTimer = nil
             }
         }
+    }
+    
+    private func showEmoticonEffect() {
+        // 랜덤 이모티콘 선택
+        guard let emoticonImage = EmoticonProvider.randomEmoticon() else { return }
+        
+        // 이모티콘 이미지뷰 생성
+        let emoticonImageView = UIImageView(image: emoticonImage)
+        emoticonImageView.contentMode = .scaleAspectFit
+        
+        let randomSize = CGFloat.random(in: 60...100)
+        
+        emoticonImageView.frame = CGRect(x: 0, y: 0, width: randomSize, height: randomSize)
+        
+        // 랜덤 위치 설정 (화면 전체에서 랜덤)
+        let randomX = CGFloat.random(in: 50...(self.bounds.width - 90))
+        let randomY = CGFloat.random(in: 50...(self.bounds.height - 90))
+        emoticonImageView.center = CGPoint(x: randomX, y: randomY)
+        
+        // 초기 상태 설정
+        emoticonImageView.alpha = 0
+        emoticonImageView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        
+        // 뷰에 추가
+        self.addSubview(emoticonImageView)
+        
+        // 애니메이션 실행
+        UIView.animateKeyframes(
+            withDuration: 1.5,
+            delay: 0,
+            options: [.calculationModeLinear],
+            animations: {
+                // 나타나기 (0.2초)
+                UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.13) {
+                    emoticonImageView.alpha = 1
+                    emoticonImageView.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+                }
+                
+                // 정상 크기로 (0.1초)
+                UIView.addKeyframe(withRelativeStartTime: 0.13, relativeDuration: 0.07) {
+                    emoticonImageView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
+                }
+                
+                // 위로 떠오르기 (0.5초)
+                UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.33) {
+                    emoticonImageView.center.y -= 30
+                }
+                
+                // 사라지기 (0.8초)
+                UIView.addKeyframe(withRelativeStartTime: 0.53, relativeDuration: 0.47) {
+                    emoticonImageView.alpha = 0
+                    emoticonImageView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+                }
+            },
+            completion: { _ in
+                // 애니메이션 완료 후 뷰에서 제거
+                emoticonImageView.removeFromSuperview()
+            }
+        )
     }
     
     func setUI() {
