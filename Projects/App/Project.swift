@@ -63,6 +63,7 @@ let project = Project(name: "App", targets: [
             .xcframework(path: "../../Carthage/Build/FlexLayout.xcframework", status: .optional),
             .external(name: "ReactorKit"),
             .external(name: "PinLayout"),
+            .external(name: "RxSwift"),
             .external(name: "RxCocoa"),
             .external(name: "FocusCollectionView"),
             .external(name: "FSCalendar"),
@@ -76,7 +77,8 @@ let project = Project(name: "App", targets: [
         ],
         settings: .settings(
             base: [
-                "DEVELOPMENT_TEAM": SettingValue(stringLiteral: teamID)
+                "DEVELOPMENT_TEAM": SettingValue(stringLiteral: teamID),
+                "OTHER_LDFLAGS": ["$(inherited)", "-all_load"]
             ]
         )
     ),

@@ -135,14 +135,14 @@ extension PillReactor {
     
     /// 앱스토어 배포 시 수정해야 할 부분
     private func setPushService(_ pill: Pill) {
-        let bodysTitle = ["하빵이", "공쥬", "쫀떡이", "쩡아"]
+        
         let (hour, time) = convertTimeStringToHourMinute(time: pill.time)!
         
         if pill.use {
             LocalPushService.shared.addRepeatingNotification(
                 identifier: pill.id,
                 title: "알약 알림",
-                body: "\(bodysTitle.randomElement()!) \(pill.title) 먹을 시간이야!",
+                body: "\(pill.title) 먹을 시간이야!",
                 hour: hour,
                 minute: time
             )

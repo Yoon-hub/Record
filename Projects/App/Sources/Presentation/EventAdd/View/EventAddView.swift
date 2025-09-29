@@ -107,40 +107,8 @@ final class EventAddView: UIView, BaseView {
         $0.isHidden = true
     }
     
-    var emoticionList = [
-        DesignAsset.nomalEmo1.image,
-        DesignAsset.nomalEmo2.image,
-        DesignAsset.nomalEmo3.image,
-        DesignAsset.nomalEmo4.image,
-        DesignAsset.nomalEmo5.image,
-        DesignAsset.nomalEmo6.image,
-        DesignAsset.nomalEmo7.image,
-        DesignAsset.nomalEmo8.image,
-        DesignAsset.nomalEmo9.image,
-        DesignAsset.nomalEmo10.image,
-        DesignAsset.nomalEmo11.image,
-        DesignAsset.nomalEmo12.image,
-        DesignAsset.nomalEmo13.image,
-        DesignAsset.nomalEmo14.image,
-        DesignAsset.nomalEmo15.image,
-        DesignAsset.nomalEmo16.image,
-        DesignAsset.nomalEmo17.image,
-        DesignAsset.nomalEmo18.image,
-        DesignAsset.nomalEmo19.image,
-        DesignAsset.nomalEmo20.image,
-        DesignAsset.nomalEmo21.image,
-        DesignAsset.nomalEmo22.image,
-        DesignAsset.nomalEmo23.image,
-        DesignAsset.nomalEmo24.image,
-        DesignAsset.nomalEmo25.image,
-        DesignAsset.nomalEmo26.image,
-        DesignAsset.nomalEmo27.image,
-        DesignAsset.nomalEmo28.image,
-        DesignAsset.nomalEmo29.image,
-    ]
-    
     lazy var randomEmoticonImage = AnimationImageView(frame: .zero).then {
-        $0.image = emoticionList.randomElement()
+        $0.image = EmoticonProvider.randomEmoticon()
     }
     
     /// Random Emoticion Metric

@@ -32,37 +32,10 @@ final class MovieDetailView: UIView, BaseView {
         return focusCollectionView
     }()
     
-    var emoticionList = [
-        DesignAsset.nomalEmo1.image,
-        DesignAsset.nomalEmo2.image,
-        DesignAsset.nomalEmo3.image,
-        DesignAsset.nomalEmo4.image,
-        DesignAsset.nomalEmo5.image,
-        DesignAsset.nomalEmo6.image,
-        DesignAsset.nomalEmo7.image,
-        DesignAsset.nomalEmo8.image,
-        DesignAsset.nomalEmo9.image,
-        DesignAsset.nomalEmo10.image,
-        DesignAsset.nomalEmo11.image,
-        DesignAsset.nomalEmo12.image,
-        DesignAsset.nomalEmo13.image,
-        DesignAsset.nomalEmo14.image,
-        DesignAsset.nomalEmo15.image,
-        DesignAsset.nomalEmo16.image,
-        DesignAsset.nomalEmo17.image,
-        DesignAsset.nomalEmo18.image,
-        DesignAsset.nomalEmo19.image,
-        DesignAsset.nomalEmo20.image,
-        DesignAsset.nomalEmo21.image,
-        DesignAsset.nomalEmo22.image,
-        DesignAsset.nomalEmo23.image,
-        DesignAsset.nomalEmo24.image,
-        DesignAsset.nomalEmo25.image,
-        DesignAsset.nomalEmo26.image,
-        DesignAsset.nomalEmo27.image,
-        DesignAsset.nomalEmo28.image,
-        DesignAsset.nomalEmo29.image,
-    ]
+    // 중복되지 않는 랜덤 이모지들을 저장
+    private lazy var uniqueRandomEmoticons: [UIImage] = {
+        return EmoticonProvider.randomUniqueEmoticons(count: 4)
+    }()
     
     let titleLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 19, weight: .semibold)
@@ -95,27 +68,19 @@ final class MovieDetailView: UIView, BaseView {
     }
     
     lazy var randomEmoticonImageFirst = AnimationImageView(frame: .zero).then {
-        let randomIndex = Int.random(in: 0..<emoticionList.count)
-        $0.image = self.emoticionList[randomIndex]
-        self.emoticionList.remove(at: randomIndex)
+        $0.image = uniqueRandomEmoticons[0]
     }
     
     lazy var randomEmoticonImageSecond = AnimationImageView(frame: .zero).then {
-        let randomIndex = Int.random(in: 0..<emoticionList.count)
-        $0.image = self.emoticionList[randomIndex]
-        self.emoticionList.remove(at: randomIndex)
+        $0.image = uniqueRandomEmoticons[1]
     }
     
     lazy var randomEmoticonImageThird = AnimationImageView(frame: .zero).then {
-        let randomIndex = Int.random(in: 0..<emoticionList.count)
-        $0.image = self.emoticionList[randomIndex]
-        self.emoticionList.remove(at: randomIndex)
+        $0.image = uniqueRandomEmoticons[2]
     }
     
     lazy var randomEmoticonImageFourth = AnimationImageView(frame: .zero).then {
-        let randomIndex = Int.random(in: 0..<emoticionList.count)
-        $0.image = self.emoticionList[randomIndex]
-        self.emoticionList.remove(at: randomIndex)
+        $0.image = uniqueRandomEmoticons[3]
     }
     
     override init(frame: CGRect) {
