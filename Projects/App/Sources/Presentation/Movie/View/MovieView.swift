@@ -31,7 +31,7 @@ final class MovieView: UIView, BaseView {
     }()
     
     let emptyLabel = UILabel().then {
-        $0.text = "너와 함께한 추억을 담을게"
+        $0.text = "소중한 추억을 담아주세요!"
         $0.font = .systemFont(ofSize: 15)
         $0.textColor = .systemGray
     }

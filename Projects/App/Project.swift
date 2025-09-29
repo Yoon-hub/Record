@@ -18,7 +18,7 @@ let project = Project(name: "App", targets: [
         bundleId: "record.app.com",
         deploymentTargets: .iOS("17.0"),
         infoPlist: .extendingDefault(with: [
-            "CFBundleDisplayName": .string("토마토"),
+            "CFBundleDisplayName": .string("메타몽"),
             "UILaunchStoryboardName": .string("LaunchScreen.storyboard"),
             "UIApplicationSceneManifest" : .dictionary([
                 "UIApplicationSupportsMultipleScenes" : .boolean(false),
