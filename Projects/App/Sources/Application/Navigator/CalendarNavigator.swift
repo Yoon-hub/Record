@@ -19,6 +19,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toKakaoShare(_ vc: UIViewController,kakaoEvent: CalendarEvent)
     //func toSubway()
     func toSubwayStation()
+    func toMetamon(_ vc: UIViewController)
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -47,6 +48,12 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
     func toPill(_ vc: UIViewController) {
          let pillView = PillViewControllerWrapper().viewController
         vc.presentFloatingBottomSheet(pillView)
+    }
+    
+    func toMetamon(_ vc: UIViewController) {
+         let metamonView = MetamonViewControllerWrapper().viewController
+        //metamonView.modalPresentationStyle = .fullScreen
+        vc.present(metamonView, animated: true)
     }
     
     func toKakaoShare(

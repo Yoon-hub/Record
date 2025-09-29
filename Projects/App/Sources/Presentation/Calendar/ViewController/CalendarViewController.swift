@@ -33,6 +33,7 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         self.navigationController?.navigationBar.tintColor = .recordColor
         self.title = "캘린더"
         makeNaviagtionItem()
+        setupTitleLongPressGesture()
     }
     
     private func makeNaviagtionItem() {
@@ -384,5 +385,33 @@ extension CalendarViewController {
         }
         
         return nil
+    }
+    
+    /// Title Long Press Gestrue
+    private func setupTitleLongPressGesture() {
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(titleLongPressed(_:)))
+        longPressGesture.minimumPressDuration = 1.5 
+        longPressGesture.numberOfTouchesRequired = 1
+        
+        if let titleView = navigationItem.titleView {
+            titleView.addGestureRecognizer(longPressGesture)
+            titleView.isUserInteractionEnabled = true
+        } else {
+            navigationController?.navigationBar.addGestureRecognizer(longPressGesture)
+        }
+    }
+    
+    @objc
+    private func titleLongPressed(_ gesture: UILongPressGestureRecognizer) {
+    
+        /// 진동
+        let generator = UIImpactFeedbackGenerator(style: .heavy)
+        generator.prepare()
+        generator.impactOccurred()
+        
+        showAlert(title: "앗!", message: "야생의 메타몽이 나타났다") { [weak self] in
+            guard let self else {return}
+            self.navigator.toMetamon(self)
+        }
     }
 }
