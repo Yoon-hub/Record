@@ -66,7 +66,9 @@ final class MetamonView: UIView, BaseView {
         "목소리 듣고 싶다 📞",
         "말차 싫어 🙅",
         "민트 싫어 😩",
-        "양재은 좋아 😘"
+        "양재은 좋아 😘",
+        "밥은 챙겨 먹었는가! 🍙",
+        "네가 기댈 수 있는 사람이 되고 싶어"
     ]
     
     override init(frame: CGRect) {
