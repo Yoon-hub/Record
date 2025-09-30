@@ -15,4 +15,10 @@ public extension Int {
         dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         return dateFormatter.date(from: dateString)
     }
+    
+    func addComma() -> String {
+         let numberFormatter = NumberFormatter()
+         numberFormatter.numberStyle = .decimal
+         return numberFormatter.string(from: NSNumber(value: self)) ?? "\(self)"
+     }
 }

@@ -31,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             RestDayDIContrainer(),
             EventDIContainer(),
             PillDIContainer(),
+            MetamonDIContainer(), // 메타몬 UseCase들
             KakaSDKDIContainer() // 카카오 SDK 용
         ]
         containers.forEach {
