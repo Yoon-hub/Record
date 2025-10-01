@@ -390,7 +390,7 @@ extension CalendarViewController {
     /// Title Long Press Gestrue
     private func setupTitleLongPressGesture() {
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(titleLongPressed(_:)))
-        longPressGesture.minimumPressDuration = 0.2
+        longPressGesture.minimumPressDuration = 0.5
         longPressGesture.numberOfTouchesRequired = 1
         
         if let titleView = navigationItem.titleView {

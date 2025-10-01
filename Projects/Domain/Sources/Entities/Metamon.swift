@@ -52,12 +52,15 @@ final public class Metamon {
 
 public enum MetamonItem: String, CaseIterable {
     case basic = "basic"
+    case flower = "flower"
     case crown = "crown"
     case letter = "letter"
     case santa = "santa"
+    case chunguma = "chunguma"
     case pikachu = "pikachu"
     case pairi = "pairi"
     case kkobugi = "kkobugi"
+    case lake = "lake"
     
     public var metamonImage: UIImage? {
         switch self {
@@ -68,6 +71,9 @@ public enum MetamonItem: String, CaseIterable {
         case .pikachu: return DesignAsset.metamonPikachu.image
         case .pairi: return DesignAsset.metamonPairi.image
         case .kkobugi: return DesignAsset.metamonKkobugi.image
+        case .chunguma: return DesignAsset.metamonChunguma.image
+        case .lake: return DesignAsset.metamonLake.image
+        case .flower: return DesignAsset.metamonFlower.image
         }
     }
     
@@ -80,6 +86,9 @@ public enum MetamonItem: String, CaseIterable {
         case .pikachu: return DesignAsset.pikachu.image
         case .pairi: return DesignAsset.pairi.image
         case .kkobugi: return DesignAsset.kkobugi.image
+        case .chunguma: return DesignAsset.chunguma.image
+        case .lake: return DesignAsset.lake.image
+        case .flower: return DesignAsset.flower.image
         }
     }
     
@@ -87,11 +96,14 @@ public enum MetamonItem: String, CaseIterable {
         switch self {
         case .basic: return 1000
         case .crown: return 1000
-        case .letter: return 1000
+        case .letter: return 300
         case .santa: return 1000
         case .pikachu: return 2000
         case .pairi: return 2000
         case .kkobugi: return 2000
+        case .chunguma: return 1100
+        case .lake: return 2500
+        case .flower: return 50
         }
     }
 }
