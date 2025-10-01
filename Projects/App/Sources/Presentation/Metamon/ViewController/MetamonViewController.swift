@@ -90,9 +90,25 @@ extension MetamonViewController {
                 self.navigator.toMetamonStore(self, handler: completion)
             })
             .disposed(by: disposeBag)
+        
+        // 밥 주기 버튼
+        contentView.feedButton.rx.tap
+            .map { Reactor.Action.didFeed }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        contentView.feedButton.rx.tap
+            .bind {
+                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                impactFeedback.impactOccurred()
+                
+                self.performJumpAnimation(false)
+            }
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: MetamonReactor) {
+        // 메타몬 상태 업데이트
         reactor.state
             .map { $0.metmona }
             .compactMap { $0 }
@@ -102,8 +118,19 @@ extension MetamonViewController {
                 vc.contentView.imageView.image = metamon.metamonItem.metamonImage ?? DesignAsset.metamon.image
                 let pointString = metamon.point.addComma()
                 vc.contentView.pointLabel.text = "POINT: \(pointString)"
+                
                 // 텍스트 변경 후 즉시 레이아웃 재계산
                 vc.contentView.setNeedsLayout()
+            })
+            .disposed(by: disposeBag)
+        
+        // 밥 주기 메시지
+        reactor.pulse(\.$feedMessage)
+            .filter { !$0.isEmpty }
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .subscribe(onNext: { vc, message in
+                vc.showFeedMessage(message)
             })
             .disposed(by: disposeBag)
     }
@@ -149,7 +176,7 @@ extension MetamonViewController {
                 withDuration: 0.5,
                 delay: 0,
                 usingSpringWithDamping: 0.6,
-                initialSpringVelocity: 0.8,
+                    initialSpringVelocity: 0.8,
                 options: .curveEaseOut
             ) {
                 self.contentView.metamonContainer.center = self.originalMetamonCenter
@@ -178,7 +205,7 @@ extension MetamonViewController {
         showEmoticonEffect()
     }
     
-    private func performJumpAnimation() {
+    private func performJumpAnimation(_ point: Bool = true) {
         let originalTransform = contentView.metamonContainer.transform
         
         UIView.animateKeyframes(
@@ -201,7 +228,7 @@ extension MetamonViewController {
                     self.contentView.metamonContainer.transform = originalTransform
                 }
             }) { _ in
-                self.reactor?.action.onNext(.didJump)
+                if point { self.reactor?.action.onNext(.didJump) }
             }
     }
     
@@ -236,6 +263,37 @@ extension MetamonViewController {
         }
     }
 
+    /// 밥 주기 메시지 표시
+    private func showFeedMessage(_ message: String) {
+        // 말풍선으로 메시지 표시
+        contentView.speechTimer?.invalidate()
+        contentView.speechTimer = nil
+        
+        contentView.speechLabel.text = message
+        
+        // 말풍선 위치 설정
+        contentView.speechLabel.pin
+            .top(20)
+            .left(20)
+            .right(20)
+            .height(50)
+        
+        // 말풍선 애니메이션
+        UIView.animate(withDuration: 0.3, animations: {
+            self.contentView.speechLabel.alpha = 1
+        }) { _ in
+            // 2초 후 말풍선 사라지기
+            self.contentView.speechTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
+                UIView.animate(withDuration: 0.3) {
+                    self.contentView.speechLabel.alpha = 0
+                }
+                self.contentView.speechTimer = nil
+            }
+        }
+    }
+    
+
+    
     private func showEmoticonEffect() {
         // 랜덤 이모티콘 선택
         guard let emoticonImage = EmoticonProvider.randomEmoticon() else { return }

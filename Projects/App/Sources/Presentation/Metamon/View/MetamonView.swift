@@ -50,6 +50,10 @@ final class MetamonView: UIView, BaseView {
         $0.contentMode = .scaleAspectFit
     }
     
+    let feedButton = UIButton().then {
+        $0.setImage(DesignAsset.meal.image, for: .normal)
+    }
+    
     let tapGesture = UITapGestureRecognizer()
     private let disposeBag = DisposeBag()
     
@@ -77,7 +81,7 @@ final class MetamonView: UIView, BaseView {
     func configure() {
         self.backgroundColor = .white
         
-        [metamonContainer, speechLabel, pointLabel, shoppingButton].forEach {
+        [metamonContainer, speechLabel, pointLabel, shoppingButton, feedButton].forEach {
             self.addSubview($0)
         }
         
@@ -111,6 +115,12 @@ final class MetamonView: UIView, BaseView {
             .vCenter(to: shoppingButton.edge.vCenter)
             .width(200)
             .sizeToFit(.width)
+        
+        // 밥 주기 버튼 (shoppingButton 옆에)
+        feedButton.pin
+            .size(63)
+            .right(20)
+            .vCenter(to: shoppingButton.edge.vCenter)
         
     }
 }

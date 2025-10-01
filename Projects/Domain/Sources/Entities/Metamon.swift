@@ -15,6 +15,7 @@ final public class Metamon {
     
     private var metamonItemRawValue: String
     public var point: Int
+    public var lastFeedDate: Date?
     
     public var metamonItem: MetamonItem {
         get {
@@ -27,10 +28,24 @@ final public class Metamon {
     
     public init(
         metamonItem: MetamonItem,
-        point: Int
+        point: Int,
+        lastFeedDate: Date? = nil
     ) {
         self.metamonItemRawValue = metamonItem.rawValue
         self.point = point
+        self.lastFeedDate = lastFeedDate
+    }
+    
+    /// 오늘 밥을 먹었는지 확인
+    public func canFeedToday() -> Bool {
+        guard let lastFeed = lastFeedDate else { return true }
+        return !Calendar.current.isDateInToday(lastFeed)
+    }
+    
+    /// 밥 먹이기
+    public func feed() {
+        lastFeedDate = Date()
+        point += 100
     }
     
 }

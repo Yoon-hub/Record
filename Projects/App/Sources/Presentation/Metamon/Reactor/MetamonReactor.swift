@@ -17,15 +17,18 @@ final class MetamonReactor: Reactor {
     enum Action {
         case viewDidload
         case didJump
+        case didFeed
         case updateMetamon
     }
     
     enum Mutation {
         case setMetamon(Metamon)
+        case showFeedMessage(String)
     }
     
     struct State {
         var metmona: Metamon?
+        @Pulse var feedMessage: String = ""
     }
     
     
@@ -48,9 +51,7 @@ final class MetamonReactor: Reactor {
         "민트 싫어 😩",
         "양재은 좋아 😘",
         "밥은 챙겨 먹었는가! 🍙",
-        "네가 기댈 수 있는 사람이 되고 싶어",
-        "살생부에 또 한놈 올라왔군🔪",
-        "보고싶어 빵순아! 🍞"
+        "네가 기댈 수 있는 사람이 되고 싶어"
     ]
     
     
@@ -76,13 +77,9 @@ extension MetamonReactor {
                     if let metamon {
                         observer.onNext(.setMetamon(metamon))
                     } else {
-                        
-                        // 신규 생성
                         let newMetamon = Metamon(metamonItem: .basic, point: 0)
                         await self.saveMetamonUsecase.execute(metamon: newMetamon)
                         observer.onNext(.setMetamon(newMetamon))
-                        
-                        UserDefaultsWrapper.itemList = ["basic"]
                     }
                     observer.onCompleted()
                 }
@@ -91,7 +88,7 @@ extension MetamonReactor {
         case .didJump:
             // SwiftData는 @Model 객체를 직접 수정하면 자동으로 저장됨
             if let metamon = self.currentState.metmona {
-                metamon.point += 100
+                metamon.point += 1
                 return .just(.setMetamon(metamon))
             }
             return .empty()
@@ -100,6 +97,27 @@ extension MetamonReactor {
                 return .just(.setMetamon(metamon))
             }
             return .empty()
+            
+        case .didFeed:
+            guard let metamon = self.currentState.metmona else {
+                return .empty()
+            }
+            
+            // 오늘 이미 밥을 먹었는지 확인
+            if !metamon.canFeedToday() {
+                metamon.point -= 1
+                return Observable.concat([
+                    .just(.showFeedMessage("이미 배불러! 🤤 (-1P)")),
+                    .just(.setMetamon(metamon))
+                ])
+            }
+            
+            // 밥 먹이기
+            metamon.feed()
+            return Observable.concat([
+                .just(.showFeedMessage("맛있다! 배불러! 😋 (+100P)")),
+                .just(.setMetamon(metamon))
+            ])
         }
     }
         
@@ -113,6 +131,9 @@ extension MetamonReactor {
             
         case .setMetamon(let metamon):
             newState.metmona = metamon
+            
+        case .showFeedMessage(let message):
+            newState.feedMessage = message
         }
         
         return newState
