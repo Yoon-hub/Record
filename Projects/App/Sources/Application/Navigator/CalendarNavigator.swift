@@ -20,6 +20,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     //func toSubway()
     func toSubwayStation()
     func toMetamon(_ vc: UIViewController)
+    func toMetamonStore(_ vc: UIViewController, handler: @escaping (() -> Void))
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -79,6 +80,13 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
             subWayView,
             animated: true
         )
+    }
+    
+    func toMetamonStore(_ vc: UIViewController, handler: @escaping (() -> Void)) {
+        let metamonStoreView = MetamonStoreViewControllerWrapper().viewController
+        metamonStoreView.updateMetamona = handler
+        metamonStoreView.modalPresentationStyle = .fullScreen
+        vc.present(metamonStoreView, animated: true)
     }
 }
 

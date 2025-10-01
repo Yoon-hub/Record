@@ -52,4 +52,6 @@ public struct UserDefaultsWrapper {
     @UserDefault(key: "theme") public static var theme
     
     @UserDefaultArray(key: "stations") public static var stations
+    
+    @UserDefaultArray(key: "itemList") public static var itemList
 }

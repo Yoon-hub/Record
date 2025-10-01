@@ -16,6 +16,8 @@ import RxCocoa
 
 final class MetamonViewController: BaseViewController<MetamonReactor, MetamonView> {
     
+    @Navigator var navigator: CalendarNavigatorProtocol
+    
     /// 메타몽 이미지 탭 제스쳐
     let tapGesture = UITapGestureRecognizer()
     
@@ -43,6 +45,14 @@ extension MetamonViewController {
                 self?.handleTap()
             })
             .disposed(by: disposeBag)
+        
+        contentView.shoppingButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self else { return }
+                let completion = { self.reactor!.action.onNext(.updateMetamon) }
+                self.navigator.toMetamonStore(self, handler: completion)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: MetamonReactor) {
@@ -52,7 +62,7 @@ extension MetamonViewController {
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .subscribe(onNext: { vc, metamon in
-                vc.contentView.imageView.image = metamon.metamonItem.image ?? DesignAsset.metamon.image
+                vc.contentView.imageView.image = metamon.metamonItem.metamonImage ?? DesignAsset.metamon.image
                 let pointString = metamon.point.addComma()
                 vc.contentView.pointLabel.text = "POINT: \(pointString)"
                 // 텍스트 변경 후 즉시 레이아웃 재계산
