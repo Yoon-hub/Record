@@ -16,6 +16,11 @@ import RxCocoa
 
 final class MetamonView: UIView, BaseView {
     
+    // 메타몽 컨테이너 뷰 (드래그 가능)
+    let metamonContainer = UIView().then {
+        $0.isUserInteractionEnabled = true
+    }
+    
     let imageView = UIImageView().then {
         $0.image = DesignAsset.metamon.image
         $0.contentMode = .scaleAspectFit
@@ -72,9 +77,11 @@ final class MetamonView: UIView, BaseView {
     func configure() {
         self.backgroundColor = .white
         
-        [imageView, speechLabel, pointLabel, shoppingButton].forEach {
+        [metamonContainer, speechLabel, pointLabel, shoppingButton].forEach {
             self.addSubview($0)
         }
+        
+        metamonContainer.addSubview(imageView)
         
         setupTapGesture()
     }
@@ -84,6 +91,12 @@ final class MetamonView: UIView, BaseView {
     }
 
     func setUI() {
+        // 메타몽 컨테이너 초기 위치 (중앙) - 크기 증가
+        metamonContainer.pin
+            .size(350)
+            .center()
+        
+        // 메타몽 이미지는 컨테이너를 가득 채움
         imageView.pin
             .all()
         
@@ -96,7 +109,7 @@ final class MetamonView: UIView, BaseView {
             .after(of: shoppingButton)
             .marginLeft(8)
             .vCenter(to: shoppingButton.edge.vCenter)
-            .width(200)  // 충분한 너비 확보
+            .width(200)
             .sizeToFit(.width)
         
     }

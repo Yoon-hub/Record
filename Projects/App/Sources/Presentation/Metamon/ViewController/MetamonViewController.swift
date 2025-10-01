@@ -21,6 +21,18 @@ final class MetamonViewController: BaseViewController<MetamonReactor, MetamonVie
     /// 메타몽 이미지 탭 제스쳐
     let tapGesture = UITapGestureRecognizer()
     
+    /// 메타몽 이미지 드래그 제스쳐
+    let panGesture = UIPanGestureRecognizer()
+    
+    /// 드래그 시작 시 메타몽 위치
+    private var initialMetamonCenter: CGPoint = .zero
+    
+    /// 원래 메타몽 위치 (중앙)
+    private var originalMetamonCenter: CGPoint = .zero
+    
+    /// 드래그 진동 피드백
+    private let dragFeedback = UIImpactFeedbackGenerator(style: .light)
+    
     override func bind(reactor: MetamonReactor) {
         super.bind(reactor: reactor)
         bindInput(reactor: reactor)
@@ -31,6 +43,18 @@ final class MetamonViewController: BaseViewController<MetamonReactor, MetamonVie
         super.viewDidLoad()
         
         reactor?.action.onNext(.viewDidload)
+        
+        // 진동 피드백 준비
+        dragFeedback.prepare()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // 원래 위치 저장 (중앙)
+        if originalMetamonCenter == .zero {
+            originalMetamonCenter = contentView.metamonContainer.center
+        }
     }
 }
 
@@ -38,11 +62,24 @@ extension MetamonViewController {
     
     private func bindInput(reactor: MetamonReactor) {
         
-        contentView.imageView.addGestureRecognizer(tapGesture)
+        // 탭 제스쳐 추가
+        contentView.metamonContainer.addGestureRecognizer(tapGesture)
+        
+        // 드래그 제스쳐 추가
+        contentView.metamonContainer.addGestureRecognizer(panGesture)
+        
+        // 탭과 드래그가 동시에 인식되도록 설정
+        tapGesture.require(toFail: panGesture)
         
         tapGesture.rx.event
             .subscribe(onNext: { [weak self] _ in
                 self?.handleTap()
+            })
+            .disposed(by: disposeBag)
+        
+        panGesture.rx.event
+            .subscribe(onNext: { [weak self] gesture in
+                self?.handlePan(gesture)
             })
             .disposed(by: disposeBag)
         
@@ -72,9 +109,62 @@ extension MetamonViewController {
     }
 }
 
-// MARK: - Handle Tap
+// MARK: - Handle Gestures
 extension MetamonViewController {
     
+    /// 드래그 핸들러
+    private func handlePan(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: contentView)
+        
+        switch gesture.state {
+        case .began:
+            // 드래그 시작 시 현재 위치 저장
+            initialMetamonCenter = contentView.metamonContainer.center
+            
+            // 시작 시 한 번 진동
+            dragFeedback.impactOccurred(intensity: 0.5)
+            
+            // 약간 커지는 애니메이션 (들어올리는 느낌)
+            UIView.animate(withDuration: 0.2) {
+                self.contentView.metamonContainer.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            }
+            
+        case .changed:
+            // 손가락 위치에 따라 메타몽 이동
+            let newCenter = CGPoint(
+                x: initialMetamonCenter.x + translation.x,
+                y: initialMetamonCenter.y + translation.y
+            )
+            contentView.metamonContainer.center = newCenter
+            
+            // 이동 중 주기적으로 미세한 진동 (거리에 따라)
+            let distance = sqrt(translation.x * translation.x + translation.y * translation.y)
+            if Int(distance) % 30 == 0 {  // 30pt마다 진동
+                dragFeedback.impactOccurred(intensity: 0.3)
+            }
+            
+        case .ended, .cancelled:
+            // 원래 자리로 돌아가는 애니메이션
+            UIView.animate(
+                withDuration: 0.5,
+                delay: 0,
+                usingSpringWithDamping: 0.6,
+                initialSpringVelocity: 0.8,
+                options: .curveEaseOut
+            ) {
+                self.contentView.metamonContainer.center = self.originalMetamonCenter
+                self.contentView.metamonContainer.transform = .identity  // 원래 크기로
+            } completion: { _ in
+                // 도착 시 진동
+                self.dragFeedback.impactOccurred(intensity: 0.7)
+            }
+            
+        default:
+            break
+        }
+    }
+    
+    /// 탭 핸들러
     private func handleTap() {
         // 햅틱 피드백 (진동)
         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -89,7 +179,7 @@ extension MetamonViewController {
     }
     
     private func performJumpAnimation() {
-        let originalTransform = contentView.imageView.transform
+        let originalTransform = contentView.metamonContainer.transform
         
         UIView.animateKeyframes(
             withDuration: 0.3,
@@ -98,17 +188,17 @@ extension MetamonViewController {
             animations: {
                 // 위로 점프
                 UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.3) {
-                    self.contentView.imageView.transform = originalTransform.translatedBy(x: 0, y: -30)
+                    self.contentView.metamonContainer.transform = originalTransform.translatedBy(x: 0, y: -30)
                 }
                 
                 // 아래로 떨어짐
                 UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.3) {
-                    self.contentView.imageView.transform = originalTransform.translatedBy(x: 0, y: 5)
+                    self.contentView.metamonContainer.transform = originalTransform.translatedBy(x: 0, y: 5)
                 }
                 
                 // 원래 위치로 복귀
                 UIView.addKeyframe(withRelativeStartTime: 0.6, relativeDuration: 0.4) {
-                    self.contentView.imageView.transform = originalTransform
+                    self.contentView.metamonContainer.transform = originalTransform
                 }
             }) { _ in
                 self.reactor?.action.onNext(.didJump)
