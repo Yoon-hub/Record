@@ -96,9 +96,9 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
         let titleHeight: CGFloat = self.bounds.size.height * 4.1 / 5
          var diameter: CGFloat = min(self.bounds.size.height * 5.2 / 8, self.bounds.size.width)
          diameter = diameter > FSCalendarStandardCellDiameter ? (diameter - (diameter-FSCalendarStandardCellDiameter) * 0.5) : diameter
-         shapeLayer.frame = CGRect(x: ((bounds.size.width - diameter) / 2) - 6,
-                                   y: ((titleHeight - diameter) / 2) - 3,
-                                   width: diameter + 12, height: diameter + 14)
+         shapeLayer.frame = CGRect(x: ((bounds.size.width - diameter) / 2) - 8,
+                                   y: ((titleHeight - diameter) / 2) - 5,
+                                   width: diameter + 16, height: diameter + 18)
          
          let path = UIBezierPath(roundedRect: shapeLayer.bounds, cornerRadius: shapeLayer.bounds.width * 0.5 * appearance.borderRadius).cgPath
          if shapeLayer.path != path {
