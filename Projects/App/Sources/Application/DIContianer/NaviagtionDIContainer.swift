@@ -15,10 +15,12 @@ final class NaviagtionDIContainer: BaseContainer {
     
     var mainNavigatorNaviagtionController: UINavigationController
     var calendarNavigatorNaviagtionController: UINavigationController
+    var diaryNavigatorNavigationController: UINavigationController
     
-    init(mainNavigatorNaviagtionController: UINavigationController, calendarNavigatorNaviagtionController: UINavigationController) {
+    init(mainNavigatorNaviagtionController: UINavigationController, calendarNavigatorNaviagtionController: UINavigationController, diaryNavigatorNavigationController: UINavigationController) {
         self.mainNavigatorNaviagtionController = mainNavigatorNaviagtionController
         self.calendarNavigatorNaviagtionController = calendarNavigatorNaviagtionController
+        self.diaryNavigatorNavigationController = diaryNavigatorNavigationController
     }
     
     func registerDependencies() {
@@ -32,6 +34,10 @@ final class NaviagtionDIContainer: BaseContainer {
         
         container.register(type: CalendarNavigatorProtocol.self) { _ in
             CalendarNavigator(navigationController: calendarNavigatorNaviagtionController)
+        }
+        
+        container.register(type: DiaryNavigatorProtocol.self) { _ in
+            DiaryNavigator(navigationController: diaryNavigatorNavigationController)
         }
     }
 }

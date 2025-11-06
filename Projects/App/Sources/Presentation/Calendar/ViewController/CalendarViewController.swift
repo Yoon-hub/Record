@@ -40,13 +40,16 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         let rightBarSettingButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(gearTap))
         let rightBarPillButtonItem = UIBarButtonItem(image: UIImage(systemName: "pill"), style: .plain, target: self, action: #selector(pillTap))
         
+        let leftBarPencilButtonItem = UIBarButtonItem(image: UIImage(systemName: "pencil.line"), style: .plain, target: self, action: #selector(diaryTap))
+        
         let leftBarTramButtonItem = UIBarButtonItem(image: UIImage(systemName: "tram")?.withConfiguration(UIImage.SymbolConfiguration(font: .systemFont(ofSize: 15))), style: .plain, target: self, action: #selector(subwayTap))
 
 
         rightBarPillButtonItem.imageInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 0)
+        leftBarTramButtonItem.imageInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 10)
 
         self.navigationItem.rightBarButtonItems = [rightBarSettingButtonItem, rightBarPillButtonItem]
-        self.navigationItem.leftBarButtonItems = [leftBarTramButtonItem]
+        self.navigationItem.leftBarButtonItems = [leftBarPencilButtonItem, leftBarTramButtonItem]
     }
     
     // MARK: - ViewLifeCycle
@@ -74,6 +77,11 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
     /// Subway Button
     @objc private func subwayTap() {
         navigator.toSubwayStation()
+    }
+    
+    /// diary 화면
+    @objc private func diaryTap() {
+        navigator.toDiary(self)
     }
 }
 

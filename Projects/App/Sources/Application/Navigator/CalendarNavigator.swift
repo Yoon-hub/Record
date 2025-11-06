@@ -17,7 +17,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toSetting()
     func toPill(_ vc: UIViewController)
     func toKakaoShare(_ vc: UIViewController,kakaoEvent: CalendarEvent)
-    //func toSubway()
+    func toDiary(_ vc: UIViewController)
     func toSubwayStation()
     func toMetamon(_ vc: UIViewController)
     func toMetamonStore(_ vc: UIViewController, handler: @escaping (() -> Void))
@@ -26,6 +26,8 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
 final class CalendarNavigator: CalendarNavigatorProtocol {
     
     var navigationController: UINavigationController
+    
+    @Navigator var diaryNavigator: DiaryNavigatorProtocol
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -65,14 +67,12 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
         vc.presentFloatingBottomSheet(kakaoShareView)
     }
     
-//    func toSubway() {
-//        let subWayView = UIHostingController(rootView: SubwayView())
-//        subWayView.title = "지하철"
-//        self.navigationController.pushViewController(
-//            subWayView,
-//            animated: true
-//        )
-//    }
+    func toDiary(_ vc: UIViewController) {
+        let navi = diaryNavigator.navigationController
+        navi.viewControllers = [DiaryViewControllerWrapper().viewController]
+        navi.modalPresentationStyle = .fullScreen
+        vc.present(navi, animated: true)
+    }   
     
     func toSubwayStation() {
         let subWayView = UIHostingController(rootView: SubwayStationView())
