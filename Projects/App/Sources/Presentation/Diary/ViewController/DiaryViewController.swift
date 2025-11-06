@@ -61,16 +61,34 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
         reactor.state
             .map { $0.diaries }
             .distinctUntilChanged()
-                .observe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .bind(to: contentView.tableView.rx.items(
                 cellIdentifier: DiaryTableViewCell.identifier,
                 cellType: DiaryTableViewCell.self
             )) { [weak self] index, diary, cell in
                 cell.bind(diary)
-
             }
             .disposed(by: disposeBag)
         
+        // 일기 목록 업데이트 후 맨 아래로 스크롤
+        reactor.state
+            .map { $0.diaries }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] diaries in
+                guard let self = self, !diaries.isEmpty else { return }
+                
+                // 레이아웃 업데이트 후 스크롤
+                DispatchQueue.main.async {
+                    let lastIndexPath = IndexPath(row: diaries.count - 1, section: 0)
+                    self.contentView.tableView.scrollToRow(
+                        at: lastIndexPath,
+                        at: .bottom,
+                        animated: false
+                    )
+                }
+            })
+            .disposed(by: disposeBag)
         
         // 빈 상태 표시/숨김
         reactor.state

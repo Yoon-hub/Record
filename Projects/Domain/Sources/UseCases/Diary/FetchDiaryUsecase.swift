@@ -22,7 +22,7 @@ public final class FetchDiaryUsecase<Repository: SwiftDataRepositoryProtocol>: F
     public func execute() async -> [Diary] {
         do {
             let data = try await repository.fetchData()
-            return data.sorted { $0.date > $1.date } // 최신순 정렬
+            return data.sorted { $0.date < $1.date } // 오래된 순 정렬 (맨 아래에 최신 일기)
         } catch {
             fatalError(error.localizedDescription)
         }

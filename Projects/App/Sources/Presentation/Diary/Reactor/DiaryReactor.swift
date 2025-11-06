@@ -98,7 +98,9 @@ extension DiaryReactor {
             
         case .addDiary(let diary):
             var diaries = newState.diaries
-            diaries.insert(diary, at: 0) // 최신순으로 맨 앞에 추가
+            diaries.append(diary) // 맨 뒤에 추가 (최신 일기)
+            // 날짜순으로 재정렬
+            diaries.sort { $0.date < $1.date }
             newState.diaries = diaries
             return newState
             

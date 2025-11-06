@@ -11,6 +11,7 @@ import Core
 
 public protocol DeleteDiaryUsecaseProtocol {
     func execute(diary: Diary) async
+    func execureDeleeAll() async
 }
 
 public final class DeleteDiaryUsecase<Repository: SwiftDataRepositoryProtocol>: DeleteDiaryUsecaseProtocol where Repository.T == Diary {
@@ -23,6 +24,10 @@ public final class DeleteDiaryUsecase<Repository: SwiftDataRepositoryProtocol>: 
     
     public func execute(diary: Diary) async {
         await repository.deleteData(data: diary)
+    }
+    
+    public func execureDeleeAll() async {
+        await repository.deleteAllData()
     }
 }
 
