@@ -32,7 +32,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             EventDIContainer(),
             PillDIContainer(),
             MetamonDIContainer(), // 메타몬 UseCase들
-            KakaSDKDIContainer() // 카카오 SDK 용
+            KakaSDKDIContainer(), // 카카오 SDK 용
+            DiaryDIContainer() // 일기 UseCase들
         ]
         containers.forEach {
             $0.registerDependencies()
