@@ -132,7 +132,7 @@ final class DiaryTableViewCell: UITableViewCell {
         weekLabel.pin
             .center()
             .sizeToFit()
-        
+         
         dateLabel.pin
             .center()
             .sizeToFit()

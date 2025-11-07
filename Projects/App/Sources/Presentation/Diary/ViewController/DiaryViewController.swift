@@ -28,6 +28,12 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
         reactor?.action.onNext(.viewDidLoad)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // 화면이 다시 나타날 때 데이터 다시 로드
+        reactor?.action.onNext(.viewDidLoad)
+    }
+    
     // MARK: Set
     override func setup() {
         setNavigation()
@@ -123,10 +129,42 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
             }
             .disposed(by: disposeBag)
 
+        // + 버튼 tap 이벤트
+        contentView.plusButton.rx.tap
+            .map { Reactor.Action.checkAndNavigateToAdd }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         // 테이블뷰 아이템 선택
         contentView.tableView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
-                self?.contentView.tableView.deselectRow(at: indexPath, animated: true)
+                guard let self = self,
+                      let reactor = self.reactor,
+                      indexPath.row < reactor.currentState.diaries.count else { return }
+                
+                self.contentView.tableView.deselectRow(at: indexPath, animated: true)
+                
+                let diary = reactor.currentState.diaries[indexPath.row]
+                self.navigator.toDiaryDetail(diary: diary)
+            })
+            .disposed(by: disposeBag)
+        
+        // Cell long press 제스처 (삭제)
+        let longPressGesture = UILongPressGestureRecognizer()
+        contentView.tableView.addGestureRecognizer(longPressGesture)
+        
+        longPressGesture.rx.event
+            .subscribe(onNext: { [weak self] gesture in
+                guard gesture.state == .began,
+                      let self = self,
+                      let reactor = self.reactor else { return }
+                
+                let location = gesture.location(in: self.contentView.tableView)
+                guard let indexPath = self.contentView.tableView.indexPathForRow(at: location),
+                      indexPath.row < reactor.currentState.diaries.count else { return }
+                
+                let diary = reactor.currentState.diaries[indexPath.row]
+                self.showDeleteConfirmation(diary: diary)
             })
             .disposed(by: disposeBag)
     }
@@ -170,8 +208,16 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
             .subscribe(onNext: { [weak self] diaries in
                 guard let self = self, !diaries.isEmpty else { return }
                 
-                // 레이아웃 업데이트 후 스크롤
+                // 레이아웃 업데이트 후 스크롤 및 하단 정렬 유지
                 DispatchQueue.main.async {
+                    // 콘텐츠가 테이블 높이보다 작으면 상단 inset을 늘려 하단 정렬
+                    let tableView = self.contentView.tableView
+                    tableView.layoutIfNeeded()
+                    let contentHeight = tableView.contentSize.height
+                    let tableHeight = tableView.bounds.height
+                    let topInset = max(0, tableHeight - contentHeight)
+                    tableView.contentInset.top = topInset
+
                     let lastIndexPath = IndexPath(row: diaries.count - 1, section: 0)
                     self.contentView.tableView.scrollToRow(
                         at: lastIndexPath,
@@ -210,6 +256,61 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
             })
             .disposed(by: disposeBag)
         
+        // 중복 일기 알림 표시
+        reactor.pulse(\.$shouldShowAlert)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] message in
+                self?.showAlert(
+                    title: "일기 추가 불가",
+                    message: message,
+                    cancel: false
+                ){}
+            })
+            .disposed(by: disposeBag)
+        
+        // 일기 추가 화면으로 이동
+        reactor.pulse(\.$shouldNavigateToAdd)
+            .compactMap { $0 }
+            .filter { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.navigator.toDiaryAdd()
+            })
+            .disposed(by: disposeBag)
+        
+    }
+    
+    private func showDeleteConfirmation(diary: Domain.Diary) {
+        let alert = UIAlertController(
+            title: "일기 삭제",
+            message: "삭제한 일기는 복구할 수 없습니다.\n정말로 삭제하시겠습니까?",
+            preferredStyle: .alert
+        )
+        
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            self?.reactor?.action.onNext(.deleteDiary(diary))
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+        
+        alert.addAction(deleteAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+}
+
+// MARK: - Test Seed
+extension DiaryViewController { 
+    
+    private static func randomDateWithinLastMonths(months: Int) -> Date {
+        let calendar = Calendar.current
+        let now = Date()
+        let start = calendar.date(byAdding: .month, value: -months, to: now) ?? now
+        let interval = now.timeIntervalSince(start)
+        let randomOffset = TimeInterval.random(in: 0...interval)
+        return start.addingTimeInterval(randomOffset)
     }
 }
 

@@ -72,7 +72,7 @@ final class DiaryView: UIView, BaseView {
     }
     
     let diaryBackButton = UIButton().then {
-        $0.setImage(UIImage(systemName: "rectangle.portrait.and.arrow.forward"), for: .normal)
+        $0.setImage(UIImage(systemName: "square.dashed"), for: .normal)
         $0.tintColor = DiaryView.Color.textColor
     }
     
