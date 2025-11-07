@@ -28,6 +28,7 @@ final class DiaryReactor: Reactor {
         case removeDiary(Diary)
         case showDuplicateAlert
         case navigateToAdd
+        case navigateToEdit(Diary)
         case resetNavigateToAdd
         case resetAlert
     }
@@ -36,6 +37,7 @@ final class DiaryReactor: Reactor {
         var diaries: [Diary] = [] 
         @Pulse var shouldShowAlert: String?
         @Pulse var shouldNavigateToAdd: Bool?
+        @Pulse var shouldNavigateToEdit: Diary?
     }
     
     let initialState: State
@@ -113,10 +115,10 @@ extension DiaryReactor {
                         return diaryDate >= todayStart && diaryDate < todayEnd
                     }
                     
-                    if !todayDiaries.isEmpty {
-                        // 오늘 날짜에 이미 일기가 있으면 알림 표시
-                        observer.onNext(.showDuplicateAlert)
-                        observer.onNext(.resetAlert)
+                    if let todayDiary = todayDiaries.first {
+                        // 오늘 날짜에 이미 일기가 있으면 수정 모드로 열기
+                        observer.onNext(.navigateToEdit(todayDiary))
+                        observer.onNext(.resetNavigateToAdd)
                     } else {
                         // 일기가 없으면 추가 화면으로 이동
                         observer.onNext(.navigateToAdd)
@@ -161,8 +163,13 @@ extension DiaryReactor {
             newState.shouldNavigateToAdd = true
             return newState
             
+        case .navigateToEdit(let diary):
+            newState.shouldNavigateToEdit = diary
+            return newState
+            
         case .resetNavigateToAdd:
             newState.shouldNavigateToAdd = nil
+            newState.shouldNavigateToEdit = nil
             return newState
             
         case .resetAlert:

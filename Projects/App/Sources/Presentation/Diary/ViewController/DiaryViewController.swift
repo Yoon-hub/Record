@@ -279,6 +279,15 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
             })
             .disposed(by: disposeBag)
         
+        // 일기 수정 화면으로 이동
+        reactor.pulse(\.$shouldNavigateToEdit)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] diary in
+                self?.navigator.toDiaryAdd(editingDiary: diary)
+            })
+            .disposed(by: disposeBag)
+        
     }
     
     private func showDeleteConfirmation(diary: Domain.Diary) {

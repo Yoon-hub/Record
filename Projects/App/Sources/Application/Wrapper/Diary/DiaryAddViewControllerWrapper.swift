@@ -7,6 +7,7 @@
 
 import UIKit
 
+import Domain
 import Core
 
 final class DiaryAddViewControllerWrapper: BaseWrapper {
@@ -15,6 +16,12 @@ final class DiaryAddViewControllerWrapper: BaseWrapper {
     typealias V = DiaryAddViewController
     typealias C = DiaryAddView
     
+    private let editingDiary: Domain.Diary?
+    
+    init(editingDiary: Domain.Diary? = nil) {
+        self.editingDiary = editingDiary
+    }
+    
     // MARK: - Make
     
     func makeViewController() -> V {
@@ -22,7 +29,7 @@ final class DiaryAddViewControllerWrapper: BaseWrapper {
     }
     
     func makeReactor() -> R {
-        return DiaryAddReactor(initialState: DiaryAddReactor.State())
+        return DiaryAddReactor(initialState: DiaryAddReactor.State(editingDiary: editingDiary))
     }
     
     func makeView() -> C {

@@ -25,6 +25,7 @@ final class DiaryAddReactor: Reactor {
     }
     
     struct State {
+        var editingDiary: Diary?
         @Pulse var errorMessage: String?
         @Pulse var isSaveSuccess: Bool = false
     }
@@ -37,6 +38,7 @@ final class DiaryAddReactor: Reactor {
     
     @Injected var fetchDiaryUsecase: FetchDiaryUsecaseProtocol
     @Injected var saveDiaryUsecase: SaveDiaryUsecaseProtocol
+    @Injected var deleteDiaryUsecase: DeleteDiaryUsecaseProtocol
 }
 
 extension DiaryAddReactor {
@@ -54,6 +56,24 @@ extension DiaryAddReactor {
                 guard let self else { return Disposables.create() }
                 
                 Task {
+                    // 수정 모드인 경우
+                    if let editingDiary = self.currentState.editingDiary {
+                        // 기존 일기 삭제
+                        await self.deleteDiaryUsecase.execute(diary: editingDiary)
+                        
+                        // 새 일기 저장 (기존 날짜 유지)
+                        let updatedDiary = Diary(id: editingDiary.id, content: trimmedContent, date: editingDiary.date)
+                        await self.saveDiaryUsecase.execute(diary: updatedDiary)
+                        
+                        // 캘린더 리로드 알림
+                        NotificationCenterService.reloadCalendar.post()
+                        
+                        observer.onNext(.saveSuccess)
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    // 추가 모드인 경우 - 중복 체크
                     let today = Date()
                     let calendar = Calendar.current
                     let todayStart = calendar.startOfDay(for: today)

@@ -12,6 +12,7 @@ import Domain
 
 protocol DiaryNavigatorProtocol: BaseNavigator {
     func toDiaryAdd()
+    func toDiaryAdd(editingDiary: Diary)
     func toDiaryDetail(diary: Diary)
     var navigationController: UINavigationController { get set }
 }
@@ -26,6 +27,11 @@ final class DiaryNavigator: DiaryNavigatorProtocol {
     
     func toDiaryAdd() {
         let diaryAddView = DiaryAddViewControllerWrapper().viewController
+        navigationController.pushViewController(diaryAddView, animated: true)
+    }
+    
+    func toDiaryAdd(editingDiary: Diary) {
+        let diaryAddView = DiaryAddViewControllerWrapper(editingDiary: editingDiary).viewController
         navigationController.pushViewController(diaryAddView, animated: true)
     }
     

@@ -23,6 +23,11 @@ final class DiaryAddViewController: BaseViewController<DiaryAddReactor, DiaryAdd
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        
+        // 수정 모드인 경우 기존 내용 표시
+        if let editingDiary = reactor?.currentState.editingDiary {
+            contentView.textView.text = editingDiary.content
+        }
     }
     
     // MARK: Set
