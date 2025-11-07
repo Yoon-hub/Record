@@ -37,19 +37,62 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
     }
     
     private func makeNaviagtionItem() {
-        let rightBarSettingButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(gearTap))
-        let rightBarPillButtonItem = UIBarButtonItem(image: UIImage(systemName: "pill"), style: .plain, target: self, action: #selector(pillTap))
+        let rightBarSettingButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "gearshape"),
+            style: .plain,
+            target: self,
+            action: #selector(gearTap)
+        )
         
-        let leftBarPencilButtonItem = UIBarButtonItem(image: UIImage(systemName: "pencil.line"), style: .plain, target: self, action: #selector(diaryTap))
+        let rightBarMenuButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "line.3.horizontal.circle"),
+            style: .plain,
+            target: nil,
+            action: nil
+        )
         
-        let leftBarTramButtonItem = UIBarButtonItem(image: UIImage(systemName: "tram")?.withConfiguration(UIImage.SymbolConfiguration(font: .systemFont(ofSize: 15))), style: .plain, target: self, action: #selector(subwayTap))
-
-
-        rightBarPillButtonItem.imageInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 0)
-        leftBarTramButtonItem.imageInsets = UIEdgeInsets(top: 0, left: -10, bottom: 0, right: 10)
-
-        self.navigationItem.rightBarButtonItems = [rightBarSettingButtonItem, rightBarPillButtonItem]
-        self.navigationItem.leftBarButtonItems = [leftBarPencilButtonItem, leftBarTramButtonItem]
+        // UIMenu 설정
+        rightBarMenuButtonItem.menu = makeQuickActionsMenu()
+        
+        rightBarMenuButtonItem.imageInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 0)
+        
+        self.navigationItem.rightBarButtonItems = [rightBarSettingButtonItem, rightBarMenuButtonItem]
+        self.navigationItem.leftBarButtonItems = []
+    }
+    
+    private func makeQuickActionsMenu() -> UIMenu {
+        // 일기 액션
+        let diaryAction = UIAction(
+            title: "일기",
+            image: UIImage(systemName: "pencil.line")
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            self.navigator.toDiary(self)
+        }
+        
+        // 알약 알림 액션
+        let pillAction = UIAction(
+            title: "알약 알림",
+            image: UIImage(systemName: "pill")
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            self.navigator.toPill(self)
+        }
+        
+        // 지하철 정보 액션
+        let subwayAction = UIAction(
+            title: "지하철 정보",
+            image: UIImage(systemName: "tram")
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            self.navigator.toSubwayStation()
+        }
+        
+        // 메뉴 생성
+        return UIMenu(
+            title: "",
+            children: [diaryAction, pillAction, subwayAction]
+        )
     }
     
     // MARK: - ViewLifeCycle
@@ -64,24 +107,9 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         bindOutput(reactor: reactor)
     }
     
-    /// 설정 화면 Transtion
+    /// 설정 화면 Transition
     @objc private func gearTap() {
         navigator.toSetting()
-    }
-    
-    /// 알략 Bottom Sheet
-    @objc private func pillTap() {
-        navigator.toPill(self)
-    }
-    
-    /// Subway Button
-    @objc private func subwayTap() {
-        navigator.toSubwayStation()
-    }
-    
-    /// diary 화면
-    @objc private func diaryTap() {
-        navigator.toDiary(self)
     }
 }
 
