@@ -21,6 +21,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toSubwayStation()
     func toMetamon(_ vc: UIViewController)
     func toMetamonStore(_ vc: UIViewController, handler: @escaping (() -> Void))
+    func toDiaryDetail(_ vc: UIViewController, diary: Diary)
 }
 
 final class CalendarNavigator: CalendarNavigatorProtocol {
@@ -72,7 +73,13 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
         navi.viewControllers = [DiaryViewControllerWrapper().viewController]
         navi.modalPresentationStyle = .fullScreen
         vc.present(navi, animated: true)
-    }   
+    }
+    
+    func toDiaryDetail(_ vc: UIViewController, diary: Diary) {
+        let diaryDetailView = DiaryDetailViewControllerWrapper(diary: diary).viewController
+        diaryDetailView.modalPresentationStyle = .fullScreen
+        vc.present(diaryDetailView, animated: true)
+    }
     
     func toSubwayStation() {
         let subWayView = UIHostingController(rootView: SubwayStationView())

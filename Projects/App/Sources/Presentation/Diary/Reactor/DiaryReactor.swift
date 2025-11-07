@@ -32,8 +32,8 @@ final class DiaryReactor: Reactor {
         case resetAlert
     }
     
-    struct State { 
-        var diaries: [Diary] = []
+    struct State {  
+        var diaries: [Diary] = [] 
         @Pulse var shouldShowAlert: String?
         @Pulse var shouldNavigateToAdd: Bool?
     }
@@ -73,6 +73,10 @@ extension DiaryReactor {
                 Task {
                     let diary = Diary(content: content, date: Date())
                     await self.saveDiaryUsecase.execute(diary: diary)
+                    
+                    // 캘린더 리로드 알림
+                    NotificationCenterService.reloadCalendar.post()
+                    
                     observer.onNext(.addDiary(diary))
                     observer.onCompleted()
                 }
@@ -84,6 +88,10 @@ extension DiaryReactor {
                 guard let self else { return Disposables.create() }
                 Task {
                     await self.deleteDiaryUsecase.execute(diary: diary)
+                    
+                    // 캘린더 리로드 알림
+                    NotificationCenterService.reloadCalendar.post()
+                    
                     observer.onNext(.removeDiary(diary))
                     observer.onCompleted()
                 }

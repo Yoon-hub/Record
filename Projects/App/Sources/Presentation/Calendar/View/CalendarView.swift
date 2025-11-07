@@ -77,6 +77,14 @@ final class CalendarView: UIView, BaseView {
         $0.textColor = .black
     }
     
+    let diaryCompleteLabel = UILabel().then {
+        $0.text = "일기 작성"
+        $0.font = DesignFontFamily.Pretendard.regular.font(size: 10)
+        $0.textColor = UIColor(hex: "#3E4044").withAlphaComponent(0.6)
+        $0.isHidden = true
+        $0.isUserInteractionEnabled = true
+    }
+    
     let eventRestDayLabel = UILabel().then {
         $0.font = DesignFontFamily.Pretendard.medium.font(size: 14)
         $0.textColor = .red
@@ -125,7 +133,7 @@ final class CalendarView: UIView, BaseView {
             containerView.addSubview($0)
         }
         
-        [eventDateLabel, eventTableView, eventRestDayLabel].forEach {
+        [eventDateLabel, eventTableView, eventRestDayLabel, diaryCompleteLabel].forEach {
             eventView.addSubview($0)
         }
     }
@@ -175,6 +183,12 @@ final class CalendarView: UIView, BaseView {
         eventDateLabel.pin
             .top()
             .left(16)
+            .sizeToFit()
+        
+        diaryCompleteLabel.pin
+            .after(of: eventDateLabel)
+            .marginLeft(8)
+            .vCenter(to: eventDateLabel.edge.vCenter)
             .sizeToFit()
         
         eventTableView.pin

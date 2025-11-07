@@ -130,6 +130,27 @@ extension CalendarViewController {
             .withUnretained(self)
             .bind { $0.0.contentView.calendar.setCurrentPage(Date(), animated: true) }
             .disposed(by: disposeBag)
+        
+        // 일기 작성 라벨 탭 시 해당 일기의 상세 화면으로 이동
+        contentView.diaryCompleteLabel.rx.tapGesture()
+            .when(.recognized)
+            .withUnretained(self)
+            .bind { (vc, _) in
+                guard let reactor = vc.reactor else { return }
+                let selectedDate = reactor.currentState.selectedDate
+                let calendar = Calendar.current
+                let targetDate = calendar.startOfDay(for: selectedDate)
+                
+                // 해당 날짜의 일기 찾기
+                if let diary = reactor.currentState.diaries.first(where: { diary in
+                    let diaryDate = calendar.startOfDay(for: diary.date)
+                    return diaryDate == targetDate
+                }) {
+                    // DiaryNavigator를 통해 상세 화면으로 이동
+                    vc.navigator.toDiaryDetail(self, diary: diary)
+                }
+            }
+            .disposed(by: disposeBag)
     }
     
     private func bindOutput(reactor: CalendarReactor) {
@@ -170,6 +191,35 @@ extension CalendarViewController {
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
             .bind { $0.0.contentView.eventRestDayLabel.text = $0.0.checkRestDayName(date: $0.1) }
+            .disposed(by: disposeBag)
+        
+        // 선택된 날짜에 일기가 있는지 확인하여 "일기 작성 완료" 표시
+        Observable.combineLatest(
+            reactor.state.map { $0.selectedDate },
+            reactor.state.map { $0.diaries }
+        )
+        .observe(on: MainScheduler.instance)
+        .withUnretained(self)
+        .bind { (vc, data) in
+            let (selectedDate, diaries) = data
+            let calendar = Calendar.current
+            let targetDate = calendar.startOfDay(for: selectedDate)
+            
+            let hasDiary = diaries.contains { diary in
+                let diaryDate = calendar.startOfDay(for: diary.date)
+                return diaryDate == targetDate
+            }
+            
+            vc.contentView.diaryCompleteLabel.isHidden = !hasDiary
+            vc.contentView.setNeedsLayout()
+        }
+        .disposed(by: disposeBag)
+        
+        // diaries가 변경될 때도 캘린더 업데이트
+        reactor.state.map { $0.diaries }
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.calendar.reloadData() }
             .disposed(by: disposeBag)
         
         NotificationCenterService.reloadCalendar.addObserver()
@@ -330,8 +380,9 @@ extension CalendarViewController: FSCalendarDelegate, FSCalendarDelegateAppearan
         
         
         let isSelected = date == reactor.currentState.selectedDate
+        let hasDiary = reactor.hasDiaryForDate(date: date)
         
-        cell.bind(events, beforeDate: beforeDateEvents, afterDate: afterDateEvents, isSelected: isSelected)
+        cell.bind(events, beforeDate: beforeDateEvents, afterDate: afterDateEvents, isSelected: isSelected, hasDiary: hasDiary)
         return cell
     }
     

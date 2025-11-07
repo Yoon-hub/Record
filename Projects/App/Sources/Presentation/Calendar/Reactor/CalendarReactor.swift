@@ -27,6 +27,7 @@ final class CalendarReactor: Reactor {
         case setSelectDate(Date)
         case setSelectedEvents([CalendarEvent])
         case setEvents([CalendarEvent], Date)
+        case setDiaries([Diary])
         case setToast(String)
         case calendarUIUpdate
         case setKakaoEvent(CalendarEvent?)
@@ -37,6 +38,7 @@ final class CalendarReactor: Reactor {
         var events: [CalendarEvent] = []
         var selectedEvents: [CalendarEvent] = []
         var selectedDate: Date = Date()
+        var diaries: [Diary] = []
         
         @Pulse var isToast: String = ""
         @Pulse var calendarUIUpdate = true
@@ -53,6 +55,7 @@ final class CalendarReactor: Reactor {
     @Injected var fetchEventUsecase: FetchEventUsecaseProtocol
     @Injected var deleteEventUsecase: DeleteEventUsecaseProtocol
     @Injected var saveEventUsecsae: SaveEventUsecaseProtocol
+    @Injected var fetchDiaryUsecase: FetchDiaryUsecaseProtocol
     
     /// Globar State
     @Injected var provider: GlobalStateProvider
@@ -73,6 +76,9 @@ extension CalendarReactor {
                     
                     let events = await self.fetchEventUsecase.execute()
                     observer.onNext(.setEvents(events, self.currentState.selectedDate))
+                    
+                    let diaries = await self.fetchDiaryUsecase.execute()
+                    observer.onNext(.setDiaries(diaries))
                 }
                 
                 return Disposables.create()
@@ -90,6 +96,9 @@ extension CalendarReactor {
                 Task {
                     let events = await self.fetchEventUsecase.execute()
                     observer.onNext(.setEvents(events, self.currentState.selectedDate))
+                    
+                    let diaries = await self.fetchDiaryUsecase.execute()
+                    observer.onNext(.setDiaries(diaries))
                 }
                 
                 return Disposables.create()
@@ -149,6 +158,9 @@ extension CalendarReactor {
             newState.events = events
             newState.selectedEvents = filterEventsByDate(events: newState.events, date: date).sorted { $0.startDate < $1.startDate }
             return newState
+        case .setDiaries(let diaries):
+            newState.diaries = diaries
+            return newState
         case .setToast(let message):
             newState.isToast = message
             return newState
@@ -172,6 +184,9 @@ extension CalendarReactor {
                         Task {
                             let events = await self.fetchEventUsecase.execute()
                             observer.onNext(.setEvents(events, self.currentState.selectedDate))
+                            
+                            let diaries = await self.fetchDiaryUsecase.execute()
+                            observer.onNext(.setDiaries(diaries))
                         }
                         
                         return Disposables.create()
@@ -197,6 +212,16 @@ extension CalendarReactor {
             let targetDate = calendar.startOfDay(for: date)
             
             return eventStartDate <= targetDate && targetDate <= eventEndDate
+        }
+    }
+    
+    func hasDiaryForDate(date: Date) -> Bool {
+        let calendar = Calendar.current
+        let targetDate = calendar.startOfDay(for: date)
+        
+        return currentState.diaries.contains { diary in
+            let diaryDate = calendar.startOfDay(for: diary.date)
+            return diaryDate == targetDate
         }
     }
 }

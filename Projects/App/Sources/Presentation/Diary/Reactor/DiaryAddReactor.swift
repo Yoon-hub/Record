@@ -75,6 +75,10 @@ extension DiaryAddReactor {
                     // 일기 저장
                     let diary = Diary(content: trimmedContent, date: today)
                     await self.saveDiaryUsecase.execute(diary: diary)
+                    
+                    // 캘린더 리로드 알림
+                    NotificationCenterService.reloadCalendar.post()
+                    
                     observer.onNext(.saveSuccess)
                     observer.onCompleted()
                 }

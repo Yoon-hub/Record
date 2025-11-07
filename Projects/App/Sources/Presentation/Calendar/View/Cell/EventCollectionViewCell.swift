@@ -36,6 +36,13 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
         $0.axis = .vertical
     }
     
+    let diaryLabel = UILabel().then {
+        $0.text = "일기 작성"
+        $0.font = DesignFontFamily.Pretendard.regular.font(size: 10)
+        $0.textColor = UIColor(hex: "#3E4044").withAlphaComponent(0.6)
+        $0.isHidden = true
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         configure()
@@ -59,7 +66,7 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
         
         contentView.layer.cornerRadius = 8
         
-        [timeLabel, tagView, labelStack].forEach {
+        [timeLabel, tagView, labelStack, diaryLabel].forEach {
             self.addSubview($0)
         }
         
@@ -87,13 +94,20 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
             .marginLeft(12)
             .right()
             .height(40)
+        
+        diaryLabel.pin
+            .after(of: titleLabel)
+            .marginLeft(8)
+            .vCenter(to: titleLabel.edge.vCenter)
+            .sizeToFit()
     }
     
-    func bind(_ event: CalendarEvent) {
+    func bind(_ event: CalendarEvent, hasDiary: Bool = false) {
         titleLabel.text = event.title
         contentLabel.text = event.content
         tagView.backgroundColor = event.tagColor.toUIColor()
         contentView.backgroundColor = event.tagColor.toUIColor()?.withAlphaComponent(0.12)
+        diaryLabel.isHidden = !hasDiary
         
         makeDateString(event)
     }

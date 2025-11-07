@@ -78,6 +78,13 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
         $0.backgroundColor = .clear
     }
     
+    // 일기 작성 표시용 작은 도트
+    let diaryDot = UIView().then {
+        $0.backgroundColor = Theme.theme
+        $0.layer.cornerRadius = 1.5
+        $0.isHidden = true
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -118,7 +125,8 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
          thirdTagSpot,
          fourthTagSpot,
          fifthTagSpot,
-         sixthTagSpot].forEach {
+         sixthTagSpot,
+         diaryDot].forEach {
             self.addSubview($0)
         }
     }
@@ -209,9 +217,16 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
             .height(7)
             .width(2)
         
+        // 일기 도트는 날짜 옆에 작게 표시
+        diaryDot.pin
+            .after(of: titleLabel)
+            .marginLeft(3)
+            .vCenter(to: titleLabel.edge.vCenter)
+            .size(3)
+        
     }
     
-    func bind(_ events: [CalendarEvent], beforeDate: [CalendarEvent], afterDate: [CalendarEvent] , isSelected: Bool) {
+    func bind(_ events: [CalendarEvent], beforeDate: [CalendarEvent], afterDate: [CalendarEvent] , isSelected: Bool, hasDiary: Bool = false) {
         
         firstContinueView.backgroundColor = .clear
         secondContinueView.backgroundColor = .clear
@@ -309,5 +324,12 @@ final class FScalendarCustomCell: FSCalendarCell, BaseView {
             }
         }
         
+        // 일기 작성 여부에 따라 도트 표시
+        diaryDot.isHidden = !hasDiary
+        if isSelected {
+            diaryDot.backgroundColor = .white
+        } else {
+            diaryDot.backgroundColor = Theme.theme
+        }
     }
 }

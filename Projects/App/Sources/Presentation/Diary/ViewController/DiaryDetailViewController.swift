@@ -45,7 +45,12 @@ final class DiaryDetailViewController: BaseViewController<DiaryDetailReactor, Di
         
         contentView.diaryBackButton.rx.tap
             .bind { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
+                guard let self else {return}
+                guard let naviController = self.navigationController else {
+                    self.dismiss(animated: true)
+                    return
+                }
+                self.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
     }
