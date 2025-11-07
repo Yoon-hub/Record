@@ -78,7 +78,7 @@ final class DiaryDetailView: UIView, BaseView {
         let topMargin: CGFloat = 12
         
         contentView.pin
-            .top(safeAreaInsets.top + 16)
+            .top(safeAreaInsets.top + 8)
             .horizontally()
             .bottom()
         
@@ -90,7 +90,7 @@ final class DiaryDetailView: UIView, BaseView {
         separatorLine.pin
             .below(of: dateLabel)
             .marginTop(16)
-            .horizontally(44)
+            .horizontally(72)
             .height(2)
         
         contentLabel.pin
