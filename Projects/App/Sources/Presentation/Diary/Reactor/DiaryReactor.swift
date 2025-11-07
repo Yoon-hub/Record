@@ -19,20 +19,27 @@ final class DiaryReactor: Reactor {
         case viewDidLoad
         case saveDiary(content: String)
         case deleteDiary(Diary)
+        case checkAndNavigateToAdd
     }
     
     enum Mutation {
         case setDiaries([Diary])
         case addDiary(Diary)
         case removeDiary(Diary)
+        case showDuplicateAlert
+        case navigateToAdd
+        case resetNavigateToAdd
+        case resetAlert
     }
     
-    struct State {
+    struct State { 
         var diaries: [Diary] = []
+        @Pulse var shouldShowAlert: String?
+        @Pulse var shouldNavigateToAdd: Bool?
     }
     
     let initialState: State
-    
+       
     init(initialState: State) {
         self.initialState = initialState
     }
@@ -82,6 +89,36 @@ extension DiaryReactor {
                 }
                 return Disposables.create()
             }
+            
+        case .checkAndNavigateToAdd:
+            return Observable.create { [weak self] observer in
+                guard let self else { return Disposables.create() }
+                Task {
+                    let today = Date()
+                    let calendar = Calendar.current
+                    let todayStart = calendar.startOfDay(for: today)
+                    let todayEnd = calendar.date(byAdding: .day, value: 1, to: todayStart)!
+                    
+                    let allDiaries = await self.fetchDiaryUsecase.execute()
+                    let todayDiaries = allDiaries.filter { diary in
+                        let diaryDate = calendar.startOfDay(for: diary.date)
+                        return diaryDate >= todayStart && diaryDate < todayEnd
+                    }
+                    
+                    if !todayDiaries.isEmpty {
+                        // 오늘 날짜에 이미 일기가 있으면 알림 표시
+                        observer.onNext(.showDuplicateAlert)
+                        observer.onNext(.resetAlert)
+                    } else {
+                        // 일기가 없으면 추가 화면으로 이동
+                        observer.onNext(.navigateToAdd)
+                        // 다음 액션을 위해 리셋
+                        observer.onNext(.resetNavigateToAdd)
+                    }
+                    observer.onCompleted()
+                }
+                return Disposables.create()
+            }
         }
     }
     
@@ -106,6 +143,22 @@ extension DiaryReactor {
             
         case .removeDiary(let diary):
             newState.diaries = newState.diaries.filter { $0.id != diary.id }
+            return newState
+            
+        case .showDuplicateAlert:
+            newState.shouldShowAlert = "이미 해당 날짜에 작성된 일기가 있습니다."
+            return newState
+            
+        case .navigateToAdd:
+            newState.shouldNavigateToAdd = true
+            return newState
+            
+        case .resetNavigateToAdd:
+            newState.shouldNavigateToAdd = nil
+            return newState
+            
+        case .resetAlert:
+            newState.shouldShowAlert = nil
             return newState
         }
     }

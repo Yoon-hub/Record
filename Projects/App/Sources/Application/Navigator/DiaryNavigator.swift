@@ -11,7 +11,7 @@ import Core
 import Domain
 
 protocol DiaryNavigatorProtocol: BaseNavigator {
-    // 필요시 네비게이션 메서드 추가
+    func toDiaryAdd()
     var navigationController: UINavigationController { get set }
 }
 
@@ -22,6 +22,9 @@ final class DiaryNavigator: DiaryNavigatorProtocol {
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
+    
+    func toDiaryAdd() {
+        let diaryAddView = DiaryAddViewControllerWrapper().viewController
+        navigationController.pushViewController(diaryAddView, animated: true)
+    }
 }
-
-
