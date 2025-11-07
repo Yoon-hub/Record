@@ -37,7 +37,7 @@ final class DiaryDetailView: UIView, BaseView {
     }
     
     let contentLabel = UITextView().then {
-        $0.font = DesignFontFamily.Pretendard.medium.font(size: 16)
+        $0.font = DesignFontFamily.Pretendard.regular.font(size: 16)
         $0.textColor = Color.textColor
         $0.backgroundColor = Color.paperBackgroundColor
         $0.textAlignment = .center
@@ -84,13 +84,14 @@ final class DiaryDetailView: UIView, BaseView {
         
         dateLabel.pin
             .top(topMargin)
-            .horizontally(horizontalMargin)
-            .sizeToFit(.width)
+            .left(horizontalMargin)
+            .sizeToFit()
         
         separatorLine.pin
             .below(of: dateLabel)
             .marginTop(16)
-            .horizontally(72)
+            .left(horizontalMargin)
+            .right(52)
             .height(2)
         
         contentLabel.pin
