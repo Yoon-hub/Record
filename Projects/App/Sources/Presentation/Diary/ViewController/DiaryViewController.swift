@@ -135,6 +135,24 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        // + 버튼 long press 제스처
+        let plusLongPressGesture = UILongPressGestureRecognizer()
+        plusLongPressGesture.minimumPressDuration = 0.5
+        contentView.plusButton.addGestureRecognizer(plusLongPressGesture)
+
+        plusLongPressGesture.rx.event
+            .filter { $0.state == .began }
+            .subscribe(onNext: { [weak self] _ in
+                
+                /// 진동
+                let generator = UIImpactFeedbackGenerator(style: .heavy)
+                generator.prepare()
+                generator.impactOccurred()
+                
+                self?.presentPreviousDayConfirmation()
+            })
+            .disposed(by: disposeBag)
+
         // 테이블뷰 아이템 선택
         contentView.tableView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
@@ -279,6 +297,14 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
             })
             .disposed(by: disposeBag)
         
+        reactor.pulse(\.$shouldNavigateToAddWithDate)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] date in
+                self?.navigator.toDiaryAdd(selectedDate: date)
+            })
+            .disposed(by: disposeBag)
+        
         // 일기 수정 화면으로 이동
         reactor.pulse(\.$shouldNavigateToEdit)
             .compactMap { $0 }
@@ -305,6 +331,29 @@ final class DiaryViewController: BaseViewController<DiaryReactor, DiaryView> {
         
         alert.addAction(deleteAction)
         alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+}
+
+// MARK: - Previous Day Handling
+extension DiaryViewController {
+    
+    private func presentPreviousDayConfirmation() {
+        let alert = UIAlertController(
+            title: "전날 일기 작성",
+            message: "메타몽 포인트 200을 사용하여 전날 일기를 작성할 수 있어요. 사용하시겠어요?",
+            preferredStyle: .alert
+        )
+        
+        let confirmAction = UIAlertAction(title: "사용하기", style: .default) { [weak self] _ in
+            self?.reactor?.action.onNext(.requestPreviousDayDiary)
+        }
+        
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel)
+        
+        alert.addAction(cancelAction)
+        alert.addAction(confirmAction)
         
         present(alert, animated: true)
     }

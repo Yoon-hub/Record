@@ -17,9 +17,11 @@ final class DiaryAddViewControllerWrapper: BaseWrapper {
     typealias C = DiaryAddView
     
     private let editingDiary: Domain.Diary?
+    private let selectedDate: Date?
     
-    init(editingDiary: Domain.Diary? = nil) {
+    init(editingDiary: Domain.Diary? = nil, selectedDate: Date? = nil) {
         self.editingDiary = editingDiary
+        self.selectedDate = selectedDate
     }
     
     // MARK: - Make
@@ -29,7 +31,12 @@ final class DiaryAddViewControllerWrapper: BaseWrapper {
     }
     
     func makeReactor() -> R {
-        return DiaryAddReactor(initialState: DiaryAddReactor.State(editingDiary: editingDiary))
+        return DiaryAddReactor(
+            initialState: DiaryAddReactor.State(
+                editingDiary: editingDiary,
+                selectedDate: selectedDate
+            )
+        )
     }
     
     func makeView() -> C {

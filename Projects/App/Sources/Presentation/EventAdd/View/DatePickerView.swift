@@ -16,12 +16,17 @@ import RxCocoa
 
 final class DatePickerView: UIView, BaseView {
     
-    let seletedDate: Date
+    private let seletedDate: Date
+    private let pickerMode: UIDatePicker.Mode
+    private let minimumDate: Date?
+    private let maximumDate: Date?
     
     lazy var datePicker = UIDatePicker().then {
         $0.locale = Locale(identifier: "ko_KR")
         $0.preferredDatePickerStyle = .wheels
-        $0.datePickerMode = .dateAndTime
+        $0.datePickerMode = self.pickerMode
+        $0.minimumDate = self.minimumDate
+        $0.maximumDate = self.maximumDate
         $0.date = self.seletedDate
     }
     
@@ -36,8 +41,17 @@ final class DatePickerView: UIView, BaseView {
     
     var disposeBag = DisposeBag()
     
-    init(frame: CGRect, seletedDate: Date) {
+    init(
+        frame: CGRect,
+        seletedDate: Date,
+        mode: UIDatePicker.Mode = .dateAndTime,
+        minimumDate: Date? = nil,
+        maximumDate: Date? = nil
+    ) {
         self.seletedDate = seletedDate
+        self.pickerMode = mode
+        self.minimumDate = minimumDate
+        self.maximumDate = maximumDate
         super.init(frame: frame)
         
         configure()

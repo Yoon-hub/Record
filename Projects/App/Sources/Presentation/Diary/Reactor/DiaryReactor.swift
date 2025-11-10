@@ -20,24 +20,29 @@ final class DiaryReactor: Reactor {
         case saveDiary(content: String)
         case deleteDiary(Diary)
         case checkAndNavigateToAdd
+        case requestPreviousDayDiary
     }
     
     enum Mutation {
         case setDiaries([Diary])
         case addDiary(Diary)
         case removeDiary(Diary)
-        case showDuplicateAlert
+        case showAlert(String)
         case navigateToAdd
         case navigateToEdit(Diary)
+        case navigateToAddWithDate(Date)
         case resetNavigateToAdd
         case resetAlert
+        case setMetamon(Metamon)
     }
     
     struct State {  
-        var diaries: [Diary] = [] 
+        var diaries: [Diary] = []
+        var metamon: Metamon?
         @Pulse var shouldShowAlert: String?
         @Pulse var shouldNavigateToAdd: Bool?
         @Pulse var shouldNavigateToEdit: Diary?
+        @Pulse var shouldNavigateToAddWithDate: Date?
     }
     
     let initialState: State
@@ -49,6 +54,8 @@ final class DiaryReactor: Reactor {
     @Injected var fetchDiaryUsecase: FetchDiaryUsecaseProtocol
     @Injected var saveDiaryUsecase: SaveDiaryUsecaseProtocol
     @Injected var deleteDiaryUsecase: DeleteDiaryUsecaseProtocol
+    @Injected var fetchMetamonUsecase: FetchMetamonUsecaseProtocol
+    @Injected var updateMetamonUsecase: UpdateMetamonUsecaseProtocol
 }
 
 extension DiaryReactor {
@@ -129,6 +136,60 @@ extension DiaryReactor {
                 }
                 return Disposables.create()
             }
+            
+        case .requestPreviousDayDiary:
+            return Observable.create { [weak self] observer in
+                guard let self else { return Disposables.create() }
+                Task {
+                    let calendar = Calendar.current
+                    let todayStart = calendar.startOfDay(for: Date())
+                    guard let previousDay = calendar.date(byAdding: .day, value: -1, to: todayStart) else {
+                        observer.onNext(.showAlert("전날 정보를 불러올 수 없습니다."))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    let targetStart = previousDay
+                    let targetEnd = calendar.date(byAdding: .day, value: 1, to: targetStart)!
+                    
+                    // 최신 데이터를 위해 다시 fetch
+                    let diaries = await self.fetchDiaryUsecase.execute()
+                    observer.onNext(.setDiaries(diaries))
+                    
+                    let duplicated = diaries.contains { diary in
+                        let diaryDate = calendar.startOfDay(for: diary.date)
+                        return diaryDate >= targetStart && diaryDate < targetEnd
+                    }
+                    
+                    if duplicated {
+                        observer.onNext(.showAlert("이미 전날 일기가 작성되어 있습니다."))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    let metamonList = await self.fetchMetamonUsecase.execute()
+                    guard let metamon = metamonList.first ?? self.currentState.metamon else {
+                        observer.onNext(.showAlert("Metamon 정보를 불러올 수 없습니다."))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    guard metamon.point >= 200 else {
+                        observer.onNext(.showAlert("Metamon 포인트가 부족합니다."))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    metamon.point -= 200
+                    await self.updateMetamonUsecase.execute(metamon: metamon)
+                    
+                    observer.onNext(.setMetamon(metamon))
+                    observer.onNext(.navigateToAddWithDate(previousDay))
+                    observer.onNext(.resetNavigateToAdd)
+                    observer.onCompleted()
+                }
+                return Disposables.create()
+            }
         }
     }
     
@@ -155,8 +216,8 @@ extension DiaryReactor {
             newState.diaries = newState.diaries.filter { $0.id != diary.id }
             return newState
             
-        case .showDuplicateAlert:
-            newState.shouldShowAlert = "이미 해당 날짜에 작성된 일기가 있습니다."
+        case .showAlert(let message):
+            newState.shouldShowAlert = message
             return newState
             
         case .navigateToAdd:
@@ -167,13 +228,22 @@ extension DiaryReactor {
             newState.shouldNavigateToEdit = diary
             return newState
             
+        case .navigateToAddWithDate(let date):
+            newState.shouldNavigateToAddWithDate = date
+            return newState
+            
         case .resetNavigateToAdd:
             newState.shouldNavigateToAdd = nil
             newState.shouldNavigateToEdit = nil
+            newState.shouldNavigateToAddWithDate = nil
             return newState
             
         case .resetAlert:
             newState.shouldShowAlert = nil
+            return newState
+            
+        case .setMetamon(let metamon):
+            newState.metamon = metamon
             return newState
         }
     }

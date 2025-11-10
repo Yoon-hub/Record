@@ -26,6 +26,7 @@ final class DiaryAddReactor: Reactor {
     
     struct State {
         var editingDiary: Diary?
+        var selectedDate: Date? = nil
         @Pulse var errorMessage: String?
         @Pulse var isSaveSuccess: Bool = false
     }
@@ -56,6 +57,9 @@ extension DiaryAddReactor {
                 guard let self else { return Disposables.create() }
                 
                 Task {
+                    let targetDate = self.currentState.selectedDate ?? Date()
+                    let calendar = Calendar.current
+
                     // 수정 모드인 경우
                     if let editingDiary = self.currentState.editingDiary {
                         // 기존 일기 삭제
@@ -74,26 +78,24 @@ extension DiaryAddReactor {
                     }
                     
                     // 추가 모드인 경우 - 중복 체크
-                    let today = Date()
-                    let calendar = Calendar.current
-                    let todayStart = calendar.startOfDay(for: today)
-                    let todayEnd = calendar.date(byAdding: .day, value: 1, to: todayStart)!
+                    let targetStart = calendar.startOfDay(for: targetDate)
+                    let targetEnd = calendar.date(byAdding: .day, value: 1, to: targetStart)!
                     
                     let allDiaries = await self.fetchDiaryUsecase.execute()
                     let todayDiaries = allDiaries.filter { diary in
                         let diaryDate = calendar.startOfDay(for: diary.date)
-                        return diaryDate >= todayStart && diaryDate < todayEnd
+                        return diaryDate >= targetStart && diaryDate < targetEnd
                     }
                     
                     if !todayDiaries.isEmpty {
-                        // 오늘 날짜에 이미 일기가 있으면 에러 표시
+                        // 선택한 날짜에 이미 일기가 있으면 에러 표시
                         observer.onNext(.showErrorAlert("이미 해당 날짜에 작성된 일기가 있습니다."))
                         observer.onCompleted()
                         return
                     }
                     
                     // 일기 저장
-                    let diary = Diary(content: trimmedContent, date: today)
+                    let diary = Diary(content: trimmedContent, date: targetDate)
                     await self.saveDiaryUsecase.execute(diary: diary)
                     
                     // 캘린더 리로드 알림
