@@ -88,10 +88,18 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
             self.navigator.toSubwayStation()
         }
         
+        let coinFlipAction = UIAction(
+            title: "동전 던지기",
+            image: UIImage(systemName: "circle.lefthalf.filled")
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            self.navigator.toCoinFlip()
+        }
+        
         // 메뉴 생성
         return UIMenu(
             title: "",
-            children: [diaryAction, pillAction, subwayAction]
+            children: [diaryAction, pillAction, subwayAction, coinFlipAction]
         )
     }
     

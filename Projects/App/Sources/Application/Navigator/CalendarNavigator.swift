@@ -19,6 +19,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toKakaoShare(_ vc: UIViewController,kakaoEvent: CalendarEvent)
     func toDiary(_ vc: UIViewController)
     func toSubwayStation()
+    func toCoinFlip()
     func toMetamon(_ vc: UIViewController)
     func toMetamonStore(_ vc: UIViewController, handler: @escaping (() -> Void))
     func toDiaryDetail(_ vc: UIViewController, diary: Diary)
@@ -85,6 +86,14 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
         let subWayView = UIHostingController(rootView: SubwayStationView())
         self.navigationController.pushViewController(
             subWayView,
+            animated: true
+        )
+    }
+    
+    func toCoinFlip() {
+        let coinFlipView = UIHostingController(rootView: CoinFlipView())
+        self.navigationController.pushViewController(
+            coinFlipView,
             animated: true
         )
     }
