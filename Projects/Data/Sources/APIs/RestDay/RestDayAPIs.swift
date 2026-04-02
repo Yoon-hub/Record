@@ -11,7 +11,7 @@ import Core
 
 public enum RestDayAPIs: API {
     
-    var serviceKey: String { "AU2BzWw7GCVRxC8DGbeMWhrP%2BiuWG7DQnFc2ulnFr9OT0A0HE5%2BY3j9fuSOxcVoHHGMnP7%2BMpLegEtfd5Fs5bw%3D%3D"
+    var serviceKey: String { "6bc41e4203192f0dbe56c50dfe78f911e2031355ac8949d2a3fe3b15ab5a689f"
     }
     
     case fetchRestDay(String, String)

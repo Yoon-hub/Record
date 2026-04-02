@@ -21,13 +21,30 @@ public extension RestDayAPIs.Worker {
         let spec = RestDayAPIs.fetchRestDay(year, month).spec
         
         return request(spec: spec)
-            .do {
-                if let str = String(data: $0.1, encoding: .utf8) {
-                    debugPrint("StatisticsSummary Fetch Result: \(str)")
+            .flatMap { _, data -> Observable<RESTDayDTO?> in
+                let preview = String(data: data, encoding: .utf8)
+                do {
+                    let dto = try JSONDecoder().decode(RESTDayDTO.self, from: data)
+                    let code = dto.response.header.resultCode
+                    if code != "00" {
+                        RestDayAPILogger.businessFailure(
+                            year: year,
+                            month: month,
+                            resultCode: code,
+                            resultMsg: dto.response.header.resultMsg
+                        )
+                        return Observable.just(nil)
+                    }
+                    return Observable.just(dto)
+                } catch {
+                    RestDayAPILogger.decodeFailure(year: year, month: month, error: error, responsePreview: preview)
+                    return Observable.just(nil)
                 }
             }
-            .map(RESTDayDTO.self)
-            .catchAndReturn(nil)
+            .catch { error in
+                RestDayAPILogger.networkFailure(year: year, month: month, error: error)
+                return Observable.just(nil)
+            }
             .asSingle()
     }
 }
