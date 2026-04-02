@@ -47,6 +47,7 @@ let project = Project(name: "App", targets: [
                     ])
                 ])
             ]),
+            "NSCalendarsFullAccessUsageDescription": .string("공공 API를 사용할 수 없을 때, 캘린더에 있는 한국 공휴일 정보를 불러오기 위해 접근합니다."),
             
         ]),
 
