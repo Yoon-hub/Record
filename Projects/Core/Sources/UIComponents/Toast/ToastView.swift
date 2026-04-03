@@ -67,12 +67,28 @@ final class ToastView: UIView, BaseView {
     }
     
     func setUI() {
+        let labelPadding = UIEdgeInsets(top: 10, left: 14, bottom: 10, right: 14)
+        let containerW: CGFloat
+        if bounds.width > 1 {
+            containerW = bounds.width
+        } else if let w = superview?.bounds.width, w > 0 {
+            containerW = max(80, w - 40)
+        } else {
+            containerW = max(80, UIScreen.main.bounds.width - 40)
+        }
+        let labelMaxWidth = max(60, containerW - labelPadding.left - labelPadding.right)
+        
+        messageLabel.preferredMaxLayoutWidth = labelMaxWidth
         messageLabel.pin
-            .sizeToFit()
-            .center()
+            .top(labelPadding.top)
+            .left(labelPadding.left)
+            .width(labelMaxWidth)
+            .sizeToFit(.width)
         
         backgroundView.pin
-            .wrapContent(padding: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)) // messageLabel을 감싸는 여백
-            .center()
+            .top(0)
+            .left(0)
+            .width(containerW)
+            .height(messageLabel.frame.maxY + labelPadding.bottom)
     }
 }

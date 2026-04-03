@@ -22,6 +22,8 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
     
     @Navigator var navigator: CalendarNavigatorProtocol
     
+    private var weatherCueDismissWorkItem: DispatchWorkItem?
+    
     override func setup() {
         setNavigation()
         contentView.calendar.delegate = self
@@ -56,8 +58,16 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
         
         rightBarMenuButtonItem.imageInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 8)
         
+        let weatherButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "cloud.sun"),
+            style: .plain,
+            target: self,
+            action: #selector(weatherIconTapped)
+        )
+        weatherButtonItem.accessibilityLabel = "오늘 날씨"
+        
         self.navigationItem.rightBarButtonItems = [rightBarSettingButtonItem, rightBarMenuButtonItem]
-        self.navigationItem.leftBarButtonItems = []
+        self.navigationItem.leftBarButtonItems = [weatherButtonItem]
     }
     
     private func makeQuickActionsMenu() -> UIMenu {
@@ -118,6 +128,24 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
     /// 설정 화면 Transition
     @objc private func gearTap() {
         navigator.toSetting()
+    }
+    
+    @objc private func weatherIconTapped() {
+        Task { @MainActor in
+            do {
+                let summary = try await TodayWeatherSummaryService.fetchTodaySummary()
+                showWeatherChunsikCue(
+                    summary: summary,
+                    characterImage: DesignAsset.climateChunsik.image,
+                    characterImageTapForTomorrow: true
+                )
+            } catch {
+                showWeatherChunsikCue(
+                    plainMessage: "앗, 날씨를 못 불러왔어요 🥺 네트워크 확인 후 다시 눌러줘!",
+                    characterImage: DesignAsset.climateChunsik.image
+                )
+            }
+        }
     }
 }
 
@@ -285,6 +313,94 @@ extension CalendarViewController {
                 vc.navigator.toKakaoShare(vc, kakaoEvent: event)
             }
             .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - Weather Chunsik cue
+extension CalendarViewController {
+    private enum WeatherCue {
+        static let tag = 9_084_271
+    }
+    
+    private func showWeatherChunsikCue(
+        summary: TodayWeatherSummaryService.WeatherDaySummary,
+        characterImage: UIImage,
+        characterImageTapForTomorrow: Bool
+    ) {
+        let onCharacterTap: (() -> Void)? = characterImageTapForTomorrow ? { [weak self] in
+            guard let self else { return }
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            Task { @MainActor in
+                do {
+                    let tomorrow = try await TodayWeatherSummaryService.fetchTomorrowSummary()
+                    self.showWeatherChunsikCue(
+                        summary: tomorrow,
+                        characterImage: DesignAsset.chunguma.image,
+                        characterImageTapForTomorrow: false
+                    )
+                } catch {
+                    Toast.show(
+                        message: "내일 날씨를 못 불러왔어요 🥺 잠시 후 다시 눌러줘!",
+                        duration: .short,
+                        position: .top
+                    )
+                }
+            }
+        } : nil
+        
+        let cue = WeatherChunsikCueView(
+            summary: summary,
+            characterImage: characterImage,
+            characterImageTapEnabled: characterImageTapForTomorrow,
+            onCharacterImageTap: onCharacterTap
+        )
+        presentWeatherCue(cue)
+    }
+    
+    private func showWeatherChunsikCue(plainMessage: String, characterImage: UIImage) {
+        let cue = WeatherChunsikCueView(plainMessage: plainMessage, characterImage: characterImage)
+        presentWeatherCue(cue)
+    }
+    
+    private func presentWeatherCue(_ cue: WeatherChunsikCueView) {
+        weatherCueDismissWorkItem?.cancel()
+        weatherCueDismissWorkItem = nil
+        view.viewWithTag(WeatherCue.tag)?.removeFromSuperview()
+        
+        cue.tag = WeatherCue.tag
+        cue.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(cue)
+        
+        NSLayoutConstraint.activate([
+            cue.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            cue.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            cue.leadingAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            cue.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16)
+        ])
+        
+        cue.alpha = 0
+        cue.transform = CGAffineTransform(scaleX: 0.92, y: 0.92)
+        UIView.animate(
+            withDuration: 0.25,
+            delay: 0,
+            usingSpringWithDamping: 0.82,
+            initialSpringVelocity: 0.4
+        ) {
+            cue.alpha = 1
+            cue.transform = .identity
+        }
+        
+        let work = DispatchWorkItem { [weak cue] in
+            guard let cue, cue.superview != nil else { return }
+            UIView.animate(withDuration: 0.22, animations: {
+                cue.alpha = 0
+                cue.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }, completion: { _ in
+                cue.removeFromSuperview()
+            })
+        }
+        weatherCueDismissWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: work)
     }
 }
 

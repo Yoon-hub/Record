@@ -51,9 +51,12 @@ extension Toast {
             switch position {
             case .top:
                 toastView.pin
-                    .top(window?.safeAreaInsets.top ?? 0 + 16)
-                    .hCenter()
-                    .size(CGSize(width: 50, height: 50))
+                    .top((window?.safeAreaInsets.top ?? 0) + 16)
+                    .horizontally(20)
+                window?.layoutIfNeeded()
+                toastView.setNeedsLayout()
+                toastView.layoutIfNeeded()
+                toastView.pin.height(toastView.backgroundView.frame.height)
             case .bottom:
                 toastView.pin
                     .bottom(window?.safeAreaInsets.bottom ?? 0 + 16)
