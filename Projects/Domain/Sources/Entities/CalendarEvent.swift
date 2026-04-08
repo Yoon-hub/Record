@@ -55,6 +55,13 @@ final public class CalendarEvent: Equatable, EventRepresentable {
     public var content: String?
     public var tagColor: String // hex String
     
+    /// 반복 없음이면 nil. `"daily"`, `"weekly"`, `"monthly"`
+    public var recurrenceFrequency: String?
+    /// `weekly`일 때만 사용. `Calendar.Component.weekday` (1=일요일 … 7=토요일)
+    public var recurrenceWeekday: Int?
+    /// 반복 종료일(자정). nil이면 종료일 없음
+    public var recurrenceEndDate: Date?
+    
     public var identity: String? {
         id
     }
@@ -66,7 +73,10 @@ final public class CalendarEvent: Equatable, EventRepresentable {
         date: Date,
         endDate: Date,
         content: String?,
-        tagColor: String
+        tagColor: String,
+        recurrenceFrequency: String? = nil,
+        recurrenceWeekday: Int? = nil,
+        recurrenceEndDate: Date? = nil
     ) {
         self.id = UUID().uuidString
         self.title = title
@@ -75,6 +85,9 @@ final public class CalendarEvent: Equatable, EventRepresentable {
         self.content = content
         self.endDate = endDate
         self.tagColor = tagColor
+        self.recurrenceFrequency = recurrenceFrequency
+        self.recurrenceWeekday = recurrenceWeekday
+        self.recurrenceEndDate = recurrenceEndDate
     }
 }
     

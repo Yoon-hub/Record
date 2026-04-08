@@ -17,6 +17,9 @@ final public class EventBuilder {
     private var alarm: String = CalendarEvent.Alarm.none.rawValue
     private var content: String?
     private var tagColor: String = Theme.theme.hexString
+    private var recurrenceFrequency: String?
+    private var recurrenceWeekday: Int?
+    private var recurrenceEndDate: Date?
     
     enum EventBuilderError: Error {
         case invalidDictionary
@@ -58,6 +61,13 @@ final public class EventBuilder {
         return self
     }
     
+    public func setRecurrence(frequency: String?, weekday: Int?, endDate: Date?) -> EventBuilder {
+        self.recurrenceFrequency = frequency
+        self.recurrenceWeekday = weekday
+        self.recurrenceEndDate = endDate
+        return self
+    }
+    
     public func build() -> CalendarEvent {
         return CalendarEvent(
             title: title,
@@ -65,7 +75,10 @@ final public class EventBuilder {
             date: date,
             endDate: endDate,
             content: content,
-            tagColor: tagColor
+            tagColor: tagColor,
+            recurrenceFrequency: recurrenceFrequency,
+            recurrenceWeekday: recurrenceWeekday,
+            recurrenceEndDate: recurrenceEndDate
         )
     }
     
@@ -86,7 +99,10 @@ final public class EventBuilder {
             date: startDate,
             endDate: endDateType,
             content: content,
-            tagColor: "#" + tagColor
+            tagColor: "#" + tagColor,
+            recurrenceFrequency: nil,
+            recurrenceWeekday: nil,
+            recurrenceEndDate: nil
         )
         return .success(event)
     }

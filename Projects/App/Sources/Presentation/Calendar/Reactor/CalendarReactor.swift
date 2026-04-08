@@ -204,15 +204,7 @@ extension CalendarReactor {
 
 extension CalendarReactor {
     func filterEventsByDate(events: [CalendarEvent], date: Date) -> [CalendarEvent] {
-        let calendar = Calendar.current
-        
-        return events.filter { event in
-            let eventStartDate = calendar.startOfDay(for: event.startDate)
-            let eventEndDate = calendar.startOfDay(for: event.endDate)
-            let targetDate = calendar.startOfDay(for: date)
-            
-            return eventStartDate <= targetDate && targetDate <= eventEndDate
-        }
+        events.filter { $0.occurs(on: date) }
     }
     
     func hasDiaryForDate(date: Date) -> Bool {

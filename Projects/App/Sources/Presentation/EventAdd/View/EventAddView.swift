@@ -73,6 +73,18 @@ final class EventAddView: UIView, BaseView {
         $0.setTitleColor(.black, for: .normal)
     }
     
+    let repeatIcon = UIImageView().then {
+        $0.tintColor = .black
+        $0.image = UIImage(systemName: "arrow.triangle.2.circlepath")
+    }
+    
+    let repeatButton = UIButton().then {
+        $0.titleLabel?.font = DesignFontFamily.Pretendard.regular.font(size: 15)
+        $0.setTitle("반복 없음", for: .normal)
+        $0.setTitleColor(.black, for: .normal)
+        $0.contentHorizontalAlignment = .leading
+    }
+    
     let memoIcon = UIImageView().then {
         $0.tintColor = .black
         $0.image = UIImage(systemName: "menucard")
@@ -142,6 +154,8 @@ final class EventAddView: UIView, BaseView {
          tagButton,
          alarmIcon,
          alarmButton,
+         repeatIcon,
+         repeatButton,
          memoIcon,
          textView,
          saveButton,
@@ -225,8 +239,21 @@ final class EventAddView: UIView, BaseView {
             .width(60)
             .height(40)
         
-        memoIcon.pin
+        repeatIcon.pin
             .below(of: alarmIcon)
+            .marginTop(30)
+            .left(20)
+            .size(26)
+        
+        repeatButton.pin
+            .after(of: repeatIcon)
+            .marginLeft(10)
+            .vCenter(to: repeatIcon.edge.vCenter)
+            .height(40)
+            .right(20)
+        
+        memoIcon.pin
+            .below(of: repeatIcon)
             .marginTop(30)
             .left(20)
             .size(26)

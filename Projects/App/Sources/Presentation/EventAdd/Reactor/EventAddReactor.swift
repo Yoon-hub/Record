@@ -24,6 +24,7 @@ final class EventAddReactor: Reactor {
         case didTapSaveButton(String?, String?)
         case didSeleteAlarm(Alarm)
         case didTapAlldayButton
+        case didSelectRecurrence(EventRecurrenceOption)
     }
     
     enum Mutation {
@@ -32,6 +33,7 @@ final class EventAddReactor: Reactor {
         case setColor(UIColor)
         case saveEvent
         case setAlarm(Alarm)
+        case setRecurrence(EventRecurrenceOption)
         case popAlert(String)
     }
     
@@ -41,6 +43,7 @@ final class EventAddReactor: Reactor {
         var selectedEndDate: Date
         var selectedColor = UserDefaultsWrapper.color.toUIColor() ?? Theme.theme
         var selectedAlarm: Alarm = .none
+        var selectedRecurrence: EventRecurrenceOption = .none
         
         @Pulse var isAlert: String = ""
         @Pulse var saveEvent = false
@@ -74,7 +77,20 @@ extension EventAddReactor {
             return Observable.create { [weak self] observer in
                 guard let self else {return Disposables.create()}
                 Task {
-                    // 이벤트 생성
+                    if self.checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
+                        observer.onNext(.popAlert("시작 날짜는 종료 날짜 이전이어야 합니다."))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    if self.currentState.selectedRecurrence != .none,
+                       !Calendar.current.isDate(self.currentState.selectedStartDate, inSameDayAs: self.currentState.selectedEndDate) {
+                        observer.onNext(.popAlert("반복 일정은 같은 날 안에서 끝나는 일정만 설정할 수 있어요."))
+                        observer.onCompleted()
+                        return
+                    }
+                    
+                    let tuple = self.currentState.selectedRecurrence.storageTuple(templateStart: self.currentState.selectedStartDate)
                     let event = EventBuilder()
                         .setAlarm(self.currentState.selectedAlarm)
                         .setDate(self.currentState.selectedStartDate)
@@ -82,32 +98,27 @@ extension EventAddReactor {
                         .setTagColor(self.currentState.selectedColor.hexString)
                         .setTitle(title)
                         .setContent(content ?? "")
+                        .setRecurrence(frequency: tuple.frequency, weekday: tuple.weekday, endDate: tuple.endDate)
                         .build()
-
-                    // 날짜 유효성 검사
-                    if self.checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
-                        observer.onNext(.popAlert("시작 날짜는 종료 날짜 이전이어야 합니다."))
-                        observer.onCompleted()
-                        return
-                    }
                     
-                    // 권한 요청 비동기 처리
                     if self.currentState.selectedAlarm != .none {
                         let result = await LocalPushService.shared.requestAuthorization()
                         if !result {
                             observer.onNext(.popAlert("알림 사용을 하기 위해서는 권한 허용이 필요합니다."))
                             observer.onCompleted()
                             return
-                        } else {
-                            LocalPushService.shared.addNotification(identifier: event.id, title: event.title, body: event.content ?? "", date: self.currentState.selectedAlarm.timeBefore(from: event.startDate) ?? event.startDate)
                         }
                     }
                     
-                    
-                    // 마지막 색상 저장
                     UserDefaultsWrapper.color = self.currentState.selectedColor.hexString
-                    // 이벤트 저장
                     await self.saveEventUsecase.excecute(event: event)
+                    
+                    EventNotificationScheduler.reschedule(
+                        event: event,
+                        alarm: self.currentState.selectedAlarm,
+                        recurrence: self.currentState.selectedRecurrence,
+                        templateStartDate: self.currentState.selectedStartDate
+                    )
                     
                     observer.onNext(.saveEvent)
                     observer.onCompleted()
@@ -117,6 +128,8 @@ extension EventAddReactor {
             }
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
+        case .didSelectRecurrence(let option):
+            return .just(.setRecurrence(option))
         case .didTapAlldayButton:
             return .concat([
                 .just(.setTime(EventAddReactor.makeDefaultTime(date: currentState.selectedDate, hour: 0))),
@@ -145,6 +158,8 @@ extension EventAddReactor {
             newState.selectedColor = color
         case .setAlarm(let alarm):
             newState.selectedAlarm = alarm
+        case .setRecurrence(let option):
+            newState.selectedRecurrence = option
         }
         return newState
     }

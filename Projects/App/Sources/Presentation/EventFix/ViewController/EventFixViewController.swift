@@ -37,7 +37,6 @@ final class EventFixViewController: BaseViewController<EventFixReactor, EventAdd
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        reactor?.action.onNext(.viewDidLoad)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -46,6 +45,7 @@ final class EventFixViewController: BaseViewController<EventFixReactor, EventAdd
     
     override func setup() {
         setAlarmButtonMenu()
+        setRepeatButtonMenu()
         showKakaoMessageButton()
     }
     
@@ -145,6 +145,12 @@ extension EventFixViewController {
             .bind { $0.0.contentView.alarmButton.setTitle($0.1.rawValue, for: .normal) }
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.selectedRecurrence }
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.repeatButton.setTitle($0.1.title, for: .normal) }
+            .disposed(by: disposeBag)
+        
         reactor.pulse(\.$saveEvent)
             .observe(on: MainScheduler.instance)
             .withUnretained(self)
@@ -156,6 +162,7 @@ extension EventFixViewController {
         
         reactor.pulse(\.$isAlert)
             .observe(on: MainScheduler.instance)
+            .filter { !$0.isEmpty }
             .withUnretained(self)
             .bind {
                 $0.0.showAlert(
@@ -232,6 +239,16 @@ extension EventFixViewController {
         
         contentView.alarmButton.showsMenuAsPrimaryAction = true
         contentView.alarmButton.menu = menu
+    }
+    
+    private func setRepeatButtonMenu() {
+        let actions = EventRecurrenceOption.allCases.map { option in
+            UIAction(title: option.title) { [weak self] _ in
+                self?.reactor?.action.onNext(.didSelectRecurrence(option))
+            }
+        }
+        contentView.repeatButton.showsMenuAsPrimaryAction = true
+        contentView.repeatButton.menu = UIMenu(children: actions)
     }
 }
 

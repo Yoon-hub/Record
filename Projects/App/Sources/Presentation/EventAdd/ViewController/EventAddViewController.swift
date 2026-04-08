@@ -31,6 +31,7 @@ final class EventAddViewController: BaseViewController<EventAddReactor, EventAdd
     
     override func setup() {
         setAlarmButtonMenu()
+        setRepeatButtonMenu()
     }
     
     override func bind(reactor: EventAddReactor) {
@@ -119,6 +120,12 @@ extension EventAddViewController {
             .bind { $0.0.contentView.alarmButton.setTitle($0.1.rawValue, for: .normal) }
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.selectedRecurrence }
+            .observe(on: MainScheduler.instance)
+            .withUnretained(self)
+            .bind { $0.0.contentView.repeatButton.setTitle($0.1.title, for: .normal) }
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.selectedStartDate}
             .observe(on: MainScheduler.instance)
             .map {
@@ -140,6 +147,7 @@ extension EventAddViewController {
         
         reactor.pulse(\.$isAlert)
             .observe(on: MainScheduler.instance)
+            .filter { !$0.isEmpty }
             .withUnretained(self)
             .bind {
                 $0.0.showAlert(title: "알림", message: $0.1)
@@ -190,5 +198,15 @@ extension EventAddViewController {
         
         contentView.alarmButton.showsMenuAsPrimaryAction = true
         contentView.alarmButton.menu = menu
+    }
+    
+    private func setRepeatButtonMenu() {
+        let actions = EventRecurrenceOption.allCases.map { option in
+            UIAction(title: option.title) { [weak self] _ in
+                self?.reactor?.action.onNext(.didSelectRecurrence(option))
+            }
+        }
+        contentView.repeatButton.showsMenuAsPrimaryAction = true
+        contentView.repeatButton.menu = UIMenu(children: actions)
     }
 }

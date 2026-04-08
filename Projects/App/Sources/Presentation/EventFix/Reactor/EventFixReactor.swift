@@ -24,9 +24,9 @@ final class EventFixReactor: Reactor {
         case didSeleteColor(UIColor)
         case didTapSaveButton(String?, String?)
         case didSeleteAlarm(Alarm)
-        case viewDidLoad
         case didTapAlldayButton
         case didTapKakaoButton
+        case didSelectRecurrence(EventRecurrenceOption)
     }
     
     enum Mutation {
@@ -35,6 +35,7 @@ final class EventFixReactor: Reactor {
         case setColor(UIColor)
         case saveEvent
         case setAlarm(Alarm)
+        case setRecurrence(EventRecurrenceOption)
         case popAlert(String)
     }
     
@@ -44,6 +45,7 @@ final class EventFixReactor: Reactor {
         var selectedEndDate: Date
         var selectedColor = Theme.theme
         var selectedAlarm: Alarm = .none
+        var selectedRecurrence: EventRecurrenceOption = .none
         
         var currentCalendarEvent: CalendarEvent
         
@@ -54,7 +56,18 @@ final class EventFixReactor: Reactor {
     let initialState: State
     
     init(seletedDate: Date, calendarEvent: CalendarEvent) {
-        self.initialState = State(selectedDate: seletedDate, selectedStartDate: EventFixReactor.makeDefaultTime(date: seletedDate, hour: 8), selectedEndDate: EventFixReactor.makeDefaultTime(date: seletedDate, hour: 9), currentCalendarEvent: calendarEvent)
+        let start = calendarEvent.displayStartDate(forCalendarDay: seletedDate)
+        let end = calendarEvent.displayEndDate(forCalendarDay: seletedDate)
+        let alarm = Alarm(rawValue: calendarEvent.alarm ?? "알림 없음") ?? .none
+        self.initialState = State(
+            selectedDate: seletedDate,
+            selectedStartDate: start,
+            selectedEndDate: end,
+            selectedColor: calendarEvent.tagColor.toUIColor() ?? Theme.theme,
+            selectedAlarm: alarm,
+            selectedRecurrence: EventRecurrenceOption.from(calendarEvent),
+            currentCalendarEvent: calendarEvent
+        )
     }
     
     @Injected var saveEventUsecase: SaveEventUsecaseProtocol
@@ -65,15 +78,6 @@ final class EventFixReactor: Reactor {
 extension EventFixReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .viewDidLoad:
-            let setEndTime = Observable.just(Mutation.setEndTime(currentState.currentCalendarEvent.endDate))
-            let setStartTime = Observable.just(Mutation.setTime(currentState.currentCalendarEvent.startDate))
-            let setColor = Observable.just(Mutation.setColor(currentState.currentCalendarEvent.tagColor.toUIColor() ?? Theme.theme))
-            
-            let alarm = Alarm(rawValue: currentState.currentCalendarEvent.alarm ?? "알림 없음") ?? .none
-            let setAlarm = Observable.just(Mutation.setAlarm(alarm))
-            
-            return Observable.concat([setEndTime, setStartTime, setColor, setAlarm])
         case .didSeleceEndTime(let date):
             return .just(.setEndTime(date))
         case .didSeleteStartTime(let date):
@@ -90,12 +94,19 @@ extension EventFixReactor {
             return Observable.create { [weak self] observer in
                 guard let self else {return Disposables.create()}
                 
-                if checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
+                if self.checkDateValidation(startDate: self.currentState.selectedStartDate, endDate: self.currentState.selectedEndDate) {
                     observer.onNext(.popAlert("시작 날짜는 종료 날짜 이전이어야 합니다."))
                     return Disposables.create()
                 }
                 
+                if self.currentState.selectedRecurrence != .none,
+                   !Calendar.current.isDate(self.currentState.selectedStartDate, inSameDayAs: self.currentState.selectedEndDate) {
+                    observer.onNext(.popAlert("반복 일정은 같은 날 안에서 끝나는 일정만 설정할 수 있어요."))
+                    return Disposables.create()
+                }
+                
                 Task {
+                    let tuple = self.currentState.selectedRecurrence.storageTuple(templateStart: self.currentState.selectedStartDate)
                     let event = EventBuilder()
                         .setAlarm(self.currentState.selectedAlarm)
                         .setDate(self.currentState.selectedStartDate)
@@ -103,6 +114,7 @@ extension EventFixReactor {
                         .setTagColor(self.currentState.selectedColor.hexString)
                         .setTitle(title)
                         .setContent(content ?? "")
+                        .setRecurrence(frequency: tuple.frequency, weekday: tuple.weekday, endDate: tuple.endDate)
                         .build()
         
                     await self.fixEvent(event: event)
@@ -129,6 +141,8 @@ extension EventFixReactor {
 //            return .just(.saveEvent)
         case .didSeleteAlarm(let alarm):
             return .just(.setAlarm(alarm))
+        case .didSelectRecurrence(let option):
+            return .just(.setRecurrence(option))
         case .didTapKakaoButton:
             return kakaoSDKMessageUsecase.executeShareCustomContent(args:
                                                                 ["title" : currentState.currentCalendarEvent.title,
@@ -179,6 +193,8 @@ extension EventFixReactor {
             newState.selectedColor = color
         case .setAlarm(let alarm):
             newState.selectedAlarm = alarm
+        case .setRecurrence(let option):
+            newState.selectedRecurrence = option
         }
         return newState
     }
@@ -204,13 +220,12 @@ extension EventFixReactor {
         await saveEventUsecase.excecute(event: event)
         await deleteEventUsecase.execute(event: currentState.currentCalendarEvent)
         
-        if event.alarm != .none {
-            LocalPushService.shared.addNotification(
-                identifier: event.id,
-                title: event.title,
-                body: event.content ?? "",
-                date: Alarm(rawValue: event.alarm ?? Alarm.none.rawValue)?.timeBefore(from: event.startDate) ?? Date()
-            )
-        }
+        let alarm = Alarm(rawValue: event.alarm ?? Alarm.none.rawValue) ?? .none
+        EventNotificationScheduler.reschedule(
+            event: event,
+            alarm: alarm,
+            recurrence: EventRecurrenceOption.from(event),
+            templateStartDate: event.startDate
+        )
     }
 }

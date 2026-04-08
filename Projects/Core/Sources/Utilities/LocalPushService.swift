@@ -79,6 +79,64 @@ final public class LocalPushService {
         }
     }
     
+    /// 매주 같은 요일·시각에 반복 (weekday: Calendar.Component.weekday, 1=일요일)
+    public func addWeeklyRepeatingNotification(
+        identifier: String,
+        title: String,
+        body: String,
+        weekday: Int,
+        hour: Int,
+        minute: Int
+    ) {
+        let center = UNUserNotificationCenter.current()
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        
+        var dateComponents = DateComponents()
+        dateComponents.weekday = weekday
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        center.add(request) { error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    /// 매월 같은 일·시각에 반복
+    public func addMonthlyRepeatingNotification(
+        identifier: String,
+        title: String,
+        body: String,
+        day: Int,
+        hour: Int,
+        minute: Int
+    ) {
+        let center = UNUserNotificationCenter.current()
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        
+        var dateComponents = DateComponents()
+        dateComponents.day = day
+        dateComponents.hour = hour
+        dateComponents.minute = minute
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        center.add(request) { error in
+            if let error = error {
+                print("Error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     public func removeNotification(identifiers: [String]) {
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: identifiers)

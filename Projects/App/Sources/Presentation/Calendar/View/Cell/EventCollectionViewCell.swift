@@ -56,7 +56,6 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
         super.layoutSubviews()
         setUI()
         
-        
         contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 6, right: 0))
     }
     
@@ -102,24 +101,27 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
             .sizeToFit()
     }
     
-    func bind(_ event: CalendarEvent, hasDiary: Bool = false) {
+    /// `referenceCalendarDay`: 반복 일정일 때 선택된 날짜(캘린더 칸). nil이면 DB에 저장된 start/end 사용.
+    func bind(_ event: CalendarEvent, hasDiary: Bool = false, referenceCalendarDay: Date? = nil) {
         titleLabel.text = event.title
         contentLabel.text = event.content
         tagView.backgroundColor = event.tagColor.toUIColor()
         contentView.backgroundColor = event.tagColor.toUIColor()?.withAlphaComponent(0.12)
         diaryLabel.isHidden = !hasDiary
         
-        makeDateString(event)
+        let start = referenceCalendarDay.map { event.displayStartDate(forCalendarDay: $0) } ?? event.startDate
+        let end = referenceCalendarDay.map { event.displayEndDate(forCalendarDay: $0) } ?? event.endDate
+        makeDateString(start: start, end: end)
     }
     
-    private func makeDateString(_ event: CalendarEvent) {
-        if event.startDate == event.endDate { // 끝과 시작이 같을 경우
+    private func makeDateString(start: Date, end: Date) {
+        if start == end { // 끝과 시작이 같을 경우
             timeLabel.font = DesignFontFamily.Pretendard.medium.font(size: 15)
-            timeLabel.text = event.startDate.formatToTime24Hour()
-        } else if Calendar.current.isDate(event.startDate, inSameDayAs: event.endDate) { // 같은 날짜일 경우
+            timeLabel.text = start.formatToTime24Hour()
+        } else if Calendar.current.isDate(start, inSameDayAs: end) { // 같은 날짜일 경우
             
-            let startDateComponent = Calendar.current.dateComponents([.hour, .minute], from: event.startDate)
-            let endDateComponent = Calendar.current.dateComponents([.hour, .minute], from: event.endDate)
+            let startDateComponent = Calendar.current.dateComponents([.hour, .minute], from: start)
+            let endDateComponent = Calendar.current.dateComponents([.hour, .minute], from: end)
             
             if startDateComponent.hour == 0 && startDateComponent.minute == 00 && endDateComponent.hour == 23 && endDateComponent.minute == 59 { // 하루 종일 일 경우
                 timeLabel.text = "AllDay"
@@ -127,8 +129,8 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
                 return
             }
             
-            let startTime = event.startDate.formatToTime24Hour()
-            let endTime = event.endDate.formatToTime24Hour()
+            let startTime = start.formatToTime24Hour()
+            let endTime = end.formatToTime24Hour()
 
             let startFont = DesignFontFamily.Pretendard.medium.font(size: 15)
             let endFont = DesignFontFamily.Pretendard.medium.font(size: 13)
@@ -146,11 +148,11 @@ final class EventCollectionViewCell: UITableViewCell, BaseView {
             timeLabel.attributedText = attributedText
         } else { // 다른 날짜일 경우
             
-            let startDate = event.startDate.formattedDateString(type: .simpleMonthDay)
-            let startTime = event.startDate.formatToTime24Hour()
+            let startDate = start.formattedDateString(type: .simpleMonthDay)
+            let startTime = start.formatToTime24Hour()
             
-            let endDate = event.endDate.formattedDateString(type: .simpleMonthDay)
-            let endTime = event.endDate.formatToTime24Hour()
+            let endDate = end.formattedDateString(type: .simpleMonthDay)
+            let endTime = end.formatToTime24Hour()
 
             
             let dateFont = DesignFontFamily.Pretendard.medium.font(size: 9)

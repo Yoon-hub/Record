@@ -132,17 +132,25 @@ final class CalendarViewController: BaseViewController<CalendarReactor, Calendar
     
     @objc private func weatherIconTapped() {
         Task { @MainActor in
+            showWeatherChunsikCue(
+                plainMessage: "하늘 소식 불러오는 중이에요... ☁️",
+                characterImage: DesignAsset.climateChunsik.image,
+                autoDismiss: false
+            )
+            
             do {
                 let summary = try await TodayWeatherSummaryService.fetchTodaySummary()
                 showWeatherChunsikCue(
                     summary: summary,
                     characterImage: DesignAsset.climateChunsik.image,
-                    characterImageTapForTomorrow: true
+                    characterImageTapForTomorrow: true,
+                    autoDismiss: true
                 )
             } catch {
                 showWeatherChunsikCue(
                     plainMessage: "앗, 날씨를 못 불러왔어요 🥺 네트워크 확인 후 다시 눌러줘!",
-                    characterImage: DesignAsset.climateChunsik.image
+                    characterImage: DesignAsset.climateChunsik.image,
+                    autoDismiss: true
                 )
             }
         }
@@ -155,8 +163,11 @@ extension CalendarViewController {
     private func bindInput(reactor: CalendarReactor) {
         contentView.eventTableView.rx.itemSelected
             .withUnretained(self)
-            .bind {
-                $0.0.navigator.toEventFix(vc: $0.0, seletedDate: $0.0.reactor!.currentState.selectedDate, currentEvent: $0.0.reactor!.currentState.selectedEvents[$0.1.row]) {
+            .bind { vc, indexPath in
+                guard let reactor = vc.reactor else { return }
+                let event = reactor.currentState.selectedEvents[indexPath.row]
+                let day = Calendar.current.startOfDay(for: reactor.currentState.selectedDate)
+                vc.navigator.toEventFix(vc: vc, seletedDate: day, currentEvent: event) {
                     self.reactor?.action.onNext(.reloadEvents)
                 }
             }
@@ -164,7 +175,10 @@ extension CalendarViewController {
     
         contentView.todayButton.rx.tap
             .withUnretained(self)
-            .bind { $0.0.contentView.calendar.setCurrentPage(Date(), animated: true) }
+            .bind {
+                $0.0.reactor?.action.onNext(.didSelectDate(Date()))
+                $0.0.contentView.calendar.setCurrentPage(Date(), animated: true)
+            }
             .disposed(by: disposeBag)
         
         // 일기 작성 라벨 탭 시 해당 일기의 상세 화면으로 이동
@@ -196,8 +210,9 @@ extension CalendarViewController {
         
         reactor.state.map { $0.selectedEvents }
             .bind(to: contentView.eventTableView.rx.items(cellIdentifier: EventCollectionViewCell.identifier, cellType: EventCollectionViewCell.self)
-            ) { _, item, cell in
-                cell.bind(item)
+            ) { [weak self] _, item, cell in
+                let day = self?.reactor?.currentState.selectedDate
+                cell.bind(item, referenceCalendarDay: day)
             }
             .disposed(by: disposeBag)
         
@@ -325,18 +340,26 @@ extension CalendarViewController {
     private func showWeatherChunsikCue(
         summary: TodayWeatherSummaryService.WeatherDaySummary,
         characterImage: UIImage,
-        characterImageTapForTomorrow: Bool
+        characterImageTapForTomorrow: Bool,
+        autoDismiss: Bool
     ) {
         let onCharacterTap: (() -> Void)? = characterImageTapForTomorrow ? { [weak self] in
             guard let self else { return }
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             Task { @MainActor in
+                self.showWeatherChunsikCue(
+                    plainMessage: "내일 하늘 소식도 불러오는 중... 🌙",
+                    characterImage: DesignAsset.chunguma.image,
+                    autoDismiss: false
+                )
+                
                 do {
                     let tomorrow = try await TodayWeatherSummaryService.fetchTomorrowSummary()
                     self.showWeatherChunsikCue(
                         summary: tomorrow,
                         characterImage: DesignAsset.chunguma.image,
-                        characterImageTapForTomorrow: false
+                        characterImageTapForTomorrow: false,
+                        autoDismiss: true
                     )
                 } catch {
                     Toast.show(
@@ -354,15 +377,15 @@ extension CalendarViewController {
             characterImageTapEnabled: characterImageTapForTomorrow,
             onCharacterImageTap: onCharacterTap
         )
-        presentWeatherCue(cue)
+        presentWeatherCue(cue, autoDismiss: autoDismiss)
     }
     
-    private func showWeatherChunsikCue(plainMessage: String, characterImage: UIImage) {
+    private func showWeatherChunsikCue(plainMessage: String, characterImage: UIImage, autoDismiss: Bool) {
         let cue = WeatherChunsikCueView(plainMessage: plainMessage, characterImage: characterImage)
-        presentWeatherCue(cue)
+        presentWeatherCue(cue, autoDismiss: autoDismiss)
     }
     
-    private func presentWeatherCue(_ cue: WeatherChunsikCueView) {
+    private func presentWeatherCue(_ cue: WeatherChunsikCueView, autoDismiss: Bool) {
         weatherCueDismissWorkItem?.cancel()
         weatherCueDismissWorkItem = nil
         view.viewWithTag(WeatherCue.tag)?.removeFromSuperview()
@@ -540,7 +563,13 @@ extension CalendarViewController: UITableViewDelegate {
         footerView.newEventButton.rx.tap
             .throttle(RxConst.milliseconds300Interval, scheduler: MainScheduler.instance)
             .withUnretained(self)
-            .bind { $0.0.navigator.toEventAdd(vc: $0.0, seletedDate: $0.0.reactor!.currentState.selectedDate) { self.reactor?.action.onNext(.reloadEvents) } }
+            .bind {
+                $0.0.navigator.toEventAdd(
+                    vc: $0.0,
+                    seletedDate: $0.0.reactor!.currentState.selectedDate,
+                    reloadTableView: { self.reactor?.action.onNext(.reloadEvents) }
+                )
+            }
             .disposed(by: footerView.disposeBag)
         
         return footerView
@@ -551,7 +580,7 @@ extension CalendarViewController: UITableViewDelegate {
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
 
-        guard let reactor else {return UISwipeActionsConfiguration()}
+        guard let reactor else { return UISwipeActionsConfiguration() }
         
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
             self?.reactor?.action.onNext(.didDeleteEvent(indexPath))
