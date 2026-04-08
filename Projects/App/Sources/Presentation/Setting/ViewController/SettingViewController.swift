@@ -8,6 +8,7 @@
 import UIKit
 
 import Core
+import Design
 
 import RxSwift
 import RxCocoa
@@ -15,6 +16,8 @@ import RxCocoa
 
 
 final class SettingViewController: BaseViewController<SettingReactor, SettinView> {
+    
+    @Navigator var navigator: CalendarNavigatorProtocol
     
     @Injected var provider: GlobalStateProvider
     
@@ -36,7 +39,20 @@ final class SettingViewController: BaseViewController<SettingReactor, SettinView
     // MARK: - Navigation
     private func setNavigation() {
         self.navigationController?.navigationBar.topItem?.title = ""
+        self.navigationController?.navigationBar.tintColor = .recordColor
         self.title = "설정"
+        let searchItem = UIBarButtonItem(
+            image: UIImage(systemName: "magnifyingglass"),
+            style: .plain,
+            target: self,
+            action: #selector(searchTapped)
+        )
+        searchItem.accessibilityLabel = "일정 검색"
+        navigationItem.rightBarButtonItem = searchItem
+    }
+    
+    @objc private func searchTapped() {
+        navigator.toEventSearch()
     }
     
     override func bind(reactor: SettingReactor) {

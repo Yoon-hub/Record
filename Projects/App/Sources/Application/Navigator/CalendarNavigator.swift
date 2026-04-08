@@ -15,6 +15,7 @@ protocol CalendarNavigatorProtocol: BaseNavigator {
     func toEventAdd(vc: UIViewController, seletedDate: Date, reloadTableView: @escaping () -> Void)
     func toEventFix(vc: UIViewController, seletedDate: Date, currentEvent: CalendarEvent, reloadTableView: @escaping () -> Void)
     func toSetting()
+    func toEventSearch()
     func toPill(_ vc: UIViewController)
     func toKakaoShare(_ vc: UIViewController,kakaoEvent: CalendarEvent)
     func toDiary(_ vc: UIViewController)
@@ -48,6 +49,11 @@ final class CalendarNavigator: CalendarNavigatorProtocol {
     func toSetting() {
         let settingView = SettingViewControllerWrapper().viewController
         self.navigationController.pushViewController(settingView, animated: true)
+    }
+    
+    func toEventSearch() {
+        let searchView = EventSearchViewControllerWrapper().viewController
+        self.navigationController.pushViewController(searchView, animated: true)
     }
     
     func toPill(_ vc: UIViewController) {
